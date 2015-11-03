@@ -6,8 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films
@@ -20,6 +18,13 @@ public class FilmDataSet {
     private ArrayList<FilmData> films;
     
     /**
+	 * Creates a new FilmDataSet instance.
+	 */
+    public FilmDataSet(){
+    	films = new ArrayList<FilmData>();
+    }
+    
+    /**
 	 * Gets a list of type FilmData.
 	 * @return A list of filmFata.
 	 */
@@ -28,54 +33,15 @@ public class FilmDataSet {
     }
     
     /**
-	 * Creates a new FilmDataSet instance.
-	 */
-    public FilmDataSet(){
-    	films = new ArrayList<FilmData>();
-    }
-    
-    /**
-	 * Filters language, countries and genres tokens to extract the relevant information.
-	 * @param token The token to clean.
-	 * @return An ArrayList of Strings containing the relevant information.
-	 */
-    public static ArrayList<String> filterLanguagesCountriesGenres(String token){
-    	//Remove surrounding brackets.
-    	token = token.replace("{", "").replace("}", "");
-
-    	//Split token between commas ", " and save it in an ArrayList.
-        ArrayList<String> genres = new ArrayList<String>(Arrays.asList(token.split(", ")));
-        
-        //Further split each token in id and genre.
-        ArrayList<ArrayList<String> > g = new ArrayList<ArrayList<String> >();
-        for (String str : genres) {
-            g.add(new ArrayList<String>(Arrays.asList(str.split(": "))));
-        }
-
-
-        genres.clear();
-        //Keep only genre.
-        int i = 0;
-        for (ArrayList<String> str : g) {
-            for (String tmp : str) {
-                if(i % 2 != 0)
-                    genres.add(tmp.replace("\"", ""));
-                    i++;
-            }
-        }
-        
-        return genres;
-    }
-    
-    /**
-	 * Imports Film data.
-	 * @param fileName The path to the .tsv file to parse.
-	 */
-    public void importFilmData(String fileName){
+     * Imports film data from file.
+     * @param filePath The path to the file to parse.
+     * @param numberOfLinesToParse The number of lines to parse from the file.
+     */
+    public void importFilmData(String filePath, long numberOfLinesToParse){
     	//Open .tsv file to read.
     	BufferedReader TSVFile = null;
     	try {
-			TSVFile = new BufferedReader(new FileReader(fileName));
+			TSVFile = new BufferedReader(new FileReader(filePath));
 		} catch (FileNotFoundException e) {
 			//File not found.
 			System.err.println("Error: File not found");
@@ -104,9 +70,9 @@ public class FilmDataSet {
 			String line = TSVFile.readLine();
 			
 			//pattern iterator.
-			int i;
+			int i, numberOfLinesParsed = 0;
 
-	        while(line != null){
+	        while(numberOfLinesParsed++ < numberOfLinesToParse && line != null){
 	        	//For each line in file, tokenize line.
 	        	StringTokenizer tok = new StringTokenizer(line, "\t");
 	        	
@@ -150,6 +116,32 @@ public class FilmDataSet {
 			e.printStackTrace();
 		}
     }
+    
+    /**
+	 * Imports Film data.
+	 * @param filePath The path to the .tsv file to parse.
+	 */
+    public void importFilmData(String filePath){
+    	try {
+			importFilmData(filePath, getFileSizeByLine(filePath));
+		} catch (IOException e) {
+			System.err.println("Error: File not found");
+		}
+    }
+    
+    /**
+     * Gets file line count.
+     * @param pathToFile Path to file.
+     * @return Number of lines in file. 
+     * @throws IOException if file was not found.
+     */
+    long getFileSizeByLine(String pathToFile) throws IOException{
+    	BufferedReader reader = new BufferedReader(new FileReader(pathToFile));
+    	int lines = 0;
+    	while (reader.readLine() != null) lines++;
+    	reader.close();
+		return lines;
+    }
 
     /**
 	 * Prints information relative to each film.
@@ -162,9 +154,14 @@ public class FilmDataSet {
 
     public static void main(String[] args) throws Exception{
     	FilmDataSet dataSet = new FilmDataSet();
-    	dataSet.importFilmData("war/Resources/movies_80000.tsv");
-//    	dataSet.printDataSet();
+    	dataSet.importFilmData("war/Resources/movies_80000.tsv", 100);
+    	System.out.println(dataSet.getFilms().size());
+    	dataSet.printDataSet();
+    	
+    	//Will throw exception if film alread in db.
+    	//Just text me and i'll empty the database :).
+//    	MySQLConnector.sendToDB(dataSet.getFilms());
     	MySQLConnector.readFromDB();
-//    	MySQLConnector.sendToDB(dataSet.getFilms()); 	
+
     }
 }

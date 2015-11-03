@@ -2,6 +2,7 @@
  * 
  */
 package com.manning.gwtia.ch03.client;
+import com.google.gwt.util.tools.*;
 
 /*
  * The import list is longer in this example than the HelloWorld in Ch2.

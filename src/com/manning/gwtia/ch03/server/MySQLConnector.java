@@ -1,5 +1,8 @@
 package com.manning.gwtia.ch03.server;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,19 +35,67 @@ public class MySQLConnector {
 	private static ResultSet rs;
 	
 	/**
-	 * url to database.
+	 * Parses access file containing log-in info to database instance.
+	 * @param pathToFile A String containing the path (relative to the project).
+	 * @return A list of tokens containing in this order: url, username, password.
 	 */
-	private static String connectionUrl = "jdbc:mysql://raspy.remote:3306/test_movie_db";
+	public static ArrayList<String> parseAccessFile(String pathToFile){
+		ArrayList<String> accessInfo = new ArrayList<String>();
+		//Read access info from file.
+		try {
+			//Open file.
+			BufferedReader accessFile = new BufferedReader(new FileReader(pathToFile));
+			
+			//Read each line.
+			String line = accessFile.readLine();
+			while(line != null){
+				//'#' is a comment line, ignore it.
+				while(line.startsWith("#")) 
+					line = accessFile.readLine();
+	
+				accessInfo.add(line);
+				line = accessFile.readLine();
+				
+			}
+			
+			accessFile.close();
+		} catch (IOException e) {
+			System.err.println("Error: Unable to find log-in info.\n");
+		}
+		
+		return accessInfo;
+	}
 	
 	/**
-	 * Access info to database.
+	 * Opens connection to MySQL database instance.
+	 * @throws SQLException If it cannot open connection.
+	 * @throws InstantiationException If the class or its nullary constructor is not accessible.
+	 * @throws IllegalAccessException If this Class represents an abstract class, an interface, 
+	 * an array class, a primitive type, or void; or if the class has no nullary constructor; or if the instantiation fails for some other reason.
+	 * @throws ClassNotFoundException If the class cannot be located.
 	 */
-	private static String connectionUser = "softEng";
+	public static void openConnection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+		//Read access info from file
+		ArrayList<String> accessInfo = parseAccessFile("war/Resources/AccessInfo.txt");
+		
+		conn = null;
+		rs = null;
+		
+		//Load driver class from .jar file.
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		
+		//Create connection to database.
+		conn = DriverManager.getConnection(accessInfo.get(0), accessInfo.get(1), accessInfo.get(2));
+
+	}
 	
 	/**
-	 * Access info to database.
+	 * Closes Connection to MySQL database instance.
 	 */
-	private static String connectionPassword = "softEng";
+	public static void closeConnection(){
+		try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+		try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+	}
 	
 	
 	/**
@@ -56,11 +107,7 @@ public class MySQLConnector {
 		rs = null;
 		
 		try {
-			//Load driver class from .jar file.
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			
-			//Create connection to database.
-			conn = DriverManager.getConnection(connectionUrl, connectionUser, connectionPassword);
+			openConnection();
 			
 			//Create a placeholder query.
 			String query = " insert into movies (movieid, title, duration, country)"
@@ -74,17 +121,17 @@ public class MySQLConnector {
 				preparedStmt.setInt(1, (int) movie.getID());
 				preparedStmt.setString(2, movie.getTitle());
 				preparedStmt.setFloat(3, movie.getDuration());
-				preparedStmt.setString(4, movie.getCountries());
+				preparedStmt.setString(4, movie.getCountries().get(0));
 				try{
-				preparedStmt.execute();
+					preparedStmt.execute();
 				} catch (MySQLIntegrityConstraintViolationException mySQLe){
+					mySQLe.printStackTrace();
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-			try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+			closeConnection();
 		}
 	}
 	
@@ -93,16 +140,11 @@ public class MySQLConnector {
 	 * Reads from the database.
 	 */
 	public static void readFromDB(){
-		conn = null;
 		stmt = null;
 		rs = null;
 		
 		try {
-			//Load driver class from .jar file.
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			
-			//Create connection to database.
-			conn = DriverManager.getConnection(connectionUrl, connectionUser, connectionPassword);
+			openConnection();
 			
 			//Create a statement object to hold the query.
 			stmt = conn.createStatement();
@@ -121,9 +163,8 @@ public class MySQLConnector {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+			closeConnection();
 			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-			try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
 		}
 	}
 }

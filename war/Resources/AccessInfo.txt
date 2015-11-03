@@ -1,0 +1,6 @@
+#Url to connect to
+jdbc:mysql://raspy.remote:3306/test_movie_db
+#Username
+softEng
+#Password
+softEng

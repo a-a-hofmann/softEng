@@ -9,5 +9,6 @@
 	<welcome-file-list>
 		<welcome-file>BasicProject.html</welcome-file>
 	</welcome-file-list>
+	<use-google-connector-j>true</use-google-connector-j>
 
 </web-app>
