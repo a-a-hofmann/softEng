@@ -2,7 +2,6 @@
  * 
  */
 package com.manning.gwtia.ch03.client;
-import com.google.gwt.util.tools.*;
 
 /*
  * The import list is longer in this example than the HelloWorld in Ch2.
@@ -392,6 +391,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		content.add(homePanel, Pages.HOME.getText());
 		content.add(productsPanel, Pages.PRODUCTS.getText());
 		content.add(contactPanel, Pages.CONTACT.getText());
+		
 		
 		// Indicate that we should show the HOME tab initially.
 		content.selectTab(DECK_HOME);

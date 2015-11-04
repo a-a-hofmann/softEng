@@ -1424,7 +1424,7 @@ ni,com.google.web.bindery.event.shared.UmbrellaException::makeCause(Ljava/util/S
 oi,com.google.web.bindery.event.shared.UmbrellaException::makeMessage(Ljava/util/Set;)Ljava/lang/String;,com.google.web.bindery.event.shared.UmbrellaException,makeMessage,com/google/web/bindery/event/shared/UmbrellaException.java,45,0
 kx,,com.manning.gwtia.ch03.client.BasicProject,,com/manning/gwtia/ch03/client/BasicProject.java,61,-1
 lx,com.manning.gwtia.ch03.client.BasicProject::$getContent(Lcom/manning/gwtia/ch03/client/BasicProject;Ljava/lang/String;)Ljava/lang/String;,com.manning.gwtia.ch03.client.BasicProject,$getContent,com/manning/gwtia/ch03/client/BasicProject.java,128,0
-mx,com.manning.gwtia.ch03.client.BasicProject::$onModuleLoad(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject,$onModuleLoad,com/manning/gwtia/ch03/client/BasicProject.java,476,0
+mx,com.manning.gwtia.ch03.client.BasicProject::$onModuleLoad(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject,$onModuleLoad,com/manning/gwtia/ch03/client/BasicProject.java,477,0
 nx,com.manning.gwtia.ch03.client.BasicProject::$wrapExisitngSearchButton(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject,$wrapExisitngSearchButton,com/manning/gwtia/ch03/client/BasicProject.java,213,0
 ox,com.manning.gwtia.ch03.client.BasicProject::BasicProject()V,com.manning.gwtia.ch03.client.BasicProject,BasicProject,com/manning/gwtia/ch03/client/BasicProject.java,61,0
 a,com.manning.gwtia.ch03.client.BasicProject::contactPanel,com.manning.gwtia.ch03.client.BasicProject,contactPanel,com/manning/gwtia/ch03/client/BasicProject.java,369,-1
@@ -1432,7 +1432,7 @@ b,com.manning.gwtia.ch03.client.BasicProject::content,com.manning.gwtia.ch03.cli
 c,com.manning.gwtia.ch03.client.BasicProject::feedback,com.manning.gwtia.ch03.client.BasicProject,feedback,com/manning/gwtia/ch03/client/BasicProject.java,179,-1
 d,com.manning.gwtia.ch03.client.BasicProject::homePanel,com.manning.gwtia.ch03.client.BasicProject,homePanel,com/manning/gwtia/ch03/client/BasicProject.java,367,-1
 e,com.manning.gwtia.ch03.client.BasicProject::logo,com.manning.gwtia.ch03.client.BasicProject,logo,com/manning/gwtia/ch03/client/BasicProject.java,184,-1
-px,com.manning.gwtia.ch03.client.BasicProject::onValueChange(Lcom/google/gwt/event/logical/shared/ValueChangeEvent;)V,com.manning.gwtia.ch03.client.BasicProject,onValueChange,com/manning/gwtia/ch03/client/BasicProject.java,511,0
+px,com.manning.gwtia.ch03.client.BasicProject::onValueChange(Lcom/google/gwt/event/logical/shared/ValueChangeEvent;)V,com.manning.gwtia.ch03.client.BasicProject,onValueChange,com/manning/gwtia/ch03/client/BasicProject.java,512,0
 f,com.manning.gwtia.ch03.client.BasicProject::productsPanel,com.manning.gwtia.ch03.client.BasicProject,productsPanel,com/manning/gwtia/ch03/client/BasicProject.java,368,-1
 g,com.manning.gwtia.ch03.client.BasicProject::search,com.manning.gwtia.ch03.client.BasicProject,search,com/manning/gwtia/ch03/client/BasicProject.java,172,-1
 h,com.manning.gwtia.ch03.client.BasicProject::searchRequest,com.manning.gwtia.ch03.client.BasicProject,searchRequest,com/manning/gwtia/ch03/client/BasicProject.java,86,-1
@@ -1460,8 +1460,8 @@ a,com.manning.gwtia.ch03.client.BasicProject$5::this$0,com.manning.gwtia.ch03.cl
 Gx,,com.manning.gwtia.ch03.client.BasicProject$6,,com/manning/gwtia/ch03/client/BasicProject.java,356,-1
 Hx,com.manning.gwtia.ch03.client.BasicProject$6::BasicProject$6(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject$6,BasicProject$6,com/manning/gwtia/ch03/client/BasicProject.java,356,0
 Ix,com.manning.gwtia.ch03.client.BasicProject$6::onClick(Lcom/google/gwt/event/dom/client/ClickEvent;)V,com.manning.gwtia.ch03.client.BasicProject$6,onClick,com/manning/gwtia/ch03/client/BasicProject.java,357,0
-Jx,,com.manning.gwtia.ch03.client.BasicProject$7,,com/manning/gwtia/ch03/client/BasicProject.java,494,-1
-Kx,com.manning.gwtia.ch03.client.BasicProject$7::BasicProject$7(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject$7,BasicProject$7,com/manning/gwtia/ch03/client/BasicProject.java,494,0
+Jx,,com.manning.gwtia.ch03.client.BasicProject$7,,com/manning/gwtia/ch03/client/BasicProject.java,495,-1
+Kx,com.manning.gwtia.ch03.client.BasicProject$7::BasicProject$7(Lcom/manning/gwtia/ch03/client/BasicProject;)V,com.manning.gwtia.ch03.client.BasicProject$7,BasicProject$7,com/manning/gwtia/ch03/client/BasicProject.java,495,0
 Lx,,com.manning.gwtia.ch03.client.BasicProject$Pages,,com/manning/gwtia/ch03/client/BasicProject.java,98,-1
 Mx,com.manning.gwtia.ch03.client.BasicProject$Pages::$VALUES,com.manning.gwtia.ch03.client.BasicProject$Pages,$VALUES,com/manning/gwtia/ch03/client/BasicProject.java,98,-1
 Qx,com.manning.gwtia.ch03.client.BasicProject$Pages::$clinit()V,com.manning.gwtia.ch03.client.BasicProject$Pages,$clinit,com/manning/gwtia/ch03/client/BasicProject.java,98,0
