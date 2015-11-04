@@ -31,6 +31,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -39,6 +40,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -59,7 +61,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
-
+	
+	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	/**
 	 * Numerical values to reference the tabs the content pages are held in.
 	 */
@@ -355,9 +358,34 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		 */
 		feedback.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
-				Window.alert("You could provide feedback if this was implemented");
+//				Window.alert("You could provide feedback if this was implemented");
+				doStuff();
 			}
 		});
+	}
+	
+	private void doStuff(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		     // Set up the callback object.
+		    AsyncCallback<String[]> callback = new AsyncCallback<String[]>() {
+		      public void onFailure(Throwable caught) {
+		        // TODO: Do something with errors.
+		    	  Window.alert("I failed");
+		    	  caught.printStackTrace();
+		      }
+
+		      public void onSuccess(String[] result) {
+		    	 Window.alert("I made it!\nID: " + result[0] + "\nTitle: " + result[1] + "\nDuration: " + result[2] +
+		    			 "\nCountry: " + result[3]);
+		    	 
+		      }
+		    };
+
+		     // Make the call to the stock price service.
+		    filmDataSvc.getFilmData(callback);
 	}
 	
 	
@@ -463,12 +491,14 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		// Add the feedback panel directly to the page
 		RootPanel.get().add(feedback);
 		// Add the logo to the DOM element with id of "logo"
-		RootPanel logoSlot = RootPanel.get("logo");
-		if (logoSlot!=null)logoSlot.add(logo);
+//		RootPanel logoSlot = RootPanel.get("logo");
+//		if (logoSlot!=null)logoSlot.add(logo);
 		// Add the TabPanel to the DOM element with the id of "content"
 		RootPanel contentSlot = RootPanel.get("content");
 		if (contentSlot!=null) contentSlot.add(content);
 		// There's no need to add the button, as it is already in the original HTML page.
+		SimpleLayoutPanel p = new SimpleLayoutPanel();
+		Label t = new Label("sd");
 	}
 
 	/**

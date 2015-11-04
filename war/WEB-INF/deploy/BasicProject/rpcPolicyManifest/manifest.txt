@@ -1,2 +1,3 @@
 # Module BasicProject
 # RPC service class, partial path of RPC policy file
+com.manning.gwtia.ch03.client.FilmDataService, 808646E0ABC286AC54078581FFF18A72.gwt.rpc

@@ -9,6 +9,18 @@
 	<welcome-file-list>
 		<welcome-file>BasicProject.html</welcome-file>
 	</welcome-file-list>
+	
 	<use-google-connector-j>true</use-google-connector-j>
+	
+	<!-- Servlets -->
+  <servlet>
+    <servlet-name>filmDataServiceImpl</servlet-name>
+    <servlet-class>com.manning.gwtia.ch03.server.FilmDataServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>filmDataServiceImpl</servlet-name>
+    <url-pattern>BasicProject/filmData</url-pattern>
+  </servlet-mapping>
 
 </web-app>

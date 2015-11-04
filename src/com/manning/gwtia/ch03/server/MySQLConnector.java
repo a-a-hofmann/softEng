@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 /**
@@ -33,6 +34,7 @@ public class MySQLConnector {
 	 * Query result.
 	 */
 	private static ResultSet rs;
+	private static int i = 1;
 	
 	/**
 	 * Parses access file containing log-in info to database instance.
@@ -52,7 +54,6 @@ public class MySQLConnector {
 				//'#' is a comment line, ignore it.
 				while(line.startsWith("#")) 
 					line = accessFile.readLine();
-	
 				accessInfo.add(line);
 				line = accessFile.readLine();
 				
@@ -76,8 +77,8 @@ public class MySQLConnector {
 	 */
 	public static void openConnection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 		//Read access info from file
-		ArrayList<String> accessInfo = parseAccessFile("war/Resources/AccessInfo.txt");
-		
+		ArrayList<String> accessInfo = parseAccessFile("/Users/alexanderhofmann/Documents/workspace/StockWatcher/war/Resources/AccessInfo.txt");
+
 		conn = null;
 		rs = null;
 		
@@ -102,46 +103,47 @@ public class MySQLConnector {
 	 * Sends data to the database.
 	 * @param data The data set to send to the database.
 	 */
-	public static void sendToDB(ArrayList<FilmData> data){
-		conn = null;
-		rs = null;
-		
-		try {
-			openConnection();
-			
-			//Create a placeholder query.
-			String query = " insert into movies (movieid, title, duration, country)"
-			        + " values (?, ?, ?, ?);";
-			
-			//For each movie in the film data set, prepare a query and send it
-			//to the database.
-			for (FilmData movie: data){
-				//Prepare statement to send afterwards.
-				PreparedStatement preparedStmt = conn.prepareStatement(query);
-				preparedStmt.setInt(1, (int) movie.getID());
-				preparedStmt.setString(2, movie.getTitle());
-				preparedStmt.setFloat(3, movie.getDuration());
-				preparedStmt.setString(4, movie.getCountries().get(0));
-				try{
-					preparedStmt.execute();
-				} catch (MySQLIntegrityConstraintViolationException mySQLe){
-					mySQLe.printStackTrace();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeConnection();
-		}
-	}
+//	public static void sendToDB(ArrayList<FilmData> data){
+//		conn = null;
+//		rs = null;
+//		
+//		try {
+//			openConnection();
+//			
+//			//Create a placeholder query.
+//			String query = " insert into movies (movieid, title, duration, country)"
+//			        + " values (?, ?, ?, ?);";
+//			
+//			//For each movie in the film data set, prepare a query and send it
+//			//to the database.
+//			for (FilmData movie: data){
+//				//Prepare statement to send afterwards.
+//				PreparedStatement preparedStmt = conn.prepareStatement(query);
+//				preparedStmt.setInt(1, (int) movie.getID());
+//				preparedStmt.setString(2, movie.getTitle());
+//				preparedStmt.setFloat(3, movie.getDuration());
+//				preparedStmt.setString(4, movie.getCountries().get(0));
+//				try{
+//					preparedStmt.execute();
+//				} catch (MySQLIntegrityConstraintViolationException mySQLe){
+//					mySQLe.printStackTrace();
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			closeConnection();
+//		}
+//	}
 	
 	
 	/**
 	 * Reads from the database.
 	 */
-	public static void readFromDB(){
+	public static String[] readFromDB(){
 		stmt = null;
 		rs = null;
+		String[] data = new String[4];
 		
 		try {
 			openConnection();
@@ -152,19 +154,42 @@ public class MySQLConnector {
 			//Executes and saves query result.
 			rs = stmt.executeQuery("SELECT * FROM movies");
 			
-			while (rs.next()) {
+//			while (rs.next()) {
+			for(int j = 0; j < i; j++)
+				rs.next();
+				
+			i++;
 				String id = rs.getString("movieid");
 				String title = rs.getString("title");
 				String duration = rs.getString("duration");
 				String country = rs.getString("country");
-				System.out.println("ID: " + id + ", Title: " + title
-						+ ", Duration: " + duration + ", Country: "+ country);
-			}
+//				System.out.println("ID: " + id + ", Title: " + title
+//						+ ", Duration: " + duration + ", Country: "+ country);
+				data[0] = id;
+				data[1] = title;
+				data[2] = duration;
+				data[3] = country;
+				
+//				ArrayList<String> countries = new ArrayList<String>();
+//				countries.add(country);
+//				film = new FilmData(Long.parseLong(id), title,  9999, 
+//			    		Float.parseFloat(duration), new ArrayList<String>(), countries, new ArrayList<String>());
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+		}
+		return data;
+	} 
+	
+	public static void main(String[] args){
+		
+		for(int i = 0; i < 10; i++){
+			for(String tmp: readFromDB())
+				System.out.print(tmp + " ");
+			System.out.println();
 		}
 	}
 }

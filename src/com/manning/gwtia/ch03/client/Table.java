@@ -9,8 +9,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
-import com.manning.gwtia.ch03.server.FilmData;
-import com.manning.gwtia.ch03.server.FilmDataSet;
+//import com.manning.gwtia.ch03.server.FilmData;
 
 public class Table {
 	//all films to be imported into table
