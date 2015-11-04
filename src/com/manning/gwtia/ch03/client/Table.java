@@ -1,0 +1,101 @@
+package com.manning.gwtia.ch03.client;
+
+import java.util.List;
+
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
+import com.manning.gwtia.ch03.server.FilmData;
+import com.manning.gwtia.ch03.server.FilmDataSet;
+
+public class Table {
+	//all films to be imported into table
+	//private FilmDataSet filmSet;
+	
+	//table reference
+	private DataGrid<FilmData> table;
+	
+	//Simple Layout Panel for return to Main
+	private SimpleLayoutPanel slp;
+	
+	public Table() {
+		DataGrid<FilmData> table = new DataGrid<FilmData> ();
+		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+		
+		//TODO: add ArrayList with imported data to fill table
+		//filmSet = new FilmDataSet("test");
+		
+		initTable();
+		//fillTable();
+		
+		//Handler for single selection of one row
+		final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
+		table.setSelectionModel(selectionModel);
+		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+
+			public void onSelectionChange(SelectionChangeEvent event) {
+				FilmData selected = selectionModel.getSelectedObject();
+				if (selected != null) {
+					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
+									+ " " + selected.getDuration());
+				}
+			}
+		});
+		
+		slp = new SimpleLayoutPanel();
+		slp.add(table);
+		slp.setHeight("1000px");
+		
+	}
+	
+	//TODO: initialize Table
+	public void initTable() {
+		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				return Long.toString( object.getID() );
+			}};
+		table.addColumn(movieID, "Movie ID");
+
+		TextColumn<FilmData> movieName = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				return object.getTitle();
+			}};
+
+		table.addColumn(movieName, "Movie Name");
+
+		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				return Float.toString( object.getDuration() );
+			}};
+			
+		table.addColumn(movieDuration, "Duration");
+
+		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				return object.getCountries().toString();
+			}};
+
+		table.addColumn(movieCountry, "Country");
+	}
+	
+	//TODO: fill Table
+//	public void fillTable() {
+//		List<FilmData> films = filmSet.getFilms();
+//		table.setRowCount(films.size(), true);
+//		table.setRowData(0, films);
+//		table.setWidth("100%");
+//	}
+	
+	//TODO: get Table
+	public SimpleLayoutPanel getTable() {
+		return slp;
+	}
+}
