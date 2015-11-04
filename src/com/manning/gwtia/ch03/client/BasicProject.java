@@ -3,6 +3,9 @@
  */
 package com.manning.gwtia.ch03.client;
 
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * The import list is longer in this example than the HelloWorld in Ch2.
  * This is simply because we do more things
@@ -24,6 +27,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -39,9 +45,12 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
 
 /**
  * 
@@ -366,7 +375,6 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	 */
 	HTMLPanel homePanel;
 	HTMLPanel productsPanel;
-	HTMLPanel contactPanel;
 
 	/**
 	 * We'll build the tab panel's content from the HTML that is already in the HTML
@@ -377,12 +385,10 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		// First retrieve the existing content for the pages from the HTML page
 		homePanel = new HTMLPanel(getContent(Pages.HOME.getText()));
 		productsPanel = new HTMLPanel(getContent(Pages.PRODUCTS.getText()));
-		contactPanel = new HTMLPanel(getContent(Pages.CONTACT.getText()));
 		
 		// set the style of HTMLPanels
 		homePanel.addStyleName("htmlPanel");
 		productsPanel.addStyleName("htmlPanel");
-		contactPanel.addStyleName("htmlPanel");
 		
 		// Create the tab panel widget
 		content = new TabLayoutPanel(20, Unit.PX);
@@ -390,7 +396,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		// Add the content we have just created to the tab panel widget
 		content.add(homePanel, Pages.HOME.getText());
 		content.add(productsPanel, Pages.PRODUCTS.getText());
-		content.add(contactPanel, Pages.CONTACT.getText());
+		content.add(new Table(), Pages.CONTACT.getText());
 		
 		
 		// Indicate that we should show the HOME tab initially.
@@ -421,7 +427,6 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		// Set up the heights of the pages.
 		homePanel.setHeight("400px");
 		productsPanel.setHeight("400px");
-		contactPanel.setHeight("400px");
 		content.setHeight("420px");
 	}
 	
@@ -469,8 +474,9 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		RootPanel contentSlot = RootPanel.get("content");
 		if (contentSlot!=null) contentSlot.add(content);
 		// There's no need to add the button, as it is already in the original HTML page.
+		
 	}
-
+	
 	/**
 	 * This is the entry point method which will create the GUI and set up the History handling.
 	 */

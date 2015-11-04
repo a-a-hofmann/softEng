@@ -1,55 +1,42 @@
 package com.manning.gwtia.ch03.client;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
-import com.manning.gwtia.ch03.server.FilmData;
-import com.manning.gwtia.ch03.server.FilmDataSet;
 
-public class Table {
+public class Table extends Composite {
 	//all films to be imported into table
-	//private FilmDataSet filmSet;
+	private ArrayList<FilmData> filmSet;
 	
 	//table reference
-	private DataGrid<FilmData> table;
+	private DataGrid<FilmData> table = new DataGrid<FilmData> ();
 	
 	//Simple Layout Panel for return to Main
 	private SimpleLayoutPanel slp;
 	
 	public Table() {
-		DataGrid<FilmData> table = new DataGrid<FilmData> ();
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
 		//TODO: add ArrayList with imported data to fill table
-		//filmSet = new FilmDataSet("test");
+		filmSet = new ArrayList<FilmData>();
+		filmSet.add(new FilmData());
+		filmSet.add(new FilmData());
 		
-		initTable();
-		//fillTable();
-		
-		//Handler for single selection of one row
-		final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
-		table.setSelectionModel(selectionModel);
-		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-
-			public void onSelectionChange(SelectionChangeEvent event) {
-				FilmData selected = selectionModel.getSelectedObject();
-				if (selected != null) {
-					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
-									+ " " + selected.getDuration());
-				}
-			}
-		});
-		
-		slp = new SimpleLayoutPanel();
+		SimpleLayoutPanel slp = new SimpleLayoutPanel();
 		slp.add(table);
 		slp.setHeight("1000px");
 		
+		initTable();
+		fillTable();
+		
+		initWidget(slp);
 	}
 	
 	//TODO: initialize Table
@@ -84,18 +71,33 @@ public class Table {
 			}};
 
 		table.addColumn(movieCountry, "Country");
+		
+		//Handler for single selection of one row
+				final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
+				table.setSelectionModel(selectionModel);
+				selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+
+					public void onSelectionChange(SelectionChangeEvent event) {
+						FilmData selected = selectionModel.getSelectedObject();
+						if (selected != null) {
+							Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
+											+ " " + selected.getDuration());
+						}
+					}
+				});
 	}
 	
 	//TODO: fill Table
-//	public void fillTable() {
-//		List<FilmData> films = filmSet.getFilms();
-//		table.setRowCount(films.size(), true);
-//		table.setRowData(0, films);
-//		table.setWidth("100%");
-//	}
+	public void fillTable() {
+		table.setRowCount(filmSet.size(), true);
+		table.setRowData(0, filmSet);
+		table.setWidth("100%");
+	}
 	
 	//TODO: get Table
 	public SimpleLayoutPanel getTable() {
+		
+		
 		return slp;
 	}
 }
