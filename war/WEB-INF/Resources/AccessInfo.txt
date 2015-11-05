@@ -1,0 +1,6 @@
+#Url to connect to
+jdbc:mysql://77.56.2.160:3306/test_movie_db
+#Username
+softEng
+#Password
+softEng

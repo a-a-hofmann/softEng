@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 import com.manning.gwtia.ch03.server.MySQLConnector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films
@@ -157,14 +158,19 @@ public class FilmDataSet {
 
     public static void main(String[] args) throws Exception{
     	FilmDataSet dataSet = new FilmDataSet();
-    	dataSet.importFilmData("war/Resources/movies_80000.tsv", 100);
+    	dataSet.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
     	System.out.println(dataSet.getFilms().size());
-    	dataSet.printDataSet();
+//    	dataSet.printDataSet();
     	
-    	//Will throw exception if film alread in db.
+    	//Will throw exception if film already in db.
     	//Just text me and i'll empty the database :).
-//    	MySQLConnector.sendToDB(dataSet.getFilms());
-    	MySQLConnector.readFromDB();
+    	long start = System.currentTimeMillis();
+    	MySQLConnector.sendToDB(dataSet.getFilms(), "movies");
+    	List<FilmData> result = MySQLConnector.readAllDataFromDB("movies");
+    	long end = System.currentTimeMillis();
+    	System.out.println("Time elapsed: " + (end - start) / 1000.0);
+//    	MySQLConnector.readAllDataFromDB();
+    	System.out.println(result.size());
 
     }
 }

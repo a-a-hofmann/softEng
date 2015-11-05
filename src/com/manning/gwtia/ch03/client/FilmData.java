@@ -38,12 +38,12 @@ public class FilmData implements Serializable {
     private ArrayList<String> languages;
 
     /**
-	 * An ArrayList of Strings contraining countries.
+	 * An ArrayList of Strings containing countries.
 	 */
     private ArrayList<String> countries;
 
     /**
-	 * An ArrayList of Strings contraining genres.
+	 * An ArrayList of Strings containing genres.
 	 */
     private ArrayList<String> genres;
 
@@ -53,8 +53,6 @@ public class FilmData implements Serializable {
     public FilmData(){
     	ID = -1;
     	title = "No Title";
-//    	date = Calendar.getInstance();
-//    	date.set(Calendar.YEAR, 9999);
     	date = -1;
     	duration = 0;
     	languages = new ArrayList<String>();
@@ -83,6 +81,23 @@ public class FilmData implements Serializable {
     	this.languages = languages;
     	this.countries = countries;
     	this.genres = genres;
+    }
+    
+    /**
+	 * Creates a new FilmData instance.
+	 * To use only for testing.
+	 * @param ID The ID of a film.
+	 * @param title The title of a film.
+	 * @param duration The duration of a film.
+	 * @param countries The countries of a film.
+	 */
+    public FilmData(long ID, String title, 
+    		float duration, ArrayList<String> countries){
+    	this();
+    	this.ID = ID;
+    	setTitle(title);
+    	this.duration = duration;
+    	this.countries = countries;
     }
 
     /**

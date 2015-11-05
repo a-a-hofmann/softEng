@@ -378,17 +378,16 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		    }
 
 		     // Set up the callback object.
-		    AsyncCallback<String[]> callback = new AsyncCallback<String[]>() {
+		    AsyncCallback<List<FilmData>> callback = new AsyncCallback<List<FilmData> >() {
 		      public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
 		    	  Window.alert("I failed");
 		    	  caught.printStackTrace();
 		      }
 
-		      public void onSuccess(String[] result) {
-		    	 Window.alert("I made it!\nID: " + result[0] + "\nTitle: " + result[1] + "\nDuration: " + result[2] +
-		    			 "\nCountry: " + result[3]);
-		    	 
+		      public void onSuccess(List<FilmData> result) {
+		    	  FilmData film = result.get(0);
+		    	  Window.alert(film.getID() + "\n" + film.getTitle() + "\n" + film.getDuration() + "\n" + film.getCountries());   	 
 		      }
 		    };
 

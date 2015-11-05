@@ -20,7 +20,7 @@
 
   <servlet-mapping>
     <servlet-name>filmDataServiceImpl</servlet-name>
-    <url-pattern>BasicProject/filmData</url-pattern>
+    <url-pattern>/BasicProject/filmData</url-pattern>
   </servlet-mapping>
 
 </web-app>

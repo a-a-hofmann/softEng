@@ -13,15 +13,15 @@ public class MySQLConnectorTest {
 	public void setUp() throws Exception {
 	}
 
-	@Test
-	public void testParseAccessFile() {
-		String commentPattern = "# .*";
-		ArrayList<String> accessInfo = MySQLConnector.parseAccessFile("war/Resources/AccessInfo.txt");
-		
-		assertEquals(3, accessInfo.size());
-		for(String info : accessInfo){
-			assertFalse(info.matches(commentPattern));
-		}
-	}
+//	@Test
+//	public void testParseAccessFile() {
+//		String commentPattern = "# .*";
+//		ArrayList<String> accessInfo = MySQLConnector.parseAccessFile("war/Resources/AccessInfo.txt");
+//		
+//		assertEquals(3, accessInfo.size());
+//		for(String info : accessInfo){
+//			assertFalse(info.matches(commentPattern));
+//		}
+//	}
 
 }
