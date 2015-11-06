@@ -9,6 +9,8 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.manning.gwtia.ch03.shared.FilmData;
+
 public class FilmDataTest {
 	private FilmData emptyFilmTest;
 	private FilmData filmTest;

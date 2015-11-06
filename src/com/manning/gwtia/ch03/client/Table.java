@@ -2,6 +2,7 @@ package com.manning.gwtia.ch03.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -10,7 +11,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
-//import com.manning.gwtia.ch03.server.FilmData;
+import com.manning.gwtia.ch03.shared.FilmData;
+import com.manning.gwtia.ch03.shared.FilmDataSet;
 
 public class Table extends Composite {
 	//all films to be imported into table
@@ -40,6 +42,22 @@ public class Table extends Composite {
 		initWidget(slp);
 	}
 	
+	public Table(FilmDataSet films) {
+		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+		
+		//TODO: add ArrayList with imported data to fill table
+		this.filmSet = films.getFilms();
+		
+		SimpleLayoutPanel slp = new SimpleLayoutPanel();
+		slp.add(table);
+		slp.setHeight("1000px");
+		
+		initTable();
+		fillTable();
+		
+		initWidget(slp);
+	}
+	
 	//TODO: initialize Table
 	public void initTable() {
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
@@ -48,7 +66,14 @@ public class Table extends Composite {
 				return Long.toString( object.getID() );
 			}};
 		table.addColumn(movieID, "Movie ID");
-
+		
+		movieID.setFieldUpdater(new FieldUpdater<FilmData, String>() {
+		    @Override
+		    public void update(int index, FilmData object, String value) {
+		        table.redraw();
+		    }
+		});
+		
 		TextColumn<FilmData> movieName = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
@@ -56,6 +81,13 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieName, "Movie Name");
+		
+		movieName.setFieldUpdater(new FieldUpdater<FilmData, String>() {
+		    @Override
+		    public void update(int index, FilmData object, String value) {
+		        table.redraw();
+		    }
+		});
 
 		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
 			@Override
@@ -64,6 +96,13 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDuration, "Duration");
+		
+		movieDuration.setFieldUpdater(new FieldUpdater<FilmData, String>() {
+		    @Override
+		    public void update(int index, FilmData object, String value) {
+		        table.redraw();
+		    }
+		});
 
 		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
 			@Override
@@ -72,6 +111,13 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieCountry, "Country");
+		
+		movieCountry.setFieldUpdater(new FieldUpdater<FilmData, String>() {
+		    @Override
+		    public void update(int index, FilmData object, String value) {
+		        table.redraw();
+		    }
+		});
 		
 		//Handler for single selection of one row
 				final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
@@ -93,12 +139,24 @@ public class Table extends Composite {
 		table.setRowCount(filmSet.size(), true);
 		table.setRowData(0, filmSet);
 		table.setWidth("100%");
+		table.redraw();
+	}
+	
+	//TODO: fill Table
+	public void fillTable(ArrayList<FilmData> filmSet) {
+		this.filmSet = filmSet;
+		table.setRowCount(filmSet.size(), true);
+		table.setRowData(0, filmSet);
+		table.setWidth("100%");
+//		table.redraw();
+//		table.setVisible(true);
 	}
 	
 	//TODO: get Table
-	public SimpleLayoutPanel getTable() {
-		
-		
+	public SimpleLayoutPanel getTable() {	
 		return slp;
+	}
+	public DataGrid<FilmData> getGrid(){
+		return table;
 	}
 }

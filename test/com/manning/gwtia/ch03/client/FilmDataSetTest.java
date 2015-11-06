@@ -13,6 +13,9 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.manning.gwtia.ch03.shared.FilmData;
+import com.manning.gwtia.ch03.shared.FilmDataSet;
+
 
 
 

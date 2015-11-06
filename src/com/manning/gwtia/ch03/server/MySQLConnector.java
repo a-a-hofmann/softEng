@@ -1,8 +1,5 @@
 package com.manning.gwtia.ch03.server;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,19 +8,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.ServletContext;
-
 import com.google.appengine.api.utils.SystemProperty;
-import com.manning.gwtia.ch03.client.FilmData;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import com.manning.gwtia.ch03.shared.FilmData;
+import com.manning.gwtia.ch03.shared.FilmDataSet;
 
 /**
  * The {@code MYSQLConnector} class is responsible for connecting to a mySQL database 
  * and for reading and writing to it.
  */
 public class MySQLConnector {
+	
 	/**
 	 * Connection to database.
 	 */
@@ -38,38 +32,6 @@ public class MySQLConnector {
 	 * Query result.
 	 */
 	private static ResultSet rs;
-	private static int i = 1;
-	
-	/**
-	 * Parses access file containing log-in info to database instance.
-	 * @param pathToFile A String containing the path (relative to the project).
-	 * @return A list of tokens containing in this order: url, username, password.
-	 */
-	private static ArrayList<String> parseAccessFile(String pathToFile){
-		ArrayList<String> accessInfo = new ArrayList<String>();
-		//Read access info from file.
-		try {
-			//Open file.
-			BufferedReader accessFile = new BufferedReader(new FileReader(pathToFile));
-			
-			//Read each line.
-			String line = accessFile.readLine();
-			while(line != null){
-				//'#' is a comment line, ignore it.
-				while(line.startsWith("#")) 
-					line = accessFile.readLine();
-				accessInfo.add(line);
-				line = accessFile.readLine();
-				
-			}
-			
-			accessFile.close();
-		} catch (IOException e) {
-			System.err.println("Error: Unable to find log-in info.\n");
-		}
-		
-		return accessInfo;
-	}
 	
 	/**
 	 * Opens connection to MySQL database instance.
@@ -79,12 +41,13 @@ public class MySQLConnector {
 	 * an array class, a primitive type, or void; or if the class has no nullary constructor; or if the instantiation fails for some other reason.
 	 * @throws ClassNotFoundException If the class cannot be located.
 	 */
-	public static void openConnection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
-
-		
+	public static void openConnection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{	
 		conn = null;
 		rs = null;
 		String url = null;
+		
+//		String userName = "softEng";
+//		String pwd = "softEng";
 		
 		
 		if (SystemProperty.environment.value() ==
@@ -94,25 +57,22 @@ public class MySQLConnector {
 		  // prefix.
 		  Class.forName("com.mysql.jdbc.GoogleDriver");
 		  url =
-		    "jdbc:google:mysql://softeng-1120:testmoviedb/test_movie_db?user=softEng";
-		  
-		  conn = DriverManager.getConnection(url);
-		  
-		} else {
-			
+		    "jdbc:google:mysql://gwtsofteng:moviedb/test_movie_db?user=softEng";
+		} else {			
 			// Connecting from an external network.
 			//Load driver class from .jar file.
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			
+			//Google SQL url.
+			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
+			
+			
+			//RPI url.
 //			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
-			url = "jdbc:mysql://173.194.106.76:3306/test_movie_db?user=softEng";
-			conn = DriverManager.getConnection(url);
-			//Log-in info.
-//			String userName = "softEng";
-//			String pwd = "softEng";
-//			conn = DriverManager.getConnection(url, userName, pwd);
 		}
 	
-
+//		conn = DriverManager.getConnection(url, userName, pwd);
+		conn = DriverManager.getConnection(url);
 	}
 	
 	/**
@@ -127,7 +87,8 @@ public class MySQLConnector {
 	/**
 	 * Sends data to the database.
 	 * @param data The data set to send to the database.
-	 * @throws SQLException 
+	 * @param table The table of the database.
+	 * @throws SQLException Database access error.
 	 */
 	public static void sendToDB(ArrayList<FilmData> data, String table) throws SQLException{
 		conn = null;
@@ -180,13 +141,15 @@ public class MySQLConnector {
 	
 	
 	/**
-	 * Reads from the database.
+	 * Reads all data from the database table.
+	 * @param table Table from which to read all data.
+	 * @return A list containing all FilmData read from db/table.
 	 */
-	public static List<FilmData> readAllDataFromDB(String table){
+	public static ArrayList<FilmData> readAllDataFromDB(String table){
 		stmt = null;
 		rs = null;
 		
-		List<FilmData> result = new ArrayList<FilmData>();
+		ArrayList<FilmData> result = new ArrayList<FilmData>();
 		FilmData film = null;
 		
 		
@@ -198,7 +161,7 @@ public class MySQLConnector {
 			stmt = conn.createStatement();
 			
 			//Executes and saves query result.
-			rs = stmt.executeQuery("SELECT * FROM " + table);
+			rs = stmt.executeQuery("SELECT * FROM " + table + ";");
 			
 			
 			while (rs.next()) {
@@ -221,12 +184,14 @@ public class MySQLConnector {
 	
 	/**
 	 * Reads from the database.
+	 * @param query Query to send to database.
+	 * @return Query result.
 	 */
-	public static List<FilmData> readFromDB(String query){
+	public static ArrayList<FilmData> readFromDB(String query){
 		stmt = null;
 		rs = null;
 		
-		List<FilmData> result = new ArrayList<FilmData>();
+		ArrayList<FilmData> result = new ArrayList<FilmData>();
 		
 		try {
 			openConnection();
@@ -255,11 +220,21 @@ public class MySQLConnector {
 		return result;
 	} 
 	
+	/**
+	 * Open tsv file and send all data to database.
+	 * @param table Table to send data to.
+	 */
+	public static void sendAllDataFromFileToDB(String table){
+		FilmDataSet films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+		try {
+			sendToDB(films.getFilms(), table);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args){
-//		List<FilmData> result = readAllDataFromDB();
-////		for(FilmData tmp: result)
-////			System.out.println(tmp);
-//		sendToDB(new ArrayList<FilmData>(result), );
-
+		sendAllDataFromFileToDB("movies");
 	}
 }

@@ -3,9 +3,6 @@
  */
 package com.manning.gwtia.ch03.client;
 
-import java.util.Arrays;
-import java.util.List;
-
 /*
  * The import list is longer in this example than the HelloWorld in Ch2.
  * This is simply because we do more things
@@ -27,9 +24,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
-import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -46,12 +40,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
+import com.manning.gwtia.ch03.shared.FilmDataSet;
 
 /**
  * 
@@ -70,11 +62,12 @@ import com.google.gwt.view.client.SingleSelectionModel;
  */
 public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	
+	private FilmDataSet dataSet = new FilmDataSet();
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	/**
 	 * Numerical values to reference the tabs the content pages are held in.
 	 */
-	static final int DECK_HOME = 0;
+	static final int DECK_TABLE = 0;
 	static final int DECK_PRODUCTS = 1;
 	static final int DECK_CONTACT = 2;
 	
@@ -82,7 +75,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	 * Strings representing the history tokens we will use to indicate which tab content
 	 * the user is viewing.
 	 */
-	static final String TOKEN_HOME = "Home";
+	static final String TOKEN_TABLE = "Table";
 	static final String TOKEN_PRODUCTS = "Products";
 	static final String TOKEN_CONTACT = "Contact";
 	
@@ -107,7 +100,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	 * 
 	 */
 	enum Pages {
-		HOME(DECK_HOME, TOKEN_HOME), PRODUCTS(DECK_PRODUCTS, TOKEN_PRODUCTS), CONTACT(DECK_CONTACT, TOKEN_CONTACT);
+		HOME(DECK_TABLE, TOKEN_TABLE), PRODUCTS(DECK_PRODUCTS, TOKEN_PRODUCTS), CONTACT(DECK_CONTACT, TOKEN_CONTACT);
 		
 		// Holds the card number in the deck this enumeration relates to. 
 		private int val;
@@ -367,27 +360,27 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		feedback.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
 //				Window.alert("You could provide feedback if this was implemented");
-				doStuff();
+//				doStuff();
 			}
 		});
 	}
 	
-	private void doStuff(){
+	private void getFilmDataSetAsync(){
 		if (filmDataSvc == null) {
 		      filmDataSvc = GWT.create(FilmDataService.class);
 		    }
 
 		     // Set up the callback object.
-		    AsyncCallback<List<FilmData>> callback = new AsyncCallback<List<FilmData> >() {
+		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		      public void onFailure(Throwable caught) {
 		        // TODO: Do something with errors.
 		    	  Window.alert("I failed");
 		    	  caught.printStackTrace();
 		      }
 
-		      public void onSuccess(List<FilmData> result) {
-		    	  FilmData film = result.get(0);
-		    	  Window.alert(film.getID() + "\n" + film.getTitle() + "\n" + film.getDuration() + "\n" + film.getCountries());   	 
+		      public void onSuccess(FilmDataSet result) {
+		    	  dataSet = result;
+		    	  table.fillTable(dataSet.getFilms());
 		      }
 		    };
 
@@ -401,6 +394,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	 */
 	HTMLPanel homePanel;
 	HTMLPanel productsPanel;
+	Table table;
 
 	/**
 	 * We'll build the tab panel's content from the HTML that is already in the HTML
@@ -411,6 +405,7 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		// First retrieve the existing content for the pages from the HTML page
 		homePanel = new HTMLPanel(getContent(Pages.HOME.getText()));
 		productsPanel = new HTMLPanel(getContent(Pages.PRODUCTS.getText()));
+		table = new Table(dataSet);
 		
 		// set the style of HTMLPanels
 		homePanel.addStyleName("htmlPanel");
@@ -420,13 +415,12 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 		content = new TabLayoutPanel(20, Unit.PX);
 
 		// Add the content we have just created to the tab panel widget
-		content.add(homePanel, Pages.HOME.getText());
+		content.add(table, Pages.HOME.getText());
+		content.add(homePanel, Pages.CONTACT.getText());
 		content.add(productsPanel, Pages.PRODUCTS.getText());
-		content.add(new Table(), Pages.CONTACT.getText());
-		
-		
+			
 		// Indicate that we should show the HOME tab initially.
-		content.selectTab(DECK_HOME);
+		content.selectTab(DECK_TABLE);
 	}
 
 	
@@ -506,6 +500,8 @@ public class BasicProject implements EntryPoint, ValueChangeHandler<String> {
 	 * This is the entry point method which will create the GUI and set up the History handling.
 	 */
 	public void onModuleLoad() {
+		// Load data.
+		getFilmDataSetAsync();
 		// Create the user interface
 		setUpGui();		
 		// Set up history management

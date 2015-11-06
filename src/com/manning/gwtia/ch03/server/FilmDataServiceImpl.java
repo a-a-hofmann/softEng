@@ -1,24 +1,26 @@
 package com.manning.gwtia.ch03.server;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.manning.gwtia.ch03.client.FilmData;
 import com.manning.gwtia.ch03.client.FilmDataService;
+import com.manning.gwtia.ch03.shared.FilmData;
+import com.manning.gwtia.ch03.shared.FilmDataSet;
 
+@SuppressWarnings("serial")
 public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDataService{
 	
-	public List<FilmData> getFilmData(){
-		List<FilmData> result = MySQLConnector.readFromDB("SELECT * FROM movies LIMIT 10");
-		return result;
+	/**
+	 * Server side implementation of FilmDataService.
+	 * Send query and returns the resulting FilmDataSet.
+	 * @return Query result.
+	 */
+	public FilmDataSet getFilmData(){
+		ArrayList<FilmData> result = MySQLConnector.readFromDB("SELECT * FROM movies LIMIT 1000;");
+		FilmDataSet newDataSet = new FilmDataSet();
+		newDataSet.setDataSet(result);
+		
+		System.out.println(result.size());
+		return newDataSet;
 	}
-	
-//	public static void main(String[] args){
-//		FilmDataServiceImpl fd = new FilmDataServiceImpl();
-//		for(int i = 0; i < 10; i++){
-//			for(String tmp: fd.getFilmData())
-//				System.out.print(tmp + " ");
-//			System.out.println();
-//		}
-//	}
 }

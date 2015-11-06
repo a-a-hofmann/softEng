@@ -1,2 +1,0 @@
-serviceClass: com.manning.gwtia.ch03.client.FilmDataService
-path: 57A77909F1E82CB7112D3617AAA729D9.gwt.rpc
