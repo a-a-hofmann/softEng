@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import com.uzh.gwt.softeng.server.TSVImporter;
 
+
+
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films.
  */
@@ -76,7 +78,7 @@ public class FilmDataSet implements Serializable{
     
     public static void main(String[] args){
     	FilmDataSet dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-//    	dataSet.printDataSet();
+    	dataSet.printDataSet();
     	ArrayList<FilmData> films = dataSet.filterByTitle("Batman");
     	for(FilmData tmp : films)
     		System.out.println(tmp);
