@@ -49,6 +49,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 public class ApplicationLogic implements EntryPoint, ValueChangeHandler<String> {
 	
 	private FilmDataSet dataSet = new FilmDataSet();
+	private FilmDataSet filteredDataSet = new FilmDataSet();
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	/**
 	 * Numerical values to reference the tabs the content pages are held in.
@@ -68,7 +69,7 @@ public class ApplicationLogic implements EntryPoint, ValueChangeHandler<String> 
 	/**
 	 * The filename of our logo image
 	 */
-	private static final String LOGO_IMAGE_NAME = "google-map-placeholder.png";
+	private static final String LOGO_IMAGE_NAME = "mapplaceholder.jpg";
 	
 	/**
 	 * A popup panel that will be displayed if the search button is selected. 
@@ -284,6 +285,8 @@ public class ApplicationLogic implements EntryPoint, ValueChangeHandler<String> 
 							searchRequest.hide();
 							// "start" the search
 							Window.alert("If implemented, now we would search for: "+searchTerm.getText());
+							filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTerm.getText()));
+							table.fillTable(filteredDataSet.getFilms());
 						}
 					});
 

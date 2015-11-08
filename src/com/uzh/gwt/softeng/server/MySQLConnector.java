@@ -1,5 +1,6 @@
 package com.uzh.gwt.softeng.server;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -49,15 +50,13 @@ public class MySQLConnector {
 //		String userName = "softEng";
 //		String pwd = "softEng";
 		
-		
 		if (SystemProperty.environment.value() ==
 		    SystemProperty.Environment.Value.Production) {
-		  // Connecting from App Engine.
-		  // Load the class that provides the "jdbc:google:mysql://"
-		  // prefix.
-		  Class.forName("com.mysql.jdbc.GoogleDriver");
-		  url =
-		    "jdbc:google:mysql://gwtsofteng:moviedb/test_movie_db?user=softEng";
+			// Connecting from App Engine.
+			// Load the class that provides the "jdbc:google:mysql://"
+			// prefix.
+			Class.forName("com.mysql.jdbc.GoogleDriver");
+			url = "jdbc:google:mysql://gwtsofteng:moviedb/test_movie_db?user=softEng";
 		} else {			
 			// Connecting from an external network.
 			//Load driver class from .jar file.
@@ -65,8 +64,7 @@ public class MySQLConnector {
 			
 			//Google SQL url.
 			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
-			
-			
+				
 			//RPI url.
 //			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
 		}
@@ -138,8 +136,7 @@ public class MySQLConnector {
 			closeConnection();
 		}
 	}
-	
-	
+		
 	/**
 	 * Reads all data from the database table.
 	 * @param table Table from which to read all data.
@@ -152,8 +149,6 @@ public class MySQLConnector {
 		ArrayList<FilmData> result = new ArrayList<FilmData>();
 		FilmData film = null;
 		
-		
-		
 		try {
 			openConnection();
 			
@@ -162,7 +157,6 @@ public class MySQLConnector {
 			
 			//Executes and saves query result.
 			rs = stmt.executeQuery("SELECT * FROM " + table + ";");
-			
 			
 			while (rs.next()) {
 				String id = rs.getString("movieid");
@@ -225,13 +219,15 @@ public class MySQLConnector {
 	 * @param table Table to send data to.
 	 */
 	public static void sendAllDataFromFileToDB(String table){
-		FilmDataSet films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+		FilmDataSet films;
 		try {
+			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 			sendToDB(films.getFilms(), table);
-		} catch (SQLException e) {
+		} catch (IOException | SQLException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
+
 	}
 	
 	public static void main(String[] args){

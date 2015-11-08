@@ -1,6 +1,7 @@
 package com.uzh.gwt.softeng.shared;
 
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -59,17 +60,17 @@ public class FilmDataSet implements Serializable{
     }
     
   //returns an ArrayList containing the filmData where titlePart occurs case ignored in the title
-    ArrayList<FilmData> filterByTitle(String titlePart){
+    public ArrayList<FilmData> filterByTitle(String titlePart){
 	   ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
 	   
 	   //distinction of occurence of titlePart in beginning, middle or end of Title
 	   //so only eg. titlePart = "the" containing data is in ArrayList and not "They"
 	   for(FilmData film: films){
-		   if(film.getTitle().toUpperCase().startsWith(titlePart.toUpperCase() + " ")){  
+		   if(film.getTitle().toUpperCase().startsWith(titlePart.toUpperCase())){  
 			   filteredSet.add(film);
-		   }else if(film.getTitle().toUpperCase().contains(" " + titlePart.toUpperCase() + " ")){
+		   }else if(film.getTitle().toUpperCase().contains(titlePart.toUpperCase())){
 			   filteredSet.add(film);
-		   }else if(film.getTitle().toUpperCase().endsWith(" " + titlePart.toUpperCase())){
+		   }else if(film.getTitle().toUpperCase().endsWith(titlePart.toUpperCase())){
 			   filteredSet.add(film);
 		   }
 	   }
@@ -77,12 +78,18 @@ public class FilmDataSet implements Serializable{
    }
     
     public static void main(String[] args){
-    	FilmDataSet dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-    	dataSet.printDataSet();
-    	ArrayList<FilmData> films = dataSet.filterByTitle("Batman");
-    	for(FilmData tmp : films)
-    		System.out.println(tmp);
-    	System.out.println(films.size());
+    	FilmDataSet dataSet;
+		try {
+			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+			dataSet.printDataSet();
+	    	ArrayList<FilmData> films = dataSet.filterByTitle("Batman");
+	    	for(FilmData tmp : films)
+	    		System.out.println(tmp);
+	    	System.out.println(films.size());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 }

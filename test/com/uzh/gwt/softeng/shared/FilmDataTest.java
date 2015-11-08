@@ -3,9 +3,6 @@ package com.uzh.gwt.softeng.shared;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-
-//import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +42,6 @@ public class FilmDataTest {
 		testTokensCleaned.add("Silent film");
 		testTokensCleaned.add("English Language");
 	}
-
 
 	@Test
 	public void testFilmDataConstructor() {

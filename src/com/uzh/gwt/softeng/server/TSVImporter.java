@@ -21,7 +21,7 @@ public class TSVImporter {
      * @return Number of lines in file. 
      * @throws IOException if file was not found.
      */
-    private static long getFileSizeByLine(String pathToFile) throws IOException{
+    static long getFileSizeByLine(String pathToFile) throws IOException{
     	BufferedReader reader = new BufferedReader(new FileReader(pathToFile));
     	int lines = 0;
     	while (reader.readLine() != null) lines++;
@@ -33,14 +33,11 @@ public class TSVImporter {
 	 * Imports Film data from file.
 	 * @param filePath The path to the .tsv file to parse.
 	 * @return Imported FilmDataSet.
+     * @throws IOException 
+     * @throws FileNotFoundException 
 	 */
-    public static FilmDataSet importFilmData(String filePath){
-    	try {
-			return importFilmData(filePath, getFileSizeByLine(filePath));
-		} catch (IOException e) {
-			System.err.println("Error: File not found");
-			return null;
-		}
+    public static FilmDataSet importFilmData(String filePath) throws FileNotFoundException, IOException{
+		return importFilmData(filePath, getFileSizeByLine(filePath));
     }
      
     /**
