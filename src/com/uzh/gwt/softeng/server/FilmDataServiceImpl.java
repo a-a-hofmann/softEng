@@ -12,15 +12,21 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	
 	/**
 	 * Server side implementation of FilmDataService.
-	 * Send query and returns the resulting FilmDataSet.
+	 * Send query and returns the resulting FilmDataSet limited to 50 results.
 	 * @return Query result.
 	 */
 	public FilmDataSet getFilmData(){
-		ArrayList<FilmData> result = MySQLConnector.readFromDB("SELECT * FROM movies LIMIT 1000;");
-		FilmDataSet newDataSet = new FilmDataSet();
-		newDataSet.setDataSet(result);
-		
-		System.out.println(result.size());
+		return getFilmData("SELECT * FROM movies LIMIT 50;");
+	}
+	
+	/**
+	 * Server side implementation of FilmDataService.
+	 * Send query and returns the resulting FilmDataSet.
+	 * @return Query result.
+	 */
+	public FilmDataSet getFilmData(String query){
+		ArrayList<FilmData> result = MySQLConnector.readFromDB(query);
+		FilmDataSet newDataSet = new FilmDataSet(result);
 		return newDataSet;
 	}
 }

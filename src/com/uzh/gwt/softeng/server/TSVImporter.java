@@ -33,8 +33,8 @@ public class TSVImporter {
 	 * Imports Film data from file.
 	 * @param filePath The path to the .tsv file to parse.
 	 * @return Imported FilmDataSet.
-     * @throws IOException 
-     * @throws FileNotFoundException 
+     * @throws IOException IOException.
+     * @throws FileNotFoundException File not found.
 	 */
     public static FilmDataSet importFilmData(String filePath) throws FileNotFoundException, IOException{
 		return importFilmData(filePath, getFileSizeByLine(filePath));
