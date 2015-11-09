@@ -17,6 +17,11 @@
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
+  
+  <instance-class>B4</instance-class>
+  <manual-scaling>
+    <instances>5</instances>
+  </manual-scaling>
 
   <!--
     HTTP Sessions are disabled by default. To enable HTTP sessions specify:
