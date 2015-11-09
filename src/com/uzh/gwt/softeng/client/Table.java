@@ -1,12 +1,18 @@
 package com.uzh.gwt.softeng.client;
 
+
 import java.util.ArrayList;
-import com.google.gwt.user.cellview.client.DataGrid;
+
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.uzh.gwt.softeng.shared.FilmData;
@@ -17,11 +23,15 @@ public class Table extends Composite {
 	private ArrayList<FilmData> filmSet;
 	
 	//table reference
-	private DataGrid<FilmData> table = new DataGrid<FilmData> ();
+	private CellTable<FilmData> table = new CellTable<FilmData> ();
 	
-	//Simple Layout Panel for return to Main
-	private SimpleLayoutPanel slp;
+	private DockLayoutPanel lp;
 	
+	ListDataProvider<FilmData> dataProvider;
+	
+	SimplePager pager;
+	
+
 	public Table() {
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
@@ -30,34 +40,30 @@ public class Table extends Composite {
 		filmSet.add(new FilmData());
 		filmSet.add(new FilmData());
 		
-		slp = new SimpleLayoutPanel();
-		slp.add(table);
-		slp.setHeight("500px");
+		table.setWidth("100%");
 		
+		dataProvider = new ListDataProvider<FilmData>(filmSet);
+		dataProvider.addDataDisplay(table);
+		
+		lp = new DockLayoutPanel(Unit.PCT);
+		lp.setHeight("600px");
+	
+		pager = new SimplePager(TextLocation.CENTER, true, true);
+		pager.setDisplay(table);
+		lp.addSouth(pager, 25);
+		lp.add(table);
 		initTable();
-		fillTable();
-		
-		initWidget(slp);
+		initWidget(lp);
 	}
 	
 	public Table(FilmDataSet films) {
-		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
-		
-		//TODO: add ArrayList with imported data to fill table
+		this();
 		this.filmSet = films.getFilms();
-		
-		slp = new SimpleLayoutPanel();
-		slp.add(table);
-		slp.setHeight("500px");
-		
-		initTable();
-		fillTable();
-		
-		initWidget(slp);
 	}
 	
 	//TODO: initialize Table
 	public void initTable() {
+		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
@@ -103,27 +109,12 @@ public class Table extends Composite {
 		});
 	}
 	
-	//TODO: fill Table
-	public void fillTable() {
-		table.setRowCount(filmSet.size(), true);
-		table.setRowData(0, filmSet);
+	public void fillTable(){
 		table.setWidth("100%");
-//		table.redraw();
 	}
 	
-	//TODO: fill Table
 	public void fillTable(ArrayList<FilmData> filmSet) {
-		this.filmSet = filmSet;
-		table.setRowCount(filmSet.size(), true);
-		table.setRowData(0, filmSet);
+		dataProvider.setList(filmSet);	
 		table.setWidth("100%");
-	}
-	
-	//TODO: get Table
-	public SimpleLayoutPanel getTable() {	
-		return slp;
-	}
-	public DataGrid<FilmData> getGrid(){
-		return table;
 	}
 }

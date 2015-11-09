@@ -1,11 +1,9 @@
 package com.uzh.gwt.softeng.shared;
 
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.uzh.gwt.softeng.server.TSVImporter;
 
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films.
@@ -157,7 +155,7 @@ public class FilmDataSet implements Serializable{
     
     /**
      * Returns an ArrayList containing the filmData of all films assigned to a given genre.
-     * @param language Language to be searched.
+     * @param genre Genre to be searched.
      * @return ArrayList containing FilmDataSet.
      */
     ArrayList<FilmData> filterByGenre(String genre){
@@ -171,12 +169,12 @@ public class FilmDataSet implements Serializable{
     }
     
     public static void main(String[] args){
-    	FilmDataSet dataSet;
-    	ArrayList<FilmData> films;
-		try {
-			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+//    	FilmDataSet dataSet;
+//    	ArrayList<FilmData> films;
+//		try {
+//			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 //			dataSet.printDataSet();
-	    	
+//	    	
 //	    	films = dataSet.searchByID(474750);
 //	    	System.out.println(films);
 //	    	
@@ -209,10 +207,10 @@ public class FilmDataSet implements Serializable{
 //	    	films = dataSet.filterByGenre("Comedy");
 //	    	for(FilmData film : films)
 //	    		System.out.println(film);
-	    	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//	    	
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
     }
 }

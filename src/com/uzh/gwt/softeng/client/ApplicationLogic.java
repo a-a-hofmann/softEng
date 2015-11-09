@@ -1,8 +1,4 @@
-/**
- * 
- */
 package com.uzh.gwt.softeng.client;
-
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -60,7 +56,6 @@ public class ApplicationLogic implements EntryPoint {
 	 * The image logo.
 	 */
 	Image logo;
-	
 	
 	/**
 	 * The filename of our logo image
@@ -162,10 +157,12 @@ public class ApplicationLogic implements EntryPoint {
 				searchTerm.setFocus(true);
 			}			
 		});
-		
-
 	}
 	
+	/**
+	 * Sends RPC to server to fetch film data and refreshes table.
+	 * TODO: Add implementation for heatmap once implemented.
+	 */
 	private void getFilmDataSetAsync(){
 		if (filmDataSvc == null) {
 		      filmDataSvc = GWT.create(FilmDataService.class);
@@ -174,7 +171,6 @@ public class ApplicationLogic implements EntryPoint {
 		     // Set up the callback object.
 		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		      public void onFailure(Throwable caught) {
-		        // TODO: Do something with errors.
 		    	  Window.alert("I failed");
 		    	  caught.printStackTrace();
 		      }
@@ -182,6 +178,7 @@ public class ApplicationLogic implements EntryPoint {
 		      public void onSuccess(FilmDataSet result) {
 		    	  dataSet = result;
 		    	  table.fillTable(dataSet.getFilms());
+		    	  Window.alert("Query result: " + result.getFilms().size());
 		      }
 		    };
 
@@ -189,7 +186,31 @@ public class ApplicationLogic implements EntryPoint {
 		    filmDataSvc.getFilmData(callback);
 	}
 	
+	/**
+	 * Sends RPC to server with specific query to fetch film data and refreshes table.
+	 * TODO: Add implementation for heatmap once implemented.
+	 */
+	private void getFilmDataSetAsync(String query){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
 
+		    // Set up the callback object.
+		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert("I failed");
+		    		caught.printStackTrace();
+		    	}
+
+		    	public void onSuccess(FilmDataSet result) {
+		    		dataSet = result;
+		    		table.fillTable(dataSet.getFilms());
+		    	}
+		    };
+
+		    // Make the call to the film data service.
+		    filmDataSvc.getFilmData(query, callback);
+	}
 	
 	/**
 	 * Style the search button.
@@ -221,6 +242,9 @@ public class ApplicationLogic implements EntryPoint {
 		styleButtonUsingDOM();
 	}
 	
+	/**
+	 * Creates table.
+	 */
 	private void buildTable() {
 		table = new Table(dataSet);		
 		RootPanel contentSlot = RootPanel.get("table");
@@ -232,8 +256,10 @@ public class ApplicationLogic implements EntryPoint {
 	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
 	 */
 	public void onModuleLoad() {
-		// Load data.
+		// Load only first 50 film data objects (for speed).
 		getFilmDataSetAsync();
+		// Load the rest.
+		getFilmDataSetAsync("SELECT * FROM movies;");
 		// Create the user interface
 		setUpGui();		
 		// Set up all the event handling required for the application.
