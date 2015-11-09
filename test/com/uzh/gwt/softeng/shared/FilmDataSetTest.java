@@ -68,4 +68,76 @@ public class FilmDataSetTest {
 		
 		assertTrue( movies.getFilms().containsAll(filteredTitles) );
 	}
+	
+	@Test
+	public void testSearchById() {
+		long[] testIds = { 144435, 83669, 17405 };
+		ArrayList<FilmData> filteredIds = new ArrayList<FilmData>();
+		
+		for(long id : testIds) {
+			filteredIds.addAll( movies.searchByID(id) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredIds) );
+	}
+	
+	@Test
+	public void testFilterByDuration() {
+		float[] testDurations = { 90.0f, 180.3f, 120.5f };
+		ArrayList<FilmData> filteredDurations = new ArrayList<FilmData>();
+		
+		for(float duration : testDurations) {
+			filteredDurations.addAll( movies.filterByDuration(duration) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredDurations) );
+	}
+	
+	@Test
+	public void testFilterByLanguage() {
+		String[] testLanguages = { "Russian", "Spanish", "Italian" };
+		ArrayList<FilmData> filteredLanguages = new ArrayList<FilmData>();
+		
+		for(String language : testLanguages) {
+			filteredLanguages.addAll( movies.filterByLanguage(language) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredLanguages) );
+	}
+	
+	@Test
+	public void testFilterByDate() {
+		String[] testDates = { "2014", "2013-06-06", "2001-01" };
+		ArrayList<FilmData> filteredDates = new ArrayList<FilmData>();
+		
+		for(String date : testDates) {
+			filteredDates.addAll( movies.filterByDate(date) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredDates) );
+	}
+	
+	@Test
+	public void testFilterByCountry() {
+		String[] testCountries = { "Spain", "Italy", "Argentina" };
+		ArrayList<FilmData> filteredCountries = new ArrayList<FilmData>();
+		
+		for(String country : testCountries) {
+			filteredCountries.addAll( movies.filterByCountry(country) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredCountries) );
+	}
+	
+	@Test
+	public void testFilterByGenre() {
+		String[] testGenre = { "Comedy", "Horror", "Action" };
+		ArrayList<FilmData> filteredGenres = new ArrayList<FilmData>();
+		
+		for(String genre : testGenre) {
+			filteredGenres.addAll( movies.filterByGenre(genre) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredGenres) );
+	}
 }
