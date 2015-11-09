@@ -13,19 +13,29 @@ import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class Table extends Composite {
-	//all films to be imported into table
+	
+	/**
+	 * All films to be imported into table.
+	 */
 	private ArrayList<FilmData> filmSet;
 	
-	//table reference
+	/**
+	 * Table reference.
+	 */
 	private DataGrid<FilmData> table = new DataGrid<FilmData> ();
 	
-	//Simple Layout Panel for return to Main
+	/**
+	 * Simple Layout Panel to contain table and pager.
+	 */
 	private SimpleLayoutPanel slp;
 	
+	/**
+	 * Table constructor.
+	 * Creates table and creates 2 default rows of data for testing.
+	 */
 	public Table() {
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
-		//TODO: add ArrayList with imported data to fill table
 		filmSet = new ArrayList<FilmData>();
 		filmSet.add(new FilmData());
 		filmSet.add(new FilmData());
@@ -40,6 +50,11 @@ public class Table extends Composite {
 		initWidget(slp);
 	}
 	
+	/**
+	 * Table constructor.
+	 * Initializes table and fills it with film data.
+	 * @param films FilmDataSet to use to fill the table.
+	 */
 	public Table(FilmDataSet films) {
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
@@ -56,7 +71,10 @@ public class Table extends Composite {
 		initWidget(slp);
 	}
 	
-	//TODO: initialize Table
+	/**
+	 * Initializes table columns.
+	 * TODO: Implement pager.
+	 */
 	public void initTable() {
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
@@ -96,34 +114,36 @@ public class Table extends Composite {
 			public void onSelectionChange(SelectionChangeEvent event) {
 				FilmData selected = selectionModel.getSelectedObject();
 				if (selected != null) {
-					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
-									+ " " + selected.getDuration());
+					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " "
+							+ selected.getCountries().toString() + " " + selected.getDuration());
 				}
 			}
 		});
 	}
 	
-	//TODO: fill Table
+	/**
+	 * Fill table with filmDataSet already saved.
+	 */
 	public void fillTable() {
 		table.setRowCount(filmSet.size(), true);
 		table.setRowData(0, filmSet);
 		table.setWidth("100%");
-//		table.redraw();
 	}
 	
-	//TODO: fill Table
+	/**
+	 * Fill table with new DataSet and replace old one.
+	 * @param filmSet
+	 */
 	public void fillTable(ArrayList<FilmData> filmSet) {
 		this.filmSet = filmSet;
-		table.setRowCount(filmSet.size(), true);
-		table.setRowData(0, filmSet);
-		table.setWidth("100%");
+		fillTable();
 	}
 	
-	//TODO: get Table
+	/**
+	 * Gets Table object (grid + pager).
+	 * @return SimpleLayoutPanel table.
+	 */
 	public SimpleLayoutPanel getTable() {	
 		return slp;
-	}
-	public DataGrid<FilmData> getGrid(){
-		return table;
 	}
 }

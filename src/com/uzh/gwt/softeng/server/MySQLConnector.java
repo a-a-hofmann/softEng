@@ -80,8 +80,7 @@ public class MySQLConnector {
 		try { if (rs != null) rs.close(); } catch (SQLException e) { e.printStackTrace(); }
 		try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
 	}
-	
-	
+		
 	/**
 	 * Sends data to the database.
 	 * @param data The data set to send to the database.
@@ -227,7 +226,6 @@ public class MySQLConnector {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 	}
 	
 	public static void main(String[] args){

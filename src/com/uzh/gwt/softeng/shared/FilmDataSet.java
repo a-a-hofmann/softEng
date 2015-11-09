@@ -1,6 +1,5 @@
 package com.uzh.gwt.softeng.shared;
 
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;

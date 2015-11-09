@@ -7,6 +7,11 @@ import com.uzh.gwt.softeng.client.FilmDataService;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
+/**
+ * Server side implementation of FilmDataService interface.
+ * Handles RPCs.
+ *
+ */
 @SuppressWarnings("serial")
 public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDataService{
 	

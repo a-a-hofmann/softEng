@@ -10,8 +10,9 @@ import java.util.Arrays;
  */
 @SuppressWarnings("serial")
 public class FilmData implements Serializable {
+	
 	/**
-	 * ID.
+	 * Film id.
 	 */
 	private long ID;
 
@@ -46,7 +47,7 @@ public class FilmData implements Serializable {
     private ArrayList<String> genres;
 
     /**
-	 * Creates a new FilmData instance.
+	 * Creates a new empty FilmData instance.
 	 */
     public FilmData(){
     	ID = -1;
@@ -70,8 +71,8 @@ public class FilmData implements Serializable {
 	 * @param countries The countries of a film.
 	 * @param genres The genres of a film.
 	 */
-    public FilmData(long ID, String title, int date, 
-    		float duration, ArrayList<String> languages, ArrayList<String> countries, ArrayList<String> genres){
+    public FilmData(long ID, String title, int date, float duration, ArrayList<String> languages,
+    		ArrayList<String> countries, ArrayList<String> genres){
     	this.ID = ID;
     	setTitle(title);
     	this.date = date;
@@ -89,8 +90,7 @@ public class FilmData implements Serializable {
 	 * @param duration The duration of a film.
 	 * @param countries The countries of a film.
 	 */
-    public FilmData(long ID, String title, 
-    		float duration, ArrayList<String> countries){
+    public FilmData(long ID, String title, float duration, ArrayList<String> countries){
     	this();
     	this.ID = ID;
     	setTitle(title);
@@ -160,7 +160,8 @@ public class FilmData implements Serializable {
 	 */
     @Override
     public String toString() {
-        return ID + " " + title  + " " + date + " " + duration + " " + languages + " " + countries + "\nGenres: " + genres + "\n";
+        return ID + " " + title  + " " + date + " " + duration + " " + languages + " " +
+        		countries + "\nGenres: " + genres + "\n";
     }
 
     /**
@@ -302,8 +303,6 @@ public class FilmData implements Serializable {
             g.add(new ArrayList<String>(Arrays.asList(str.split(": "))));
         }
         
-
-
         genres.clear();
         //Keep only genre.
         int i = 0;

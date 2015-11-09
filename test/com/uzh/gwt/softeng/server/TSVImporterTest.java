@@ -64,7 +64,6 @@ public class TSVImporterTest {
 		String pathToFile = "war/WEB-INF/Resources/movies_80000.tsv";
 		int lineToParse = 100;
 		
-		
 		//Test wrong path to file.
 		//Should fail
 		try {
