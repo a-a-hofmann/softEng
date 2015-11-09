@@ -57,4 +57,15 @@ public class FilmDataSetTest {
 		assertEquals(output.toString(), outContent.toString());
 	}
 	
+	@Test
+	public void testFilterByTitle() {
+		String[] testTitles = { "Buffy", "Plan 9", "Dirty" };
+		ArrayList<FilmData> filteredTitles = new ArrayList<FilmData>();
+		
+		for(String title : testTitles) {
+			filteredTitles.addAll( movies.filterByTitle(title) );
+		}
+		
+		assertTrue( movies.getFilms().containsAll(filteredTitles) );
+	}
 }
