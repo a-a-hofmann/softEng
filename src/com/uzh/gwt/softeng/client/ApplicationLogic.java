@@ -178,7 +178,7 @@ public class ApplicationLogic implements EntryPoint {
 		      public void onSuccess(FilmDataSet result) {
 		    	  dataSet = result;
 		    	  table.fillTable(dataSet.getFilms());
-		    	  Window.alert("Query result: " + result.getFilms().size());
+//		    	  Window.alert("Query result: " + dataSet.getFilms().size());
 		      }
 		    };
 
@@ -205,6 +205,7 @@ public class ApplicationLogic implements EntryPoint {
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
 		    		table.fillTable(dataSet.getFilms());
+//		    		Window.alert("Query result: " + dataSet.getFilms().size());
 		    	}
 		    };
 

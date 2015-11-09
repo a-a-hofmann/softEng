@@ -11,8 +11,6 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 @SuppressWarnings("serial")
 public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDataService{
-	
-	Logger log;
 	/**
 	 * Server side implementation of FilmDataService.
 	 * Send query and returns the resulting FilmDataSet limited to 50 results.
@@ -29,7 +27,6 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 */
 	public FilmDataSet getFilmData(String query){
 		ArrayList<FilmData> result = MySQLConnector.readFromDB(query);
-		log.log(Level.INFO, "Query result: " + result.size());
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		return newDataSet;
 	}

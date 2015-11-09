@@ -63,14 +63,14 @@ public class MySQLConnector {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			
 			//Google SQL url.
-//			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
+			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
 				
 			//RPI url.
-			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
+//			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
 		}
 	
-		conn = DriverManager.getConnection(url, userName, pwd);
-//		conn = DriverManager.getConnection(url);
+//		conn = DriverManager.getConnection(url, userName, pwd);
+		conn = DriverManager.getConnection(url);
 	}
 	
 	/**
