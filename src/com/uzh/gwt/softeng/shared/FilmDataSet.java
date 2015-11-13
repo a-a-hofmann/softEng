@@ -1,8 +1,13 @@
 package com.uzh.gwt.softeng.shared;
 
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.uzh.gwt.softeng.server.TSVImporter;
 
 
 /**
@@ -15,6 +20,8 @@ public class FilmDataSet implements Serializable{
 	 * List of filmData.
 	 */
     private ArrayList<FilmData> films;
+    
+    private HashMap<String, Integer> filmsPerCountry;
     
     /**
 	 * Creates a new FilmDataSet instance.
@@ -37,6 +44,26 @@ public class FilmDataSet implements Serializable{
 	 */
     public ArrayList<FilmData> getFilms(){
     	return this.films;
+    }
+    
+    /**
+     * Gets number of Films per country.
+     * @return Map containing number of films per country.
+     */
+    public HashMap<String, Integer> getFilmsPerCountry(){
+		if (filmsPerCountry != null)
+			return filmsPerCountry;
+		
+		filmsPerCountry = new HashMap<String, Integer>();
+		for (FilmData film : films){
+			for (String country : film.getCountries()){
+				if (filmsPerCountry.containsKey(country))
+					filmsPerCountry.put(country, filmsPerCountry.get(country) + 1);
+				else
+					filmsPerCountry.put(country, 1);
+			}
+		}
+    	return filmsPerCountry;
     }
     
     /**
@@ -169,11 +196,16 @@ public class FilmDataSet implements Serializable{
     }
     
     public static void main(String[] args){
-//    	FilmDataSet dataSet;
+    	FilmDataSet dataSet;
 //    	ArrayList<FilmData> films;
-//		try {
-//			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-//			dataSet.printDataSet();
+		try {
+			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+			dataSet.printDataSet();
+			HashMap<String, Integer> data = dataSet.getFilmsPerCountry();
+			for (Map.Entry<String, Integer> cursor : data.entrySet()){
+				System.out.println(cursor.getKey() + " " + cursor.getValue());
+			}
+			
 //	    	
 //	    	films = dataSet.searchByID(474750);
 //	    	System.out.println(films);
@@ -208,9 +240,9 @@ public class FilmDataSet implements Serializable{
 //	    	for(FilmData film : films)
 //	    		System.out.println(film);
 //	    	
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

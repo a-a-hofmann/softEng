@@ -47,6 +47,11 @@ public class ApplicationLogic implements EntryPoint {
 	private Table table;
 	
 	/**
+	 * The heatmap.
+	 */
+	private HeatMap map;
+	
+	/**
 	 * This button  will wrap the existing HTML button defined in the HTML page and 
 	 * is used for the dummy search capability.
 	 */
@@ -60,7 +65,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * The filename of our logo image
 	 */
-	private static final String LOGO_IMAGE_NAME = "mapplaceholder.jpg";
+	private static final String LOGO_IMAGE_NAME = "mapplaceholder.png";
 	
 	/**
 	 * A popup panel that will be displayed if the search button is selected. 
@@ -161,7 +166,6 @@ public class ApplicationLogic implements EntryPoint {
 	
 	/**
 	 * Sends RPC to server to fetch film data and refreshes table.
-	 * TODO: Add implementation for heatmap once implemented.
 	 */
 	private void getFilmDataSetAsync(){
 		if (filmDataSvc == null) {
@@ -178,6 +182,8 @@ public class ApplicationLogic implements EntryPoint {
 		      public void onSuccess(FilmDataSet result) {
 		    	  dataSet = result;
 		    	  table.fillTable(dataSet.getFilms());
+		    	  
+		    	  buildMap();
 //		    	  Window.alert("Query result: " + dataSet.getFilms().size());
 		      }
 		    };
@@ -188,7 +194,6 @@ public class ApplicationLogic implements EntryPoint {
 	
 	/**
 	 * Sends RPC to server with specific query to fetch film data and refreshes table.
-	 * TODO: Add implementation for heatmap once implemented.
 	 */
 	private void getFilmDataSetAsync(String query){
 		if (filmDataSvc == null) {
@@ -205,6 +210,7 @@ public class ApplicationLogic implements EntryPoint {
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
 		    		table.fillTable(dataSet.getFilms());
+		    		buildMap();
 //		    		Window.alert("Query result: " + dataSet.getFilms().size());
 		    	}
 		    };
@@ -223,16 +229,18 @@ public class ApplicationLogic implements EntryPoint {
 		search.getElement().getStyle().setOpacity(0.7);
 	}
 	
-
 	/**
 	 * Sets up the GUI components used in the application
 	 * 
+	 * 1. A heatmap.
 	 * 1. A Table to contain the dataSet.
 	 * 2. A search button that is from the original HTML page.
 	 * 3. An image for the logo.
 	 * 
 	 */
 	private void setUpGui() {
+		//Build Map
+		buildMap();
 		//Build Table
 		buildTable();
 		// Wrap the existing search button
@@ -243,6 +251,22 @@ public class ApplicationLogic implements EntryPoint {
 		styleButtonUsingDOM();
 	}
 	
+	/**
+	 * Create a new map object with updated FilmDataSet.
+	 */
+	private void buildMap() {
+		RootPanel mapSlot = RootPanel.get("heatmap");
+		if(map != null){
+			mapSlot.remove(map);
+		}
+		map = new HeatMap(dataSet);
+		if (mapSlot != null)
+			mapSlot.add(map);
+		else{
+			System.out.println("Heatmap id not found!");
+		}
+	}
+
 	/**
 	 * Creates table.
 	 */
