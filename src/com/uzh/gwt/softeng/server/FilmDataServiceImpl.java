@@ -1,9 +1,6 @@
 package com.uzh.gwt.softeng.server;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.uzh.gwt.softeng.client.FilmDataService;
 import com.uzh.gwt.softeng.shared.FilmData;

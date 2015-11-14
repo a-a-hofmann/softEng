@@ -47,8 +47,8 @@ public class MySQLConnector {
 		rs = null;
 		String url = null;
 		
-		String userName = "softEng";
-		String pwd = "softEng";
+//		String userName = "softEng";
+//		String pwd = "softEng";
 		
 		if (SystemProperty.environment.value() ==
 		    SystemProperty.Environment.Value.Production) {
@@ -174,7 +174,28 @@ public class MySQLConnector {
 			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
 		}
 		return result;
-	} 
+	}
+	
+//	private static FilmDataSet parseResultSet(ResultSet rs){
+//		ArrayList<FilmData> result = new ArrayList<FilmData>();
+//		FilmData film;
+//		try {
+//			while (rs.next()) {
+//				String id = rs.getString("movieid");
+//				String title = rs.getString("title");
+//				String duration = rs.getString("duration");
+//				String country = rs.getString("country");
+//				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
+//				film = new FilmData(Long.parseLong(id), title, Float.parseFloat(duration), countries);
+//				result.add(film);
+//			}
+//		} catch (NumberFormatException | SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		return new FilmDataSet(result);
+//	}
 	
 	/**
 	 * Reads from the database.

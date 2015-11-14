@@ -37,6 +37,11 @@ public class HeatMap extends Composite {
 	 * Datatable to be used to draw heatmap.
 	 */
 	DataTable dataTable;
+	
+	/**
+	 * Max value.
+	 */
+	private int maxValue;
 
 	/**
 	 * Heatmap constructor.
@@ -52,6 +57,7 @@ public class HeatMap extends Composite {
 	public HeatMap(FilmDataSet filmSet){
 		this();
 		this.filmSet = filmSet;
+		maxValue = filmSet.getFilms().size();
 	}
 
 	/**
@@ -62,7 +68,7 @@ public class HeatMap extends Composite {
 		dlp = new DockLayoutPanel(Unit.PCT);
 		dlp.setHeight("600px");
 		initWidget(dlp);
-
+		
 		
 		chartLoader.loadApi(new Runnable() {
 
@@ -111,12 +117,20 @@ public class HeatMap extends Composite {
 		GeoChartOptions options = GeoChartOptions.create();
 		GeoChartColorAxis geoChartColorAxis = GeoChartColorAxis.create();
 		geoChartColorAxis.setColors("green", "yellow", "red");
-		geoChartColorAxis.setMaxValue(10000);
+		geoChartColorAxis.setMaxValue(maxValue);
 		options.setColorAxis(geoChartColorAxis);
 		options.setDatalessRegionColor("gray");
+		options.setKeepAspectRatio(true);
 
 		// Draw the chart
 		geoChart.draw(dataTable, options);
+	}
+	
+	/**
+	 * Draw data with max value.
+	 */
+	public void setMaxValue(int maxValue){
+		this.maxValue = maxValue;
 	}
 	
 	/**

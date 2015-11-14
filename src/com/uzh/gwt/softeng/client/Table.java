@@ -1,8 +1,6 @@
 package com.uzh.gwt.softeng.client;
 
 
-import java.util.ArrayList;
-
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
@@ -12,38 +10,50 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
+/**
+ * The {@code Table} class handles the Table object and the data retrieval for it.
+ * It is an extension to the GWT Composite class.
+ * It is composed from a CellTable, a SimplePager and an AsynchronousDataProvider.
+ */
 public class Table extends Composite {
-	//all films to be imported into table
-	private ArrayList<FilmData> filmSet;
 	
-	//table reference
+	/**
+	 * Table.
+	 */
 	private CellTable<FilmData> table = new CellTable<FilmData> ();
 	
+	/**
+	 * Table and pager container.
+	 */
 	private DockLayoutPanel lp;
 	
-	ListDataProvider<FilmData> dataProvider;
+	/**
+	 * Asynchronous data provider.
+	 */
+	FilmDataAsyncProvider asyncDataProvider;
 	
+	/**
+	 * Pager for the table.
+	 */
 	SimplePager pager;
 	
-
+	/**
+	 * Table constructor.
+	 * Creates container panel and adds table and pager to it.
+	 * Initializes data provider.
+	 */
 	public Table() {
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
-		//TODO: add ArrayList with imported data to fill table
-		filmSet = new ArrayList<FilmData>();
-		filmSet.add(new FilmData());
-		filmSet.add(new FilmData());
-		
 		table.setWidth("100%");
+		table.setRowCount(80000, false);
 		
-		dataProvider = new ListDataProvider<FilmData>(filmSet);
-		dataProvider.addDataDisplay(table);
+		asyncDataProvider = new FilmDataAsyncProvider(table);
 		
 		lp = new DockLayoutPanel(Unit.PCT);
 		lp.setHeight("600px");
@@ -56,12 +66,10 @@ public class Table extends Composite {
 		initWidget(lp);
 	}
 	
-	public Table(FilmDataSet films) {
-		this();
-		this.filmSet = films.getFilms();
-	}
-	
-	//TODO: initialize Table
+	/**
+	 * Table initialization.
+	 * Creates columns and sets selection handler.
+	 */
 	public void initTable() {
 		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
@@ -106,15 +114,21 @@ public class Table extends Composite {
 									+ " " + selected.getDuration());
 				}
 			}
-		});
+		});	
 	}
 	
-	public void fillTable(){
-		table.setWidth("100%");
+	/**
+	 * Reset data on table.
+	 */
+	public void reset(){
+		asyncDataProvider.reset();
 	}
 	
-	public void fillTable(ArrayList<FilmData> filmSet) {
-		dataProvider.setList(filmSet);	
-		table.setWidth("100%");
+	/**
+	 * Shows filtered results.
+	 * @param filmDataSet Filtered FilmDataSet.
+	 */
+	public void filter(FilmDataSet filmDataSet){
+		asyncDataProvider.filter(filmDataSet);
 	}
 }

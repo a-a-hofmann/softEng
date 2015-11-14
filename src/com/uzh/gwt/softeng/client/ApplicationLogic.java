@@ -65,7 +65,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * The filename of our logo image
 	 */
-	private static final String LOGO_IMAGE_NAME = "mapplaceholder.png";
+	private static final String LOGO_IMAGE_NAME = "ads.png";
 	
 	/**
 	 * A popup panel that will be displayed if the search button is selected. 
@@ -84,9 +84,10 @@ public class ApplicationLogic implements EntryPoint {
 			}
 		};
 		
-		RootPanel logoSlot = RootPanel.get("logo");
+		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
 			logoSlot.add(logo);
+		logo.setWidth("60em");
 	}
 	
 	/**
@@ -143,8 +144,11 @@ public class ApplicationLogic implements EntryPoint {
 						public void onChange(ChangeEvent event) {
 							// Hide the popup panel from the screen
 							searchRequest.hide();
-							filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTerm.getText()));
-							table.fillTable(filteredDataSet.getFilms());
+							
+							String searchTitle = searchTerm.getText();
+							filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTitle));
+							table.filter(filteredDataSet);
+							
 							searchTerm.setText("");
 						}
 					});
@@ -157,7 +161,6 @@ public class ApplicationLogic implements EntryPoint {
 				} else {
 					searchRequest.show();
 				}
-				
 				// Set the TextBox of the popup Panel to have focus.
 				searchTerm.setFocus(true);
 			}			
@@ -181,10 +184,7 @@ public class ApplicationLogic implements EntryPoint {
 
 		      public void onSuccess(FilmDataSet result) {
 		    	  dataSet = result;
-		    	  table.fillTable(dataSet.getFilms());
-		    	  
 		    	  buildMap();
-//		    	  Window.alert("Query result: " + dataSet.getFilms().size());
 		      }
 		    };
 
@@ -209,9 +209,8 @@ public class ApplicationLogic implements EntryPoint {
 
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
-		    		table.fillTable(dataSet.getFilms());
 		    		buildMap();
-//		    		Window.alert("Query result: " + dataSet.getFilms().size());
+		    		map.setMaxValue(10000);
 		    	}
 		    };
 
@@ -271,7 +270,7 @@ public class ApplicationLogic implements EntryPoint {
 	 * Creates table.
 	 */
 	private void buildTable() {
-		table = new Table(dataSet);		
+		table = new Table();
 		RootPanel contentSlot = RootPanel.get("table");
 		if (contentSlot!=null) 
 			contentSlot.add(table);	

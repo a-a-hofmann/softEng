@@ -1,9 +1,9 @@
-.gwt-TabLayoutPanel{
-   width: 90%;
-   margin: 15px;
+wrapper{
+	width: 95%;
+	margin: 0 2.5%;
 }
 
-H1 {
+h1 {
 	font-family: Verdana, sans-serif;
 	color: #ffffff;
 	font-weight: bold;
@@ -23,6 +23,11 @@ H1 {
    height: 25%;
    margin: 25px;
    border: 1px black solid;
+}
+
+#ad{
+	margin-left: auto;
+	margin-rigth: auto;
 }
 
 #search{
