@@ -194,6 +194,7 @@ public class ApplicationLogic implements EntryPoint {
 	
 	/**
 	 * Sends RPC to server with specific query to fetch film data and refreshes table.
+	 * @param query The query to send to the database.
 	 */
 	private void getFilmDataSetAsync(String query){
 		if (filmDataSvc == null) {

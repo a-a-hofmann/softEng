@@ -16,6 +16,11 @@ import com.googlecode.gwt.charts.client.geochart.GeoChartColorAxis;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
+/**
+ * The {@code HeatMap} class handles the HeatMap object and the data retrieval for it.
+ * It is an extension to the GWT Composite class.
+ * It is composed from a GeoChart, and a DataTable to hold the data.
+ */
 public class HeatMap extends Composite {
 	
 	/**
@@ -24,7 +29,7 @@ public class HeatMap extends Composite {
 	private GeoChart geoChart;
 	
 	/**
-	 * filmSet to be represented.
+	 * FilmDataSet to be represented.
 	 */
 	private FilmDataSet filmSet;
 	
@@ -34,7 +39,7 @@ public class HeatMap extends Composite {
 	private DockLayoutPanel dlp;
 	
 	/**
-	 * Datatable to be used to draw heatmap.
+	 * DataTable to be used to draw heatmap.
 	 */
 	DataTable dataTable;
 	
@@ -128,6 +133,7 @@ public class HeatMap extends Composite {
 	
 	/**
 	 * Draw data with max value.
+	 * @param maxValue New Maximum value to be set.
 	 */
 	public void setMaxValue(int maxValue){
 		this.maxValue = maxValue;

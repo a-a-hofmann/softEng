@@ -13,7 +13,7 @@ public class FilmData implements Serializable {
 	/**
 	 * ID.
 	 */
-	private long ID;
+	private int ID;
 
 	/**
 	 * Film title.
@@ -69,7 +69,7 @@ public class FilmData implements Serializable {
 	 * @param countries The countries of a film.
 	 * @param genres The genres of a film.
 	 */
-    public FilmData(long ID, String title, int date, 
+    public FilmData(int ID, String title, int date, 
     		float duration, ArrayList<String> languages, ArrayList<String> countries, ArrayList<String> genres){
     	this.ID = ID;
     	setTitle(title);
@@ -88,7 +88,7 @@ public class FilmData implements Serializable {
 	 * @param duration The duration of a film.
 	 * @param countries The countries of a film.
 	 */
-    public FilmData(long ID, String title, 
+    public FilmData(int ID, String title, 
     		float duration, ArrayList<String> countries){
     	this();
     	this.ID = ID;
@@ -101,7 +101,7 @@ public class FilmData implements Serializable {
 	 * Gets the ID of a film.
 	 * @return Film ID.
 	 */
-    public long getID(){
+    public int getID(){
     	return this.ID;
     }
 
@@ -173,7 +173,7 @@ public class FilmData implements Serializable {
 
     	switch(instance){
 	    	case ID:
-	    		setID(Long.parseLong(value));
+	    		setID(Integer.parseInt(value));
 	    		break;
 	    	case title:
 				setTitle(value);
@@ -203,7 +203,7 @@ public class FilmData implements Serializable {
 	 * @param id The positive new id of a film.
 	 * @throws IllegalArgumentException if id is negative.
 	 */
-    void setID(long id) {
+    void setID(int id) {
     	if(id >= 0){
     		this.ID = id;
     	}

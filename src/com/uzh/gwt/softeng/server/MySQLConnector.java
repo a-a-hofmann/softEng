@@ -194,7 +194,7 @@ public class MySQLConnector {
 			int j = 0;
 			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);
 			for(FilmData film : data.getFilms()){
-				int movieID = (int) film.getID();
+				int movieID = film.getID();
 				
 				for(int i = 0; i < film.getCountries().size()/2; i+=2){
 					movieCountriesPreparedStatement.setInt(1, ++j); 
@@ -226,7 +226,7 @@ public class MySQLConnector {
 			j = 0;
 			PreparedStatement movieLanguagesPreparedStatement = conn.prepareStatement(movieLanguagesQuery);
 			for(FilmData film : data.getFilms()){
-				int movieID = (int) film.getID();
+				int movieID = film.getID();
 				
 				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
 					movieLanguagesPreparedStatement.setInt(1, ++j); 
@@ -257,7 +257,7 @@ public class MySQLConnector {
 			j = 0;
 			PreparedStatement movieGenresPreparedStatement = conn.prepareStatement(movieGenresQuery);
 			for(FilmData film : data.getFilms()){
-				int movieID = (int) film.getID();
+				int movieID = film.getID();
 				
 				for(int i = 0; i < film.getGenres().size()/2; i+=2){
 					movieGenresPreparedStatement.setInt(1, ++j); 
@@ -282,7 +282,7 @@ public class MySQLConnector {
 			PreparedStatement preparedStmt = conn.prepareStatement(moviesTableQuery);
 			for (FilmData movie: data.getFilms()){
 				
-				preparedStmt.setInt(++moviesPlaceholderCounter, (int) movie.getID());
+				preparedStmt.setInt(++moviesPlaceholderCounter, movie.getID());
 				preparedStmt.setString(++moviesPlaceholderCounter, movie.getTitle());
 				preparedStmt.setFloat(++moviesPlaceholderCounter, movie.getDate());
 				preparedStmt.setFloat(++moviesPlaceholderCounter, movie.getDuration());
@@ -328,7 +328,7 @@ public class MySQLConnector {
 				String duration = rs.getString("duration");
 				String country = rs.getString("country");
 				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
-				film = new FilmData(Long.parseLong(id), title, Float.parseFloat(duration), countries);
+				film = new FilmData(Integer.parseInt(id), title, Float.parseFloat(duration), countries);
 				result.add(film);
 			}
 		} catch (Exception e) {
@@ -366,7 +366,7 @@ public class MySQLConnector {
 				String duration = rs.getString("duration");
 				String country = rs.getString("country");
 				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
-				FilmData film = new FilmData(Long.parseLong(id), title, Float.parseFloat(duration), countries);
+				FilmData film = new FilmData(Integer.parseInt(id), title, Float.parseFloat(duration), countries);
 				result.add(film);
 			}
 		} catch (Exception e) {

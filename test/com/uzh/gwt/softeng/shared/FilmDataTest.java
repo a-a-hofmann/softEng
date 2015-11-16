@@ -11,7 +11,7 @@ import com.uzh.gwt.softeng.shared.FilmData;
 public class FilmDataTest {
 	private FilmData emptyFilmTest;
 	private FilmData filmTest;
-	private long testID = 1;
+	private int testID = 1;
 	private String testTitle = "Star Wars Episode IV: A New Hope";
 	private float testDuration = 121.0f;
 	private int testDate = 1977;

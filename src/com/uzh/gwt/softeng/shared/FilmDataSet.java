@@ -28,17 +28,17 @@ public class FilmDataSet implements Serializable{
     private HashMap<String, Integer> filmsPerCountry;
     
     /**
-     * Map <id, language>.
+     * Map (id, language).
      */
     private HashMap<String, String> languages;
     
     /**
-     * Map <id, genres>.
+     * Map (id, genres).
      */
     private HashMap<String, String> genres;
     
     /**
-     * Map <id, countries>.
+     * Map (id, countries).
      */
     private HashMap<String, String> countries;
     
