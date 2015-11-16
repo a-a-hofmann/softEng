@@ -55,7 +55,6 @@ public class FilmData implements Serializable {
     	duration = 0;
     	languages = new ArrayList<String>();
     	countries = new ArrayList<String>();
-    	countries.add("{}");
     	genres = new ArrayList<String>();
     }
     
@@ -309,9 +308,9 @@ public class FilmData implements Serializable {
         int i = 0;
         for (ArrayList<String> str : g) {
             for (String tmp : str) {
-                if(i % 2 != 0)
+//                if(i % 2 != 0)
                     genres.add(tmp.replace("\"", ""));
-                i++;
+//                i++;
             }
         }
         

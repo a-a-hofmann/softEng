@@ -102,9 +102,15 @@ public class TSVImporter {
 	            		//search for next matching pattern.
 	            		for(int c = i + 1; c < patterns.size(); c++){
 	            			if((c > 3 && token.equals("{}")) || token.matches(patterns.get(c))){
-	                    		m.set(c++, token);
-	                    		i = c;
-	                    		break;
+	            				if(token.equals("{}")){
+	            					c++;
+	            					i = c;
+	            				}
+	            				else{
+	            					m.set(c++, token);
+	            					i = c;
+	            					break;
+	            				}
 	                    	}
 	            		}
 	            	}

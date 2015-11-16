@@ -3,6 +3,7 @@ package com.uzh.gwt.softeng.client;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
@@ -72,12 +73,19 @@ public class Table extends Composite {
 	 */
 	public void initTable() {
 		
+		AsyncHandler columnSortHandler = new AsyncHandler(table);
+		table.addColumnSortHandler(columnSortHandler);
+		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
 				return Long.toString( object.getID() );
 			}};
 		table.addColumn(movieID, "Movie ID");
+		movieID.setSortable(true);
+		
+	
+		table.getColumnSortList().push(movieID);
 		
 		TextColumn<FilmData> movieName = new TextColumn<FilmData>() {
 			@Override
@@ -98,7 +106,11 @@ public class Table extends Composite {
 		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
-				return object.getCountries().toString();
+				String countries = "";
+				for(String country : object.getCountries())
+					countries = countries.concat(country + ", ");
+				countries = countries.substring(0, countries.length() - 2);
+				return countries;
 			}};
 
 		table.addColumn(movieCountry, "Country");

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.uzh.gwt.softeng.server.TSVImporter;
@@ -22,6 +24,12 @@ public class FilmDataSet implements Serializable{
     private ArrayList<FilmData> films;
     
     private HashMap<String, Integer> filmsPerCountry;
+    
+    private HashMap<String, String> languages;
+    
+    private HashMap<String, String> genres;
+    
+    private HashMap<String, String> countries;
     
     /**
 	 * Creates a new FilmDataSet instance.
@@ -44,6 +52,78 @@ public class FilmDataSet implements Serializable{
 	 */
     public ArrayList<FilmData> getFilms(){
     	return this.films;
+    }
+    
+    /**
+     * Get all languages from the FilmDataSet.
+     * @return Map containing all languages and ids.
+     */
+    public HashMap<String, String> getLanguages(){
+    	if (languages != null){
+    		return languages;
+    	}
+    	
+		HashMap<String, String> results = new HashMap<String, String>();
+	    	String id;
+	    	String language;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getLanguages().iterator();
+	    		while(it.hasNext()){
+	    			id = it.next();
+	    			language = it.next();
+	    			
+	    			results.put(language, id);
+	    		}
+	    	}
+    	return results;
+    }
+    
+    /**
+     * Get all genres from the FilmDataSet.
+     * @return Map containing all genres and ids.
+     */
+    public HashMap<String, String> getGenres(){
+    	if (genres != null){
+    		return genres;
+    	}
+    	
+		HashMap<String, String> results = new HashMap<String, String>();
+	    	String id;
+	    	String genre;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getGenres().iterator();
+	    		while(it.hasNext()){
+	    			id = it.next();
+	    			genre = it.next();
+	    			
+	    			results.put(genre, id);
+	    		}
+	    	}
+    	return results;
+    }
+    
+    /**
+     * Get all countries from the FilmDataSet.
+     * @return Map containing all genres and ids.
+     */
+    public HashMap<String, String> getCountries(){
+    	if (countries != null){
+    		return countries;
+    	}
+    	
+		HashMap<String, String> results = new HashMap<String, String>();
+	    	String id;
+	    	String country;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getCountries().iterator();
+	    		while(it.hasNext()){
+	    			id = it.next();
+	    			country = it.next();
+	    			
+	    			results.put(country, id);
+	    		}
+	    	}
+    	return results;
     }
     
     /**
@@ -200,11 +280,21 @@ public class FilmDataSet implements Serializable{
 //    	ArrayList<FilmData> films;
 		try {
 			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-			dataSet.printDataSet();
-			HashMap<String, Integer> data = dataSet.getFilmsPerCountry();
-			for (Map.Entry<String, Integer> cursor : data.entrySet()){
+//			dataSet.printDataSet();
+			
+			HashMap<String, String> data = dataSet.getCountries();
+			for (Map.Entry<String, String> cursor : data.entrySet()){
 				System.out.println(cursor.getKey() + " " + cursor.getValue());
 			}
+			
+			System.out.println("\n");
+			for(String tmp : dataSet.getFilms().get(0).getCountries())
+				System.out.println(tmp);
+			
+//			HashMap<String, Integer> data = dataSet.getFilmsPerCountry();
+//			for (Map.Entry<String, Integer> cursor : data.entrySet()){
+//				System.out.println(cursor.getKey() + " " + cursor.getValue());
+//			}
 			
 //	    	
 //	    	films = dataSet.searchByID(474750);
