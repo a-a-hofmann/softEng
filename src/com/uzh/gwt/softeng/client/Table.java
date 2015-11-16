@@ -57,7 +57,7 @@ public class Table extends Composite {
 		asyncDataProvider = new FilmDataAsyncProvider(table);
 		
 		lp = new DockLayoutPanel(Unit.PCT);
-		lp.setHeight("600px");
+		lp.setHeight("700px");
 	
 		pager = new SimplePager(TextLocation.CENTER, true, true);
 		pager.setDisplay(table);
@@ -87,13 +87,21 @@ public class Table extends Composite {
 	
 		table.getColumnSortList().push(movieID);
 		
-		TextColumn<FilmData> movieName = new TextColumn<FilmData>() {
+		TextColumn<FilmData> title = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
 				return object.getTitle();
 			}};
 
-		table.addColumn(movieName, "Movie Name");
+		table.addColumn(title, "Title");
+		
+		TextColumn<FilmData> movieDate = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				return Integer.toString( object.getDate() );
+			}};
+			
+		table.addColumn(movieDate, "Date");
 
 		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
 			@Override
@@ -102,6 +110,30 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDuration, "Duration");
+		
+		TextColumn<FilmData> movieGenres = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				String genres = "";
+				for(String genre : object.getGenres())
+					genres = genres.concat(genre + ", ");
+				genres = genres.substring(0, genres.length() - 2);
+				return genres;
+			}};
+
+		table.addColumn(movieGenres, "Genres");
+		
+		TextColumn<FilmData> movieLanguages = new TextColumn<FilmData>() {
+			@Override
+			public String getValue(FilmData object) {
+				String languages = "";
+				for(String language : object.getLanguages())
+					languages = languages.concat(language + ", ");
+				languages = languages.substring(0, languages.length() - 2);
+				return languages;
+			}};
+
+		table.addColumn(movieLanguages, "Languages");
 
 		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
 			@Override

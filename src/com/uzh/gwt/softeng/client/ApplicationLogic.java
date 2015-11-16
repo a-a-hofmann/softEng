@@ -240,7 +240,7 @@ public class ApplicationLogic implements EntryPoint {
 	 */
 	private void setUpGui() {
 		//Build Map
-		buildMap();
+//		buildMap();
 		//Build Table
 		buildTable();
 		// Wrap the existing search button
@@ -284,7 +284,17 @@ public class ApplicationLogic implements EntryPoint {
 		// Load only first 50 film data objects (for speed).
 		getFilmDataSetAsync();
 		// Load the rest.
-		getFilmDataSetAsync("SELECT * FROM movies;");
+		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid;";
+		getFilmDataSetAsync(query);
 		// Create the user interface
 		setUpGui();		
 		// Set up all the event handling required for the application.

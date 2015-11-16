@@ -2,8 +2,8 @@ com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true, true, t
 com.google.gwt.user.client.rpc.RpcTokenException, true, true, false, false, com.google.gwt.user.client.rpc.RpcTokenException/2345075298, 2345075298
 com.google.gwt.user.client.rpc.XsrfToken, false, false, true, true, com.google.gwt.user.client.rpc.XsrfToken/4254043109, 4254043109
 com.uzh.gwt.softeng.client.FilmDataService, false, false, false, false, _, 2546874109
-com.uzh.gwt.softeng.shared.FilmData, true, true, false, false, com.uzh.gwt.softeng.shared.FilmData/1628270456, 1628270456
-com.uzh.gwt.softeng.shared.FilmDataSet, true, true, false, false, com.uzh.gwt.softeng.shared.FilmDataSet/3924676603, 3924676603
+com.uzh.gwt.softeng.shared.FilmData, true, true, false, false, com.uzh.gwt.softeng.shared.FilmData/1196683354, 1196683354
+com.uzh.gwt.softeng.shared.FilmDataSet, true, true, false, false, com.uzh.gwt.softeng.shared.FilmDataSet/1906562896, 1906562896
 java.lang.Exception, true, false, true, false, java.lang.Exception/1920171873, 1920171873
 java.lang.Integer, true, true, false, false, java.lang.Integer/3438268394, 3438268394
 java.lang.Number, true, false, false, false, java.lang.Number/300033342, 300033342

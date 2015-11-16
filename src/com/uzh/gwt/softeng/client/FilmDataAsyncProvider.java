@@ -73,7 +73,18 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	    };
 	    
 	    // Make the call to the film data service.
-	    String query = "SELECT * FROM movies LIMIT " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+//	    String query = "SELECT * FROM movies LIMIT " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+	    String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid "
+				+ "limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
 	    
 	    if(isSearch == false)
 	    	filmDataSvc.getFilmData(query, callback);
@@ -102,6 +113,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		isSearch = true;
 		this.filmDataWrapper = filmDataSet.getFilms();
 		updateRowData(0, filmDataSet.getFilms());
-		updateRowCount(filmDataSet.getFilms().size(), false);
+		updateRowCount(filmDataSet.getFilms().size(), true);
 	}
 }

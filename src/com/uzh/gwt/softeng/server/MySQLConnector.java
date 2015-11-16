@@ -65,7 +65,7 @@ public class MySQLConnector {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			
 			//Google SQL url.
-			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
+			url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
 				
 			//RPI url.
 //			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
@@ -325,9 +325,9 @@ public class MySQLConnector {
 			while (rs.next()) {
 				String id = rs.getString("movieid");
 				String title = rs.getString("title");
-				String duration = rs.getString("duration");
-				String country = rs.getString("country");
-				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
+				String duration = rs.getString("date");
+				String country = rs.getString("duration");
+				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.split(",")));
 				film = new FilmData(Integer.parseInt(id), title, Float.parseFloat(duration), countries);
 				result.add(film);
 			}
@@ -361,12 +361,43 @@ public class MySQLConnector {
 			rs = stmt.executeQuery(query);
 			
 			while (rs.next()) {
-				String id = rs.getString("movieid");
+				int id = rs.getInt("movieid");
 				String title = rs.getString("title");
-				String duration = rs.getString("duration");
-				String country = rs.getString("country");
-				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
-				FilmData film = new FilmData(Integer.parseInt(id), title, Float.parseFloat(duration), countries);
+				int date = rs.getInt("date");
+				Float duration = rs.getFloat("duration");
+				
+				String genre = rs.getString("genres");
+				String language = rs.getString("languages");
+				String country = rs.getString("countries");
+				
+				ArrayList<String> genres = null;
+				if (genre != null){
+					genres = new ArrayList<String>(Arrays.asList(genre));
+				}
+				else{
+					genres = new ArrayList<String>();
+					genres.add("null");
+				}
+				
+				ArrayList<String> languages = null;
+				if (language != null){
+					languages = new ArrayList<String>(Arrays.asList(language));
+				}
+				else{
+					languages = new ArrayList<String>();
+					languages.add("null");
+				}
+				
+				ArrayList<String> countries = null;
+				if (country != null){
+					countries = new ArrayList<String>(Arrays.asList(country));
+				}
+				else{
+					countries = new ArrayList<String>();
+					countries.add("null");
+				}
+	
+				FilmData film = new FilmData(id, title, date, duration, languages, countries, genres);
 				result.add(film);
 			}
 		} catch (Exception e) {
@@ -395,6 +426,21 @@ public class MySQLConnector {
 	}
 	
 	public static void main(String[] args){
-		sendAllDataFromFileToDB("movies");
+//		sendAllDataFromFileToDB("movies");
+		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid;";
+		System.out.println(query);
+		ArrayList<FilmData> result = readFromDB(query);
+		for(FilmData film : result){
+			System.out.println(film);
+		}
 	}
 }

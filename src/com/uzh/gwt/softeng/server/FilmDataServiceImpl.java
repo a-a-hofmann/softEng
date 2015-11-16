@@ -14,7 +14,18 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 * @return Query result.
 	 */
 	public FilmDataSet getFilmData(){
-		return getFilmData("SELECT * FROM movies LIMIT 50;");
+		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid "
+				+ "limit 50;";
+		return getFilmData(query);
 	}
 	
 	/**
