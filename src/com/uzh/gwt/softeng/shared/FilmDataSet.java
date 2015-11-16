@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.uzh.gwt.softeng.server.TSVImporter;
@@ -23,12 +22,24 @@ public class FilmDataSet implements Serializable{
 	 */
     private ArrayList<FilmData> films;
     
+    /**
+     * Map of number of films per country.
+     */
     private HashMap<String, Integer> filmsPerCountry;
     
+    /**
+     * Map <id, language>.
+     */
     private HashMap<String, String> languages;
     
+    /**
+     * Map <id, genres>.
+     */
     private HashMap<String, String> genres;
     
+    /**
+     * Map <id, countries>.
+     */
     private HashMap<String, String> countries;
     
     /**

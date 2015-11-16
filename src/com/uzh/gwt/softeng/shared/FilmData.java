@@ -300,12 +300,10 @@ public class FilmData implements Serializable {
         for (String str : genres) {
             g.add(new ArrayList<String>(Arrays.asList(str.split(": "))));
         }
-        
-
-
+       
         genres.clear();
-        //Keep only genre.
-        int i = 0;
+        //Keep id and genre.
+//        int i = 0;
         for (ArrayList<String> str : g) {
             for (String tmp : str) {
 //                if(i % 2 != 0)
