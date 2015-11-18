@@ -63,7 +63,7 @@ public class FilmDataTest {
 	
 	@Test
 	public void testGetDate(){
-		assertTrue(testDate == filmTest.getDate());
+		assertEquals(testDate, filmTest.getDate());
 	}
 	
 	@Test
@@ -79,12 +79,13 @@ public class FilmDataTest {
 		for(String language: filmTest.getLanguages()){
 			assertEquals(testLanguages.get(i++), language);
 		}
+		assertEquals(testLanguages.size(), filmTest.getLanguages().size());
 	}
 	
 	@Test
 	public void testGetCountries(){
-		assertEquals(1, emptyFilmTest.getCountries().size());
-		assertEquals("{}", emptyFilmTest.getCountries().get(0));
+		assertEquals(0, emptyFilmTest.getCountries().size());
+		assertTrue(emptyFilmTest.getCountries().isEmpty());
 		
 		int i = 0;
 		for(String country: filmTest.getCountries()){
@@ -175,23 +176,30 @@ public class FilmDataTest {
 		assertEquals(10.0, filmTest.getDuration(), 0.01);
 	}
 	
-	@Test
-	public void testPrepareLanguagesCountriesGenresTokens(){
-		ArrayList<String> cleanedTokens = filmTest.prepareLanguagesCountriesGenresTokens(testTokens);
-		int i = 0;
-		for(String token: cleanedTokens){
-			assertEquals(token, testTokensCleaned.get(i++));
-		}
-	}
+	//TODO: Write new unit test.
+//	@Test
+//	public void testPrepareLanguagesCountriesGenresTokens(){
+//		ArrayList<String> cleanedTokens = filmTest.prepareLanguagesCountriesGenresTokens(testTokens);
+//		
+//		int i = 0;
+//		for(String token: cleanedTokens){
+//			assertEquals(token, testTokensCleaned.get(i++));
+//		}
+//	}
 	
-	@Test
-	public void testSetLanguages(){		
-		filmTest.setLanguages(testTokens);
-		int i = 0;
-		for(String language: filmTest.getLanguages()){
-			assertEquals(testTokensCleaned.get(i++), language);
-		}
-	}
+	//TODO: Write new unit test for setLanguages().
+//	@Test
+//	public void testSetLanguages(){		
+//		filmTest.setLanguages(testTokens);
+//		System.out.println();
+////		int i = 0;
+//		for(int i = 1; i < filmTest.getLanguages().size(); i+=2){
+//			assertEquals(testTokensCleaned.get(i - 1), filmTest.getLanguages().get(i));
+//		}
+////		for(String language: filmTest.getLanguages()){
+////			assertEquals(testTokensCleaned.get(i++), language);
+////		}
+//	}
 	
 	@Test
 	public void testToString(){

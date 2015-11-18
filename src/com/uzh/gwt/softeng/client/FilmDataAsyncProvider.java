@@ -109,8 +109,8 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * Filter data on table.
 	 * @param filmDataSet Result from filtering to show on table.
 	 */
-	public void filter(FilmDataSet filmDataSet){
-		isSearch = true;
+	public void filter(FilmDataSet filmDataSet, boolean isSearch){
+		this.isSearch = isSearch;
 		this.filmDataWrapper = filmDataSet.getFilms();
 		updateRowData(0, filmDataSet.getFilms());
 		updateRowCount(filmDataSet.getFilms().size(), true);

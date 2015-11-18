@@ -146,8 +146,12 @@ public class ApplicationLogic implements EntryPoint {
 							searchRequest.hide();
 							
 							String searchTitle = searchTerm.getText();
-							filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTitle));
-							table.filter(filteredDataSet);
+							boolean isSearch = searchTitle.equals("") ? false : true;
+							if (isSearch)
+								filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTitle));
+							else
+								filteredDataSet = dataSet;
+							table.filter(filteredDataSet, isSearch);
 							
 							searchTerm.setText("");
 						}
