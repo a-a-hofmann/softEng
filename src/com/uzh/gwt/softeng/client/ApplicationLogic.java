@@ -216,6 +216,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		dataSet = result;
 		    		buildMap();
 		    		map.setMaxValue(10000);
+		    		table.setList(dataSet);
 		    	}
 		    };
 
@@ -285,8 +286,9 @@ public class ApplicationLogic implements EntryPoint {
 	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
 	 */
 	public void onModuleLoad() {
-		// Load only first 50 film data objects (for speed).
-		getFilmDataSetAsync();
+//		// Load only first 50 film data objects (for speed).
+//		getFilmDataSetAsync();
+		buildMap();
 		// Load the rest.
 		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 				+ "group_concat(DISTINCT l.language) languages, "

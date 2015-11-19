@@ -175,4 +175,12 @@ public class Table extends Composite {
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.filter(filmDataSet, isSearch);
 	}
+	
+	/**
+	 * Sets a list in the data provider to be used as cache.
+	 * @param filmDataSet FilmDataSet containing list to be set.
+	 */
+	public void setList(FilmDataSet filmDataSet){
+		asyncDataProvider.setList(filmDataSet);
+	}
 }

@@ -41,10 +41,31 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	private List<FilmData> filmDataWrapper;
 	
 	/**
+	 * Says if the application is finished loading all film data.
+	 */
+	private boolean isFinishedLoading;
+	
+	/**
+	 * Query for the database. Needs to be complemented with a limit for the pager
+	 * and a WHERE condition in case of a async search.
+	 */
+	private String query;
+	
+	/**
 	 * Data provider constructor.
 	 * @param table Table reference to add to the list of displays to monitor.
 	 */
 	public FilmDataAsyncProvider(CellTable<FilmData> table){
+		query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid ";
 		this.table = table;
 		addDataDisplay(table);
 	}
@@ -59,42 +80,30 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		final int start = range.getStart();
 		int length = range.getLength();
 		
-		// Set up the callback object.
-	    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-	    	public void onFailure(Throwable caught) {
-	    		Window.alert("onRangeChanged failed");
-	    		caught.printStackTrace();
-	    	}
+		if (!isFinishedLoading){
+			// Set up the callback object.
+		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert("onRangeChanged failed");
+		    		caught.printStackTrace();
+		    	}
+	
+		    	public void onSuccess(FilmDataSet result) {
+		            List<FilmData> newData = result.getFilms();
+		            updateRowData(start, newData);
+		    	}
+		    };
 
-	    	public void onSuccess(FilmDataSet result) {
-	            List<FilmData> newData = result.getFilms();
-	            updateRowData(start, newData);
-	    	}
-	    };
-	    
-	    // Make the call to the film data service.
-//	    String query = "SELECT * FROM movies LIMIT " + Integer.toString(start) + "," + Integer.toString(length) + ";";
-	    String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
-				+ "group_concat(DISTINCT l.language) languages, "
-				+ "group_concat(DISTINCT c.country) countries "
-				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
-				+ "left join genres g on g.genreid=mg.genreid "
-				+ "left join movielanguages ml on m.movieid=ml.movieid "
-				+ "left join languages l on l.languageid=ml.languageid "
-				+ "left join moviecountries mc on m.movieid=mc.movieid "
-				+ "left join countries c on c.countryid=mc.countryid "
-				+ "group by m.movieid "
-				+ "limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
-	    
-	    if(isSearch == false)
-	    	filmDataSvc.getFilmData(query, callback);
-	    else{
-	    	List<FilmData> tmp = new ArrayList<FilmData>();
-	    	for(int i = start; i < start + length; i++){
-	    		tmp.add(filmDataWrapper.get(i));
-	    	}
-	    	updateRowData(start, tmp);
-	    }
+			String getAllQuery = query + "limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+	    	filmDataSvc.getFilmData(getAllQuery, callback);
+		}
+		else{
+			List<FilmData> tmp = new ArrayList<FilmData>();
+			for(int i = start; i < start + length && i < filmDataWrapper.size(); i++){
+				tmp.add(filmDataWrapper.get(i));
+			}
+			updateRowData(start, tmp);
+		}
 	}
 	
 	/**
@@ -110,9 +119,20 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * @param filmDataSet Result from filtering to show on table.
 	 */
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
-		this.isSearch = isSearch;
-		this.filmDataWrapper = filmDataSet.getFilms();
-		updateRowData(0, filmDataSet.getFilms());
-		updateRowCount(filmDataSet.getFilms().size(), true);
+		setList(filmDataSet);
+	}
+
+	/**
+	 * Set a list for the data provider.
+	 * If possible the data provider will use this list instead of sending
+	 * remote procedure calls.
+	 * @param filmDataSet FilmDataSet to save in the data provider.
+	 */
+	public void setList(FilmDataSet filmDataSet) {
+		if (filmDataSet != null){
+			filmDataWrapper = filmDataSet.getFilms();
+			isFinishedLoading = true;
+			updateRowCount(filmDataWrapper.size(), true);
+		}
 	}
 }
