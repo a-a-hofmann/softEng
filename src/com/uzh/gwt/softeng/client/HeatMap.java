@@ -6,11 +6,16 @@ import java.util.Map;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
+import com.googlecode.gwt.charts.client.ChartType;
+import com.googlecode.gwt.charts.client.ChartWrapper;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
+import com.googlecode.gwt.charts.client.controls.Dashboard;
+import com.googlecode.gwt.charts.client.controls.filter.DateRangeFilter;
+import com.googlecode.gwt.charts.client.controls.filter.NumberRangeFilter;
+import com.googlecode.gwt.charts.client.controls.filter.NumberRangeFilterOptions;
 import com.googlecode.gwt.charts.client.geochart.GeoChart;
 import com.googlecode.gwt.charts.client.geochart.GeoChartColorAxis;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
@@ -27,6 +32,14 @@ public class HeatMap extends Composite {
 	 * The actual heatmap.
 	 */
 	private GeoChart geoChart;
+	
+	/*
+	 * References for the time bar
+	 */
+	private Dashboard dashboard;
+	private ChartWrapper<GeoChartOptions> mapWrapper;
+	private DateRangeFilter dateRangeFilter; 
+	private NumberRangeFilter numberRangeFilter;
 	
 	/**
 	 * FilmDataSet to be represented.
@@ -69,7 +82,7 @@ public class HeatMap extends Composite {
 	 * Set heatmap parameters.
 	 */
 	private void initialize() {
-		ChartLoader chartLoader = new ChartLoader(ChartPackage.GEOCHART);
+		ChartLoader chartLoader = new ChartLoader(ChartPackage.GEOCHART, ChartPackage.CONTROLS);
 		dlp = new DockLayoutPanel(Unit.PCT);
 		dlp.setHeight("600px");
 		initWidget(dlp);
@@ -81,11 +94,41 @@ public class HeatMap extends Composite {
 			public void run() {
 				// Create and attach the chart
 				geoChart = new GeoChart();
-				dlp.add(geoChart);
-				fillDataTable();
+				dlp.addSouth(getDashboardWidget(), 0);
+				dlp.addSouth(getNumberRangeFilter(), 20);
+				dlp.add(getGeoChartOptions());
 				draw();
 			}
 		});
+	}
+	
+	private DateRangeFilter getDateRangeFilter() {
+		if (dateRangeFilter == null) {
+			dateRangeFilter = new DateRangeFilter();
+		}
+		return dateRangeFilter;
+	}
+	
+	private NumberRangeFilter getNumberRangeFilter() {
+		if (numberRangeFilter == null) {
+			numberRangeFilter = new NumberRangeFilter();
+		}
+		return numberRangeFilter;
+	}
+	
+	private Dashboard getDashboardWidget() {
+		if (dashboard == null) {
+			dashboard = new Dashboard();
+		}
+		return dashboard;
+	}
+	
+	private ChartWrapper<GeoChartOptions> getGeoChartOptions() {
+		if (mapWrapper == null) {
+			mapWrapper = new ChartWrapper<GeoChartOptions>();
+			mapWrapper.setChartType(ChartType.GEO_CHART);
+		}
+		return mapWrapper;
 	}
 	
 	/**
@@ -106,6 +149,7 @@ public class HeatMap extends Composite {
 		dataTable.addRows(filmSet.getFilmsPerCountry().size());
 		dataTable.addColumn(ColumnType.STRING, "Country");
 		dataTable.addColumn(ColumnType.NUMBER, "Number of films");
+		dataTable.addColumn(ColumnType.DATE, "Year");
 		int i = 0;
 		for (Map.Entry<String, Integer> cursor : filmSet.getFilmsPerCountry().entrySet()){
 			System.out.println(cursor.getKey() + " " + cursor.getValue());
@@ -117,7 +161,7 @@ public class HeatMap extends Composite {
 	/**
 	 * Draw data
 	 */
-	private void draw() {
+	public void draw() {
 		// Set options
 		GeoChartOptions options = GeoChartOptions.create();
 		GeoChartColorAxis geoChartColorAxis = GeoChartColorAxis.create();
@@ -127,8 +171,32 @@ public class HeatMap extends Composite {
 		options.setDatalessRegionColor("gray");
 		options.setKeepAspectRatio(true);
 
+//		// Set control options
+//		DateRangeFilterOptions dateRangeFilterOptions = DateRangeFilterOptions.create();
+//		dateRangeFilterOptions.setFilterColumnLabel("Number of films");
+//		DateRangeFilterUi dateRangeFilterUi = DateRangeFilterUi.create();
+//		//dateRangeFilterUi.setFormat(DateFormatOptions.create("yyyy"));
+//		dateRangeFilterUi.setFormat(DateFormatOptions.create());
+//		dateRangeFilterOptions.setUi(dateRangeFilterUi);
+//		dateRangeFilter.setOptions(dateRangeFilterOptions);
+
+		// Set control options
+		NumberRangeFilterOptions numberRangeFilterOptions = NumberRangeFilterOptions.create();
+		numberRangeFilterOptions.setFilterColumnLabel("Number of films");
+		numberRangeFilterOptions.setMinValue(0);
+		numberRangeFilterOptions.setMaxValue(300);
+		numberRangeFilter.setOptions(numberRangeFilterOptions);
+
+		mapWrapper.setOptions(options);
+		
+		fillDataTable();
+		
 		// Draw the chart
-		geoChart.draw(dataTable, options);
+		//geoChart.draw(dataTable, options);
+		
+		// Draw the chart
+		dashboard.bind(numberRangeFilter, mapWrapper);
+		dashboard.draw(dataTable);
 	}
 	
 	/**
@@ -143,7 +211,7 @@ public class HeatMap extends Composite {
 	 * Gets the Panel containing the heatmap.
 	 * @return DockLayoutPanel containing heatmap.
 	 */
-	public Widget getMap(){
+	public DockLayoutPanel getMap(){
 		return dlp;
 	}
 }
