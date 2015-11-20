@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
@@ -13,11 +14,16 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
@@ -254,6 +260,8 @@ public class ApplicationLogic implements EntryPoint {
 		insertLogo();
 		// Style the Button using low level DOM access
 		styleButtonUsingDOM();
+		
+		
 	}
 	
 	/**
@@ -305,5 +313,117 @@ public class ApplicationLogic implements EntryPoint {
 		setUpGui();		
 		// Set up all the event handling required for the application.
 		setUpEventHandling();
+		
+		//filterdropdown
+		RootPanel filterSlot = RootPanel.get("filterDropdown");
+		if (filterSlot != null)
+			filterSlot.add(onInitialize());
 	}
+	
+	//create filterdropdown
+	/**
+	   * The constants used in this Content Widget.
+	   */
+	 /* public static interface CwConstants extends Constants {
+	    String[] cwListBoxCars();
+
+	    String[] cwListBoxCategories();
+
+	    String cwListBoxDescription();
+
+	    String cwListBoxName();
+
+	    String cwListBoxSelectAll();
+
+	    String cwListBoxSelectCategory();
+
+	    String[] cwListBoxSports();
+
+	    String[] cwListBoxVacations();
+	  }
+
+	  /**
+	   * An instance of the constants.
+	   */
+	 // private final CwConstants constants;
+
+	  /**
+	   * Initialize this example.
+	   */
+	  
+	  public Widget onInitialize() {
+	    // Create a panel to align the Widgets
+	    HorizontalPanel hPanel = new HorizontalPanel();
+	    hPanel.setSpacing(20);
+
+	    // Add a drop box with the list types
+	    final ListBox dropBox = new ListBox(false);
+	    String[] listTypes = {"Cars", "Sports", "vacation"};//constants.cwListBoxCategories();
+	    for (int i = 0; i < listTypes.length; i++) {
+	      dropBox.addItem(listTypes[i]);
+	    }
+	    dropBox.ensureDebugId("cwListBox-dropBox");
+	    VerticalPanel dropBoxPanel = new VerticalPanel();
+	    dropBoxPanel.setSpacing(4);
+	    dropBoxPanel.add(new HTML("select A cat:"));//constants.cwListBoxSelectCategory()));
+	    dropBoxPanel.add(dropBox);
+	    hPanel.add(dropBoxPanel);
+
+	    // Add a list box with multiple selection enabled
+	    final ListBox multiBox = new ListBox(true);
+	    multiBox.ensureDebugId("cwListBox-multiBox");
+	    multiBox.setWidth("11em");
+	    multiBox.setVisibleItemCount(10);
+	    VerticalPanel multiBoxPanel = new VerticalPanel();
+	    multiBoxPanel.setSpacing(4);
+	    multiBoxPanel.add(new HTML("select several"));//constants.cwListBoxSelectAll()));
+	    multiBoxPanel.add(multiBox);
+	    hPanel.add(multiBoxPanel);
+
+	    // Add a handler to handle drop box events
+	    dropBox.addChangeHandler(new ChangeHandler() {
+	      public void onChange(ChangeEvent event) {
+	        showCategory(multiBox, dropBox.getSelectedIndex());
+	        multiBox.ensureDebugId("cwListBox-multiBox");
+	      }
+	    });
+
+	    // Show default category
+	    showCategory(multiBox, 0);
+	    multiBox.ensureDebugId("cwListBox-multiBox");
+
+	    // Return the panel
+	    return hPanel;
+	    
+	  }
+
+	  /**
+	   * Display the options for a given category in the list box.
+	   *
+	   * @param listBox the ListBox to add the options to
+	   * @param category the category index
+	   */
+	  private void showCategory(ListBox listBox, int category) {
+	    listBox.clear();
+	    String[] listData = null;
+	    switch (category) {
+	      case 0:
+	    	String[] cars = {"audi", "fiat"};//constants.cwListBoxCars();
+	    	listData = cars;
+	        break;
+	      case 1:
+	    	  String[] sports = {"volley", "soccer"};
+	        listData = sports;//{"volley", ""}//constants.cwListBoxSports();
+	        break;
+	      case 2:
+	    	  String[] vacations = {"sportive vacation", "other vacation"};
+	        listData = vacations; //constants.cwListBoxVacations();
+	        break;
+	    }
+	    for (int i = 0; i < listData.length; i++) {
+	      listBox.addItem(listData[i]);
+	    }
+	  }
+	
+	
 }
