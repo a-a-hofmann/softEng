@@ -15,7 +15,8 @@ h1 {
 }
 
 #mainHeader { 
-    height: 0px !important;
+    height: 0px !important
+    ;
     display: none; 
 } 
 

@@ -4,7 +4,7 @@ var $gwt_version = "2.6.0";
 var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName, $moduleBase;
-var $strongName = '5581F3C73523BE7114CC20E9C72E790A';
+var $strongName = '45708F21BEEB817E6BE545BF9F09B3E7';
 var $stats = $wnd.__gwtStatsEvent ? function(a) {return $wnd.__gwtStatsEvent(a);} : null,
 $sessionId = $wnd.__gwtStatsSessionId ? $wnd.__gwtStatsSessionId : null;
 $stats && $stats({moduleName:'SoftEng',sessionId:$sessionId,subSystem:'startup',evtGroup:'moduleStartup',millis:(new Date()).getTime(),type:'moduleEvalStart'});
@@ -4937,8 +4937,8 @@ function $layout(this$static, duration, callback){
   var l, l$iterator, l$iterator0, parentHeight, parentWidth;
   !!this$static.animation && $cancel(this$static.animation);
   if (duration == 0) {
-    for (l$iterator0 = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator0.i < l$iterator0.this$0_0.size_1();) {
-      l = dynamicCast($next_1(l$iterator0), Q$Layout$Layer);
+    for (l$iterator = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator.i < l$iterator.this$0_0.size_1();) {
+      l = dynamicCast($next_1(l$iterator), Q$Layout$Layer);
       l.left_0 = l.sourceLeft = l.targetLeft;
       l.top_0 = l.sourceTop = l.targetTop;
       l.right = l.sourceRight = l.targetRight;
@@ -4963,8 +4963,8 @@ function $layout(this$static, duration, callback){
   }
   parentWidth = this$static.parentElem.clientWidth | 0;
   parentHeight = this$static.parentElem.clientHeight | 0;
-  for (l$iterator = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator.i < l$iterator.this$0_0.size_1();) {
-    l = dynamicCast($next_1(l$iterator), Q$Layout$Layer);
+  for (l$iterator0 = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator0.i < l$iterator0.this$0_0.size_1();) {
+    l = dynamicCast($next_1(l$iterator0), Q$Layout$Layer);
     $adjustHorizontalConstraints(this$static, parentWidth, l);
     $adjustVerticalConstraints(this$static, parentHeight, l);
   }
@@ -7222,12 +7222,12 @@ function $refreshColumnWidths_0(this$static){
   if (this$static.colGroupEnabled) {
     colCount = this$static.colgroup.childNodes.length;
     lastColumn = max_1(this$static.columns.size_0, 0);
-    for (i = 0; i < lastColumn; i++) {
-      $setPropertyImpl($ensureTableColElement(this$static, i).style, 'display', '');
+    for (i0 = 0; i0 < lastColumn; i0++) {
+      $setPropertyImpl($ensureTableColElement(this$static, i0).style, 'display', '');
     }
-    for (i0 = lastColumn; i0 < colCount; i0++) {
-      this$static.colGroupEnabled && $setPropertyImpl($ensureTableColElement(this$static, i0).style, 'width', '0px');
-      $ensureTableColElement(this$static, i0).style['display'] = ($clinit_Style$Display() , 'none');
+    for (i = lastColumn; i < colCount; i++) {
+      this$static.colGroupEnabled && $setPropertyImpl($ensureTableColElement(this$static, i).style, 'width', '0px');
+      $ensureTableColElement(this$static, i).style['display'] = ($clinit_Style$Display() , 'none');
     }
   }
 }
@@ -11285,14 +11285,14 @@ function $insert_1(this$static, w, beforeIndex){
   }
   if (this$static.size_0 == this$static.array.length) {
     newArray = initDim(_3Lcom_google_gwt_user_client_ui_Widget_2_classLit, makeCastMap([Q$Serializable]), Q$Widget, this$static.array.length * 2, 0);
-    for (i0 = 0; i0 < this$static.array.length; ++i0) {
-      setCheck(newArray, i0, this$static.array[i0]);
+    for (i = 0; i < this$static.array.length; ++i) {
+      setCheck(newArray, i, this$static.array[i]);
     }
     this$static.array = newArray;
   }
   ++this$static.size_0;
-  for (i = this$static.size_0 - 1; i > beforeIndex; --i) {
-    setCheck(this$static.array, i, this$static.array[i - 1]);
+  for (i0 = this$static.size_0 - 1; i0 > beforeIndex; --i0) {
+    setCheck(this$static.array, i0, this$static.array[i0 - 1]);
   }
   setCheck(this$static.array, beforeIndex, w);
 }
@@ -12553,15 +12553,16 @@ function $draw_1(this$static){
 }
 
 function $fillDataTable(this$static){
-  var cursor, cursor$iterator, i;
+  var cursor, cursor$iterator, i, size_0;
+  size_0 = $getFilmsPerCountry(this$static.filteredSet).size_1();
+  size_0 > 10000 && (size_0 = 10000);
   this$static.dataTable = new $wnd.google.visualization.DataTable;
-  $addRows(this$static.dataTable, $getFilmsPerCountry(this$static.filteredSet).size_1());
+  $addRows(this$static.dataTable, size_0);
   $addColumn_0(this$static.dataTable, ($clinit_ColumnType() , STRING_0), 'Country');
   $addColumn_0(this$static.dataTable, NUMBER, 'Number of films');
   i = 0;
   for (cursor$iterator = $getFilmsPerCountry(this$static.filteredSet).entrySet().iterator(); cursor$iterator.hasNext();) {
     cursor = dynamicCast(cursor$iterator.next_0(), Q$Map$Entry);
-    dynamicCast(cursor.getKey(), Q$String) + ' ' + cursor.getValue_0();
     $setValue_0(this$static.dataTable, i, 0, dynamicCast(cursor.getKey(), Q$String));
     $setValue(this$static.dataTable, i++, 1, dynamicCast(cursor.getValue_0(), Q$Integer).value_0);
   }
@@ -15169,7 +15170,7 @@ function $addSliderClasses(id_0){
 
 function RangeSlider_0(){
   var options;
-  Slider_0.call(this, (options = getOptions(1850, 2020, initValues(_3I_classLit, makeCastMap([Q$Serializable]), -1, [1888, 2020])) , $put_0(options, ($clinit_SliderOption() , RANGE).m_name, ($clinit_JSONBoolean() , $clinit_JSONBoolean() , TRUE)) , options));
+  Slider_0.call(this, (options = getOptions(1880, 2020, initValues(_3I_classLit, makeCastMap([Q$Serializable]), -1, [1888, 2020])) , $put_0(options, ($clinit_SliderOption() , RANGE).m_name, ($clinit_JSONBoolean() , $clinit_JSONBoolean() , TRUE)) , options));
 }
 
 defineSeed(603, 604, makeCastMap([Q$HasAttachHandlers, Q$HasHandlers, Q$EventListener, Q$HasVisibility, Q$IsWidget, Q$UIObject, Q$Widget]), RangeSlider_0);

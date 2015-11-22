@@ -169,6 +169,7 @@ public class Table extends Composite {
 	/**
 	 * Shows filtered results.
 	 * @param filmDataSet Filtered FilmDataSet.
+	 * @param isSearch If it is a search or reset (not working).
 	 */
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.filter(filmDataSet, isSearch);

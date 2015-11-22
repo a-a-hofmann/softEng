@@ -4,7 +4,7 @@ var $gwt_version = "2.6.0";
 var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName, $moduleBase;
-var $strongName = '3379FE3C5B0BA0EDEAD3F4C8C6ECBBEC';
+var $strongName = 'B50F42940EC48A24681A86F2818BE2F7';
 var $stats = $wnd.__gwtStatsEvent ? function(a) {return $wnd.__gwtStatsEvent(a);} : null,
 $sessionId = $wnd.__gwtStatsSessionId ? $wnd.__gwtStatsSessionId : null;
 $stats && $stats({moduleName:'SoftEng',sessionId:$sessionId,subSystem:'startup',evtGroup:'moduleStartup',millis:(new Date()).getTime(),type:'moduleEvalStart'});
@@ -4934,8 +4934,8 @@ function $layout(this$static, duration, callback){
   var l, l$iterator, l$iterator0, parentHeight, parentWidth;
   !!this$static.animation && $cancel(this$static.animation);
   if (duration == 0) {
-    for (l$iterator0 = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator0.i < l$iterator0.this$0_0.size_1();) {
-      l = dynamicCast($next_1(l$iterator0), Q$Layout$Layer);
+    for (l$iterator = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator.i < l$iterator.this$0_0.size_1();) {
+      l = dynamicCast($next_1(l$iterator), Q$Layout$Layer);
       l.left_0 = l.sourceLeft = l.targetLeft;
       l.top_0 = l.sourceTop = l.targetTop;
       l.right = l.sourceRight = l.targetRight;
@@ -4960,8 +4960,8 @@ function $layout(this$static, duration, callback){
   }
   parentWidth = this$static.parentElem.clientWidth | 0;
   parentHeight = this$static.parentElem.clientHeight | 0;
-  for (l$iterator = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator.i < l$iterator.this$0_0.size_1();) {
-    l = dynamicCast($next_1(l$iterator), Q$Layout$Layer);
+  for (l$iterator0 = new AbstractList$IteratorImpl_0(this$static.layers); l$iterator0.i < l$iterator0.this$0_0.size_1();) {
+    l = dynamicCast($next_1(l$iterator0), Q$Layout$Layer);
     $adjustHorizontalConstraints(this$static, parentWidth, l);
     $adjustVerticalConstraints(this$static, parentHeight, l);
   }
@@ -6444,14 +6444,14 @@ function $findInteractiveColumn(this$static, start_0, reverse){
   var i, i0;
   if (this$static.table.isInteractive) {
     if (reverse) {
-      for (i = start_0 - 1; i >= 0; i--) {
-        if (isColumnInteractive($getColumn(this$static.table, i))) {
-          return i;
-        }
-      }
-      for (i0 = this$static.table.columns.size_0 - 1; i0 >= start_0; i0--) {
+      for (i0 = start_0 - 1; i0 >= 0; i0--) {
         if (isColumnInteractive($getColumn(this$static.table, i0))) {
           return i0;
+        }
+      }
+      for (i = this$static.table.columns.size_0 - 1; i >= start_0; i--) {
+        if (isColumnInteractive($getColumn(this$static.table, i))) {
+          return i;
         }
       }
     }
@@ -7706,17 +7706,17 @@ function $buildHeaderOrFooterImpl(this$static){
       isSortable && ($append_1(classesBuilder.impl, ' GPBYFDEDE') , classesBuilder);
       isSorted && ($append_1(classesBuilder.impl, sortedStyle) , classesBuilder);
       $appendExtraStyles(prevHeader);
-      th = dynamicCast($className($colSpan($startTH(tr.delegate), prevColspan), classesBuilder.impl.string), Q$TableCellBuilder);
-      $enableColumnHandlers(this$static, th, column);
+      th0 = dynamicCast($className($colSpan($startTH(tr.delegate), prevColspan), classesBuilder.impl.string), Q$TableCellBuilder);
+      $enableColumnHandlers(this$static, th0, column);
       if (prevHeader) {
         new Cell$Context_0(0, curColumn - prevColspan, prevHeader);
         if (isSortable) {
-          $attribute_0(th.delegate, 'role', 'button');
-          $trustedAttribute(th.delegate, 'tabIndex', -1);
+          $attribute_0(th0.delegate, 'role', 'button');
+          $trustedAttribute(th0.delegate, 'tabIndex', -1);
         }
-        $renderSortableHeader(this$static, th, prevHeader, isSorted, isSortAscending);
+        $renderSortableHeader(this$static, th0, prevHeader, isSorted, isSortAscending);
       }
-      $end_0(th.delegate_0, 'th');
+      $end_0(th0.delegate_0, 'th');
       prevHeader = header;
       prevColspan = 1;
       classesBuilder = new StringBuilder_1(className);
@@ -7736,13 +7736,13 @@ function $buildHeaderOrFooterImpl(this$static){
   isSorted && ($append_1(classesBuilder.impl, sortedStyle) , classesBuilder);
   $append_6(($append_1(classesBuilder.impl, ' ') , classesBuilder), isFooter?'GPBYFDEMD':'GPBYFDEND');
   $appendExtraStyles(prevHeader);
-  th0 = dynamicCast($className($colSpan($startTH(tr.delegate), prevColspan), classesBuilder.impl.string), Q$TableCellBuilder);
-  $enableColumnHandlers(this$static, th0, column);
+  th = dynamicCast($className($colSpan($startTH(tr.delegate), prevColspan), classesBuilder.impl.string), Q$TableCellBuilder);
+  $enableColumnHandlers(this$static, th, column);
   if (prevHeader) {
     new Cell$Context_0(0, curColumn - prevColspan, prevHeader);
-    $renderSortableHeader(this$static, th0, prevHeader, isSorted, isSortAscending);
+    $renderSortableHeader(this$static, th, prevHeader, isSorted, isSortAscending);
   }
-  $end_0(th0.delegate_0, 'th');
+  $end_0(th.delegate_0, 'th');
   $end_0(tr.delegate_0, 'tr');
   return true;
 }
@@ -8163,12 +8163,12 @@ function $setRowData(this$static, start_0, values){
   }
   pending = $ensurePendingState(this$static);
   cacheOffset = max_1(0, boundedStart - pageStart - (!this$static.pendingState?this$static.state:this$static.pendingState).rowData.size_0);
-  for (i = 0; i < cacheOffset; i++) {
+  for (i0 = 0; i0 < cacheOffset; i0++) {
     $add_8(pending.rowData, null);
   }
-  for (i0 = boundedStart; i0 < boundedEnd; i0++) {
-    value_0 = (checkIndex(i0 - start_0, values.size_0) , $get_3(values.wrapped, values.fromIndex + (i0 - start_0)));
-    dataIndex = i0 - pageStart;
+  for (i = boundedStart; i < boundedEnd; i++) {
+    value_0 = (checkIndex(i - start_0, values.size_0) , $get_3(values.wrapped, values.fromIndex + (i - start_0)));
+    dataIndex = i - pageStart;
     dataIndex < (!this$static.pendingState?this$static.state:this$static.pendingState).rowData.size_0?$set_2(pending.rowData, dataIndex, value_0):$add_8(pending.rowData, value_0);
   }
   $add_8(pending.replacedRanges, new Range_1(boundedStart - cacheOffset, boundedEnd - (boundedStart - cacheOffset)));
@@ -12562,15 +12562,16 @@ function $draw_1(this$static){
 }
 
 function $fillDataTable(this$static){
-  var cursor, cursor$iterator, i;
+  var cursor, cursor$iterator, i, size_0;
+  size_0 = $getFilmsPerCountry(this$static.filteredSet).size_1();
+  size_0 > 10000 && (size_0 = 10000);
   this$static.dataTable = new $wnd.google.visualization.DataTable;
-  $addRows(this$static.dataTable, $getFilmsPerCountry(this$static.filteredSet).size_1());
+  $addRows(this$static.dataTable, size_0);
   $addColumn_0(this$static.dataTable, ($clinit_ColumnType() , STRING_0), 'Country');
   $addColumn_0(this$static.dataTable, NUMBER, 'Number of films');
   i = 0;
   for (cursor$iterator = $getFilmsPerCountry(this$static.filteredSet).entrySet().iterator(); cursor$iterator.hasNext();) {
     cursor = dynamicCast(cursor$iterator.next_0(), Q$Map$Entry);
-    dynamicCast(cursor.getKey(), Q$String) + ' ' + cursor.getValue_0();
     $setValue_1(this$static.dataTable, i, 0, dynamicCast(cursor.getKey(), Q$String));
     $setValue_0(this$static.dataTable, i++, 1, dynamicCast(cursor.getValue_0(), Q$Integer).value_0);
   }
@@ -15194,7 +15195,7 @@ function $addSliderClasses(id_0){
 
 function RangeSlider_0(){
   var options;
-  Slider_0.call(this, (options = getOptions(1850, 2020, initValues(_3I_classLit, makeCastMap([Q$Serializable]), -1, [1888, 2020])) , $put_0(options, ($clinit_SliderOption() , RANGE).m_name, ($clinit_JSONBoolean() , $clinit_JSONBoolean() , TRUE)) , options));
+  Slider_0.call(this, (options = getOptions(1880, 2020, initValues(_3I_classLit, makeCastMap([Q$Serializable]), -1, [1888, 2020])) , $put_0(options, ($clinit_SliderOption() , RANGE).m_name, ($clinit_JSONBoolean() , $clinit_JSONBoolean() , TRUE)) , options));
 }
 
 defineSeed(604, 605, makeCastMap([Q$HasAttachHandlers, Q$HasHandlers, Q$EventListener, Q$HasVisibility, Q$IsWidget, Q$UIObject, Q$Widget]), RangeSlider_0);

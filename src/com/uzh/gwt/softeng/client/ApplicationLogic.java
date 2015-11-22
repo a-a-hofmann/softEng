@@ -348,6 +348,7 @@ public class ApplicationLogic implements EntryPoint {
 
 	  /**
 	   * Initialize this example.
+	   * @return returns a widget.
 	   */
 	  public Widget onInitialize() {
 	    // Create a panel to align the Widgets

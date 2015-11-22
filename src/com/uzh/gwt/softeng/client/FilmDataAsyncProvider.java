@@ -126,6 +126,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	/**
 	 * Filter data on table.
 	 * @param filmDataSet Result from filtering to show on table.
+	 * @param isSearch If it is a search or reset (not working).
 	 */
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
 		setList(filmDataSet);
@@ -142,6 +143,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			filmDataWrapper = filmDataSet.getFilms();
 			isFinishedLoading = true;
 			updateRowCount(filmDataWrapper.size(), true);
+			onRangeChanged(table);
 		}
 	}
 	

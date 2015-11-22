@@ -48,27 +48,32 @@ public class HeatMap extends Composite {
 	/**
 	 * Datatable to be used to draw heatmap.
 	 */
-	DataTable dataTable;
+	private DataTable dataTable;
 	
 	/**
 	 * Range slider.
 	 */
-	RangeSlider slider;
+	private RangeSlider slider;
 	
 	/**
 	 * Panel containing the slider and two label for min and max value.
 	 */
-	DockLayoutPanel sliderPanel;
+	private DockLayoutPanel sliderPanel;
 	
 	/**
 	 * Min value label of slider.
 	 */
-	Label minValueLabel;
+	private Label minValueLabel;
 	
 	/**
 	 * Max value label of slider.
 	 */
-	Label maxValueLabel;
+	private Label maxValueLabel;
+	
+	/**
+	 * Max range for heatmap. Otherwise it's kinda useless.
+	 */
+	private int maxSize = 10000;
 	
 	/**
 	 * Heatmap constructor.
@@ -126,7 +131,7 @@ public class HeatMap extends Composite {
 		maxValueLabel = new Label("Max: 2020");
 		maxValueLabel.setHeight("20px");
 		
-		slider = new RangeSlider("slider", 1850, 2020, 1888, 2020);
+		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
 
 			@Override
@@ -182,15 +187,17 @@ public class HeatMap extends Composite {
 	 * Fill data table.
 	 */
 	private void fillDataTable(){
-		// Prepare the data
-		dataTable = DataTable.create();
+		int size = filteredSet.getFilmsPerCountry().size();
+		if(size > maxSize)
+			size = maxSize;
 		
-		dataTable.addRows(filteredSet.getFilmsPerCountry().size());
+		// Prepare the data
+		dataTable = DataTable.create();	
+		dataTable.addRows(size);
 		dataTable.addColumn(ColumnType.STRING, "Country");
 		dataTable.addColumn(ColumnType.NUMBER, "Number of films");
 		int i = 0;
 		for (Map.Entry<String, Integer> cursor : filteredSet.getFilmsPerCountry().entrySet()){
-			System.out.println(cursor.getKey() + " " + cursor.getValue());
 			dataTable.setValue(i, 0, cursor.getKey());
 			dataTable.setValue(i++, 1, cursor.getValue());
 		}
@@ -204,7 +211,7 @@ public class HeatMap extends Composite {
 		GeoChartOptions options = GeoChartOptions.create();
 		GeoChartColorAxis geoChartColorAxis = GeoChartColorAxis.create();
 		geoChartColorAxis.setColors("green", "yellow", "red");
-		geoChartColorAxis.setMaxValue(10000);
+		geoChartColorAxis.setMaxValue(maxSize);
 		options.setColorAxis(geoChartColorAxis);
 		options.setDatalessRegionColor("gray");
 
