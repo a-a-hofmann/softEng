@@ -221,7 +221,8 @@ public class ApplicationLogic implements EntryPoint {
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
 		    		buildMap();
-		    		map.setMaxValue(10000);
+//		    		map.setMaxValue(80000);
+		    		map.setFilmDataSet(dataSet);
 		    		table.setList(dataSet);
 		    	}
 		    };
@@ -251,7 +252,7 @@ public class ApplicationLogic implements EntryPoint {
 	 */
 	private void setUpGui() {
 		//Build Map
-//		buildMap();
+		buildMap();
 		//Build Table
 		buildTable();
 		// Wrap the existing search button
@@ -294,9 +295,6 @@ public class ApplicationLogic implements EntryPoint {
 	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
 	 */
 	public void onModuleLoad() {
-//		// Load only first 50 film data objects (for speed).
-//		getFilmDataSetAsync();
-		buildMap();
 		// Load the rest.
 		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 				+ "group_concat(DISTINCT l.language) languages, "
@@ -308,6 +306,7 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join moviecountries mc on m.movieid=mc.movieid "
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
+		
 		getFilmDataSetAsync(query);
 		// Create the user interface
 		setUpGui();		
@@ -350,7 +349,6 @@ public class ApplicationLogic implements EntryPoint {
 	  /**
 	   * Initialize this example.
 	   */
-	  
 	  public Widget onInitialize() {
 	    // Create a panel to align the Widgets
 	    HorizontalPanel hPanel = new HorizontalPanel();

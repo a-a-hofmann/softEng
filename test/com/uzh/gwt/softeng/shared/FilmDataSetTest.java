@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +34,7 @@ public class FilmDataSetTest {
         patterns.add(languageCountryGenrePattern);
         patterns.add(languageCountryGenrePattern);
         patterns.add(languageCountryGenrePattern);
-        System.setOut(new PrintStream(outContent));
+//        System.setOut(new PrintStream(outContent));
 	}
 
 	@Test
@@ -139,5 +141,29 @@ public class FilmDataSetTest {
 		}
 		
 		assertTrue( movies.getFilms().containsAll(filteredGenres) );
+	}
+	
+	@Test
+	public void testFilterByDateRange() {
+		ArrayList<FilmData> films = new ArrayList<FilmData>(Arrays.asList(new FilmData(), new FilmData(1, "a", 5), 
+				new FilmData(2, "b", 10), new FilmData(3, "c", 1000)));
+		
+		FilmDataSet movies = new FilmDataSet(films);
+		boolean thrown = false;
+		try{
+			movies.filterByDateRange(-1, 1);
+		} catch (IllegalArgumentException e){
+			thrown = true;
+		}
+		assertTrue(thrown);
+		
+		ArrayList<FilmData> tmp = movies.filterByDateRange(2, 6);
+		assertEquals(tmp.get(0).getDate(), 5);
+		
+		tmp = movies.filterByDateRange(2, 1000);
+		for (FilmData film : tmp){
+			assertTrue(film.getDate() <= 1000 && film.getDate() >= 2);
+		}
+		
 	}
 }

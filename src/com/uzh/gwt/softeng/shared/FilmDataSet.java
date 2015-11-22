@@ -255,6 +255,21 @@ public class FilmDataSet implements Serializable{
     	}
     	return filteredSet;
     }
+    
+    
+    public ArrayList<FilmData> filterByDateRange(int low, int high){
+    	if(low < 0){
+    		throw new IllegalArgumentException("Low < 0");
+    	}
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	
+    	for(FilmData film: films){
+    		if(film.getDate() >= low && film.getDate() <= high){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
 
     /**
      * Returns an ArrayList containing the filmData of all films filmed (partially) in a given country.
@@ -293,14 +308,18 @@ public class FilmDataSet implements Serializable{
 			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 //			dataSet.printDataSet();
 			
-			HashMap<String, String> data = dataSet.getCountries();
-			for (Map.Entry<String, String> cursor : data.entrySet()){
-				System.out.println(cursor.getKey() + " " + cursor.getValue());
-			}
+			dataSet = new FilmDataSet(dataSet.filterByDateRange(2010, 2015));
+			dataSet.printDataSet();
+			System.out.println(dataSet.getFilms().size());
 			
-			System.out.println("\n");
-			for(String tmp : dataSet.getFilms().get(0).getCountries())
-				System.out.println(tmp);
+//			HashMap<String, String> data = dataSet.getCountries();
+//			for (Map.Entry<String, String> cursor : data.entrySet()){
+//				System.out.println(cursor.getKey() + " " + cursor.getValue());
+//			}
+//			
+//			System.out.println("\n");
+//			for(String tmp : dataSet.getFilms().get(0).getCountries())
+//				System.out.println(tmp);
 			
 //			HashMap<String, Integer> data = dataSet.getFilmsPerCountry();
 //			for (Map.Entry<String, Integer> cursor : data.entrySet()){

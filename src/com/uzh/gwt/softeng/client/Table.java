@@ -83,8 +83,6 @@ public class Table extends Composite {
 			}};
 		table.addColumn(movieID, "Movie ID");
 		movieID.setSortable(true);
-		
-	
 		table.getColumnSortList().push(movieID);
 		
 		TextColumn<FilmData> title = new TextColumn<FilmData>() {

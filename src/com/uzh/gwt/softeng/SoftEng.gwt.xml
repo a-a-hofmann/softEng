@@ -3,7 +3,8 @@
 <module rename-to="SoftEng">
 	<!--  As always, we need to inherit the User module -->
 	<inherits name="com.google.gwt.user.User"/>
-	 <inherits name="com.googlecode.gwt.charts.Charts"/> 
+	 <inherits name="com.googlecode.gwt.charts.Charts"/>
+	 <inherits name="org.spiffyui.spiffyui" />
 
 	<!-- We tell the GWT compiler to compile all code in and below the client package -->
 	<source path="client" />

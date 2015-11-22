@@ -72,7 +72,7 @@ public class FilmData implements Serializable {
     public FilmData(int ID, String title, int date, 
     		float duration, ArrayList<String> languages, ArrayList<String> countries, ArrayList<String> genres){
     	this.ID = ID;
-    	setTitle(title);
+    	this.title = title;
     	this.date = date;
     	this.duration = duration;
     	this.languages = languages;
@@ -92,10 +92,26 @@ public class FilmData implements Serializable {
     		float duration, ArrayList<String> countries){
     	this();
     	this.ID = ID;
-    	setTitle(title);
+    	this.title = title;
     	this.duration = duration;
     	this.countries = countries;
     }
+    
+    /**
+   	 * Creates a new FilmData instance.
+   	 * To use only for testing.
+   	 * @param ID The ID of a film.
+   	 * @param title The title of a film.
+   	 * @param date The release date of a film.
+   	 */
+       public FilmData(int ID, String title, 
+       		int date){
+       	this();
+       	this.ID = ID;
+       	this.title = title;
+       	this.date = date;
+       }
+    
 
     /**
 	 * Gets the ID of a film.

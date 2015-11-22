@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -31,11 +34,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	private CellTable<FilmData> table;
 	
 	/**
-	 * Flag for the pager.
-	 */
-	private boolean isSearch = false;
-	
-	/**
 	 * List for search requests.
 	 */
 	private List<FilmData> filmDataWrapper;
@@ -50,6 +48,10 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * and a WHERE condition in case of a async search.
 	 */
 	private String query;
+	
+	private boolean isSearch;
+	
+	private boolean isSort;
 	
 	/**
 	 * Data provider constructor.
@@ -79,6 +81,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		Range range = display.getVisibleRange();
 		final int start = range.getStart();
 		int length = range.getLength();
+	
 		
 		if (!isFinishedLoading){
 			// Set up the callback object.
@@ -93,8 +96,14 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		            updateRowData(start, newData);
 		    	}
 		    };
-
-			String getAllQuery = query + "limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+		   
+			if(isSort){
+				// Get the ColumnSortInfo from the table.
+		        final ColumnSortList sortList = table.getColumnSortList();
+		        boolean isAscending = sortList.get(0).isAscending();
+		    	String ASCDESC = isAscending ? "ASC" : "DESC";
+		    }
+			String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
 	    	filmDataSvc.getFilmData(getAllQuery, callback);
 		}
 		else{
@@ -134,5 +143,9 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			isFinishedLoading = true;
 			updateRowCount(filmDataWrapper.size(), true);
 		}
+	}
+	
+	public void setSort(boolean isSort){
+		this.isSort = isSort;
 	}
 }
