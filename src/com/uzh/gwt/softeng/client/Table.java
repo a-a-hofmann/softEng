@@ -96,7 +96,13 @@ public class Table extends Composite {
 		TextColumn<FilmData> movieDate = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
-				return Integer.toString( object.getDate() );
+				int date = object.getDate();
+				if (date == -1){
+					return "";
+				}
+				else{
+					return Integer.toString(date);
+				}
 			}};
 			
 		table.addColumn(movieDate, "Date");
@@ -104,7 +110,13 @@ public class Table extends Composite {
 		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
-				return Float.toString( object.getDuration() );
+				float duration = object.getDuration();
+				if (duration == 0.0){
+					return "";
+				}
+				else{
+					return Float.toString(duration);
+				}
 			}};
 			
 		table.addColumn(movieDuration, "Duration");
@@ -160,19 +172,16 @@ public class Table extends Composite {
 	}
 	
 	/**
-	 * Reset data on table.
-	 */
-	public void reset(){
-		asyncDataProvider.reset();
-	}
-	
-	/**
 	 * Shows filtered results.
 	 * @param filmDataSet Filtered FilmDataSet.
 	 * @param isSearch If it is a search or reset (not working).
 	 */
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.filter(filmDataSet, isSearch);
+	}
+	
+	public void filterByName(String search){
+		asyncDataProvider.filterByName(search);
 	}
 	
 	/**

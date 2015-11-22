@@ -376,7 +376,7 @@ public class MySQLConnector {
 				}
 				else{
 					genres = new ArrayList<String>();
-					genres.add("null");
+					genres.add("");
 				}
 				
 				ArrayList<String> languages = null;
@@ -385,7 +385,7 @@ public class MySQLConnector {
 				}
 				else{
 					languages = new ArrayList<String>();
-					languages.add("null");
+					languages.add("");
 				}
 				
 				ArrayList<String> countries = null;
@@ -394,7 +394,7 @@ public class MySQLConnector {
 				}
 				else{
 					countries = new ArrayList<String>();
-					countries.add("null");
+					countries.add("");
 				}
 	
 				FilmData film = new FilmData(id, title, date, duration, languages, countries, genres);

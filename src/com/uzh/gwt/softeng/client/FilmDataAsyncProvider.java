@@ -5,9 +5,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -18,8 +15,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
  * Extension of asyncDataProvider. Retrieves new FilmData when the SimplePager
- * controls are used.
- * 
+ * controls are used. Send search queries
  */
 public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 
@@ -48,10 +44,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * and a WHERE condition in case of a async search.
 	 */
 	private String query;
-	
-	private boolean isSearch;
-	
-	private boolean isSort;
 	
 	/**
 	 * Data provider constructor.
@@ -96,13 +88,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		            updateRowData(start, newData);
 		    	}
 		    };
-		   
-			if(isSort){
-				// Get the ColumnSortInfo from the table.
-		        final ColumnSortList sortList = table.getColumnSortList();
-		        boolean isAscending = sortList.get(0).isAscending();
-		    	String ASCDESC = isAscending ? "ASC" : "DESC";
-		    }
+		  
 			String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
 	    	filmDataSvc.getFilmData(getAllQuery, callback);
 		}
@@ -116,20 +102,43 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	}
 	
 	/**
-	 * Reset table with all values.
-	 */
-	public void reset(){
-		isSearch = false;
-		onRangeChanged(table);
-	}
-	
-	/**
 	 * Filter data on table.
 	 * @param filmDataSet Result from filtering to show on table.
 	 * @param isSearch If it is a search or reset (not working).
 	 */
 	public void filter(FilmDataSet filmDataSet, boolean isSearch){
 		setList(filmDataSet);
+	}
+	
+	/**
+	 * Filter by name
+	 * @param search Search query.
+	 */
+	public void filterByName(String search){
+		String titleQuery = "select m.*, group_concat(DISTINCT g.genre) genres, "
+					+ "group_concat(DISTINCT l.language) languages, "
+					+ "group_concat(DISTINCT c.country) countries "
+					+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+					+ "left join genres g on g.genreid=mg.genreid "
+					+ "left join movielanguages ml on m.movieid=ml.movieid "
+					+ "left join languages l on l.languageid=ml.languageid "
+					+ "left join moviecountries mc on m.movieid=mc.movieid "
+					+ "left join countries c on c.countryid=mc.countryid "
+					+ "where LOWER(m.title) like LOWER(\"%" + search + "%\") "
+					+ "group by m.movieid;";
+			
+		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+	    	public void onFailure(Throwable caught) {
+	    		Window.alert("onRangeChanged failed");
+	    		caught.printStackTrace();
+	    	}
+
+	    	public void onSuccess(FilmDataSet result) {
+	            setList(result);
+	    	}
+	    };
+	    
+    	filmDataSvc.getFilmData(titleQuery, callback);
 	}
 
 	/**
@@ -145,9 +154,5 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			updateRowCount(filmDataWrapper.size(), true);
 			onRangeChanged(table);
 		}
-	}
-	
-	public void setSort(boolean isSort){
-		this.isSort = isSort;
 	}
 }

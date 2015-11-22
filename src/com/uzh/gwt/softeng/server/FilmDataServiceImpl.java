@@ -36,6 +36,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	public FilmDataSet getFilmData(String query){
 		ArrayList<FilmData> result = MySQLConnector.readFromDB(query);
 		FilmDataSet newDataSet = new FilmDataSet(result);
+		System.out.println("Finished getting data");
 		return newDataSet;
 	}
 }
