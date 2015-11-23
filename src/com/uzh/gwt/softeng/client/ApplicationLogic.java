@@ -2,13 +2,12 @@ package com.uzh.gwt.softeng.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -56,6 +55,11 @@ public class ApplicationLogic implements EntryPoint {
 	 * The heatmap.
 	 */
 	private HeatMap map;
+	
+	/*
+	 * the FilterPanel
+	 */
+	private FilterPanel filterPanel;
 	
 	/**
 	 * This button  will wrap the existing HTML button defined in the HTML page and 
@@ -257,6 +261,8 @@ public class ApplicationLogic implements EntryPoint {
 		buildMap();
 		//Build Table
 		buildTable();
+		//Build FilterPanel
+		buildFilters();
 		// Wrap the existing search button
 		wrapExisitngSearchButton();
 		// Insert a logo into a defined slot in the HTML page
@@ -291,6 +297,13 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel contentSlot = RootPanel.get("table");
 		if (contentSlot!=null) 
 			contentSlot.add(table);	
+	}
+	
+	private void buildFilters() {
+		filterPanel = new FilterPanel();
+		RootPanel filterSlot = RootPanel.get("filterPanel");
+		if(filterSlot != null)
+			filterSlot.add(filterPanel);
 	}
 	
 	/**
