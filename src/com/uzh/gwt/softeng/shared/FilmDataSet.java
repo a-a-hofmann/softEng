@@ -31,9 +31,19 @@ public class FilmDataSet implements Serializable{
     private HashMap<String, String> languages;
     
     /**
+     * ArrayList languagesList for client
+     */
+    private ArrayList<String> languagesList;
+    
+    /**
      * Map (id, genres).
      */
     private HashMap<String, String> genres;
+   
+    /**
+     * ArrayList genresList for client
+     */
+    private ArrayList<String> genresList;
     
     /**
      * Map (id, countries).
@@ -43,7 +53,7 @@ public class FilmDataSet implements Serializable{
     /**
      * ArrayList countries for client
      */
-    private ArrayList<String> countriesList; //
+    private ArrayList<String> countriesList;
     
     
     /**
@@ -94,6 +104,27 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
+     * Get all languages from the FilmDataSet for the client
+     */
+    public ArrayList<String> getLanguagesList(){
+    	if (languagesList != null){
+    		return languagesList;
+    	}
+    	
+		ArrayList<String> results = new ArrayList<String>();
+	    	String language;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getLanguages().iterator();
+	    		while(it.hasNext()){
+	    			language = it.next();
+	    			
+	    			results.add(language);
+	    		}
+	    	}
+    	return results;
+    }
+    
+    /**
      * Get all genres from the FilmDataSet.
      * @return Map containing all genres and ids.
      */
@@ -112,6 +143,27 @@ public class FilmDataSet implements Serializable{
 	    			genre = it.next();
 	    			
 	    			results.put(genre, id);
+	    		}
+	    	}
+    	return results;
+    }
+    
+    /**
+     * Get all genres from the FilmDataSet for the client
+     */
+    public ArrayList<String> getGenresList(){
+    	if (genresList != null){
+    		return genresList;
+    	}
+    	
+		ArrayList<String> results = new ArrayList<String>();
+	    	String genre;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getGenres().iterator();
+	    		while(it.hasNext()){
+	    			genre = it.next();
+	    			
+	    			results.add(genre);
 	    		}
 	    	}
     	return results;
@@ -141,8 +193,9 @@ public class FilmDataSet implements Serializable{
     	return results;
     }
     
-    
-    ///
+    /**
+     * Get all countries from the FilmDataSet for the client
+     */
     public ArrayList<String> getCountriesList(){
     	if (countriesList != null){
     		return countriesList;

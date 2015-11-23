@@ -346,8 +346,8 @@ public class ApplicationLogic implements EntryPoint {
 		//create the suggestion data 	  
 	      MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();  
 	      
-	      for (String i : dataSet.getCountriesList()){
-				oracle.add(i);
+	      for (int i = 0; i< dataSet.getCountriesList().size(); i++){
+	    	  oracle.add(dataSet.getCountriesList().get(i));
 	      }
 	      //create the suggestion box and pass it the data created above
 	      SuggestBox suggestionBox = new SuggestBox(oracle);
