@@ -49,16 +49,13 @@ public class MySQLConnector {
 		rs = null;
 		String url = null;
 		
-		String userName = "softEng";
-		String pwd = "softEng";
-		
 		if (SystemProperty.environment.value() ==
 		    SystemProperty.Environment.Value.Production) {
 			// Connecting from App Engine.
 			// Load the class that provides the "jdbc:google:mysql://"
 			// prefix.
 			Class.forName("com.mysql.jdbc.GoogleDriver");
-			url = "jdbc:google:mysql://gwtsofteng:moviedb/moviedb?user=softeng";
+			url = "jdbc:google:mysql://gwt-softeng:moviedb/moviedb?user=softeng";
 			conn = DriverManager.getConnection(url);
 		} else {			
 			// Connecting from an external network.
@@ -69,6 +66,8 @@ public class MySQLConnector {
 			//url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
 				
 			//RPI url.
+			String userName = "softEng";
+			String pwd = "softEng";
 			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
 			conn = DriverManager.getConnection(url, userName, pwd);
 		}
