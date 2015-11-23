@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spiffyui.client.widgets.slider.RangeSlider;
+import org.spiffyui.client.widgets.slider.SliderEvent;
+import org.spiffyui.client.widgets.slider.SliderListener;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -45,10 +47,14 @@ public class FilterPanel extends Composite {
 	private TextBox titleSearchBox;
 
 	private Label dateLabel;
-	private RangeSlider dateSlider;
+    private RangeSlider dateSlider;
+    private Label dateminValueLabel;
+    private Label datemaxValueLabel;
 
-	private Label durationLabel;
-	private RangeSlider durationSlider;
+    private Label durationLabel;
+    private RangeSlider durationSlider;
+    private Label durationminValueLabel;
+    private Label durationmaxValueLabel;
 	
 	private Label genresLabel;
 	private SuggestBox genresBox;
@@ -78,11 +84,78 @@ public class FilterPanel extends Composite {
 
 		//Date
 		dateLabel = new Label("Date: ");
-		dateSlider = new RangeSlider("dateSlider", 1888, 2020, 1888, 2020);
+        dateSlider = new RangeSlider("dateSlider", 1888, 2020, 1888, 2020);
+        dateminValueLabel = new Label("Min: 1888");
+        dateminValueLabel.setHeight("20px");
+        datemaxValueLabel = new Label("Max: 2020");
+        datemaxValueLabel.setHeight("20px");
 
-		//Duration
-		durationLabel = new Label("Duration: ");
-		durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
+        dateSlider.addListener(new SliderListener(){
+            @Override
+            public void onStart(SliderEvent e) {
+            }
+            @Override
+            public boolean onSlide(SliderEvent e) {
+                int max = dateSlider.getValueMax();
+                int min = dateSlider.getValueMin();
+
+                dateminValueLabel.setText("Min: " + min);
+                datemaxValueLabel.setText("Max: " + max);
+                return true;
+            }
+
+            @Override
+            public void onChange(SliderEvent e) {
+                int max = dateSlider.getValueMax();
+                int min = dateSlider.getValueMin();
+
+                dateminValueLabel.setText("Min: " + min);
+                datemaxValueLabel.setText("Max: " + max);
+            }
+
+            @Override
+            public void onStop(SliderEvent e) {
+            }
+
+        });
+
+
+        //Duration
+        durationLabel = new Label("Duration: ");
+        durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
+        durationminValueLabel = new Label("Min: 400");
+        durationminValueLabel.setHeight("20px");
+        durationmaxValueLabel = new Label("Max: 400");
+        durationmaxValueLabel.setHeight("20px");
+
+        durationSlider.addListener(new SliderListener(){
+            @Override
+            public void onStart(SliderEvent e) {
+            }
+            @Override
+            public boolean onSlide(SliderEvent e) {
+                int max = durationSlider.getValueMax();
+                int min = durationSlider.getValueMin();
+
+                durationminValueLabel.setText("Min: " + min);
+                durationmaxValueLabel.setText("Max: " + max);
+                return true;
+            }
+
+            @Override
+            public void onChange(SliderEvent e) {
+                int max = durationSlider.getValueMax();
+                int min = durationSlider.getValueMin();
+
+                durationminValueLabel.setText("Min: " + min);
+                durationmaxValueLabel.setText("Max: " + max);
+            }
+
+            @Override
+            public void onStop(SliderEvent e) {
+            }
+
+        });
 
 
 
@@ -178,13 +251,17 @@ public class FilterPanel extends Composite {
 		
 		
 		vlp.add(titlePanel);
-		vlp.add(dateLabel);
-		vlp.add(dateSlider);
-		vlp.add(durationLabel);
-		vlp.add(durationSlider);
-		vlp.add(genresPanel);
-		vlp.add(languagesPanel);
-		vlp.add(countriesPanel);
+        vlp.add(dateLabel);
+        vlp.add(dateminValueLabel);
+        vlp.add(datemaxValueLabel);
+        vlp.add(dateSlider);
+        vlp.add(durationLabel);
+        vlp.add(durationminValueLabel);
+        vlp.add(durationmaxValueLabel);
+        vlp.add(durationSlider);
+        vlp.add(genresPanel);
+        vlp.add(languagesPanel);
+        vlp.add(countriesPanel);
 		
 		buttonsPanel = new HorizontalPanel();
 		buttonsPanel.add(submitButton);
