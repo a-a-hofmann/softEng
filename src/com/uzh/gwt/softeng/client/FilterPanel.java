@@ -1,8 +1,6 @@
 package com.uzh.gwt.softeng.client;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.spiffyui.client.widgets.slider.RangeSlider;
 import org.spiffyui.client.widgets.slider.SliderEvent;
 import org.spiffyui.client.widgets.slider.SliderListener;
@@ -21,7 +19,6 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
@@ -232,7 +229,8 @@ public class FilterPanel extends Composite {
 		genresPanel = new HorizontalPanel();
 		genresPanel.add(genresLabel);
 		genresPanel.add(genresBox);
-		genresPanel.addStyleName("filter-genre-panel");
+//		genresPanel.addStyleName("filter-genre-panel");
+		genresPanel.setHeight("40px");
 		
 		//Languages
 		languagesLabel = new Label("Languages: ");
@@ -240,16 +238,17 @@ public class FilterPanel extends Composite {
 		languagesPanel = new HorizontalPanel();
 		languagesPanel.add(languagesLabel);
 		languagesPanel.add(languagesBox);
-		languagesPanel.addStyleName("filter-language-panel");
+//		languagesPanel.addStyleName("filter-language-panel");
+		languagesPanel.setHeight("40px");
 		
 		//Countries
 		countriesLabel = new Label("Countries: ");
 		countriesBox = new SuggestBox(getCountrySuggestion());
-		countriesBox.setWidth("200px");
 		countriesPanel = new HorizontalPanel();
 		countriesPanel.add(countriesLabel);
 		countriesPanel.add(countriesBox);
-		countriesPanel.addStyleName("filter-countries-panel");
+//		countriesPanel.addStyleName("filter-countries-panel");
+		countriesPanel.setHeight("40px");
 		
 		
 		vlp.add(titlePanel);

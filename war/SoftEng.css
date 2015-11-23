@@ -15,25 +15,6 @@ h1 {
 	clear: both;
 }
 
-.filter-title-panel {
-	padding: 2px;
-}
-
-.filter-language-panel {
-	padding: 2px;
-}
-
-.filter-genre-panel {
-	padding: 2px;
-}
-
-.filter-country-panel {
-	padding: 2px;
-}
-
-#filterPanel tr{
-	height: 2em;
-}
 
 #mainHeader { 
     height: 0px !important;
