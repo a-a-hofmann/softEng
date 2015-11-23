@@ -56,19 +56,21 @@ h1 {
 }
 
 #header {
-	clear: both;	
+	clear: both;
+	bottom: 0.5em;	
 }
 
 #heatmap {
-	top: 20em;
 	width: 80%;
 	float: left;
+	position: relative;
 }
 
 #filterPanel {
 	top: 20em;
 	width: 20%;
 	float: right;
+	position: relative;
 }
 
 #table {
