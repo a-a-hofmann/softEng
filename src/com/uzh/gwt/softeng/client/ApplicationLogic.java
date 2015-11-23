@@ -159,7 +159,7 @@ public class ApplicationLogic implements EntryPoint {
 		//Build FilterPanel
 		buildFilters();
 		// Insert a logo into a defined slot in the HTML page
-		insertLogo();
+//		insertLogo();
 	}
 	
 	/**

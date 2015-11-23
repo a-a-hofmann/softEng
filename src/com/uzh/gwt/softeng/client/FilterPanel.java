@@ -186,7 +186,7 @@ public class FilterPanel extends Composite {
 				
 				//countries
 				if( !countriesBox.getText().equals("") )
-					filterString.append( "LOWER(l.country) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
+					filterString.append( "LOWER(c.country) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
 				
 				//genres
 				if( !genresBox.getText().equals("") )
@@ -201,8 +201,6 @@ public class FilterPanel extends Composite {
 				//has to be last String in this chain
 				filterString.append( "group by m.movieid;" );
 				
-				//TODO: send query to server
-//				Window.alert( filterString.toString() );
 				
 				AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 			    	public void onFailure(Throwable caught) {
