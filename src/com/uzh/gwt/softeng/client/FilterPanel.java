@@ -1,23 +1,33 @@
 package com.uzh.gwt.softeng.client;
 
+import java.util.ArrayList;
+
 import org.spiffyui.client.widgets.slider.RangeSlider;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
 
+	FilmDataSet filmSet;
 	//This widgets main panel
 	private VerticalPanel vlp;
 	private HorizontalPanel titlePanel;
-	private VerticalPanel datePanel;
+	private HorizontalPanel datePanel;
+	private HorizontalPanel genresPanel;
+	private HorizontalPanel languagesPanel;
+	private HorizontalPanel countriesPanel;
 
 	private Label titleLabel;
 	private TextBox titleSearchBox;
@@ -27,6 +37,15 @@ public class FilterPanel extends Composite {
 
 	private Label durationLabel;
 	private RangeSlider durationSlider;
+	
+	private Label genresLabel;
+	private SuggestBox genresBox;
+	
+	private Label languagesLabel;
+	private SuggestBox languagesBox;
+	
+	private Label countriesLabel;
+	private SuggestBox countriesBox;
 
 	private Button submitButton;
 	private StringBuilder filterString;
@@ -88,16 +107,69 @@ public class FilterPanel extends Composite {
 			}
 		});
 
+		//Genres
+		genresLabel = new Label("Genres: ");
+		genresBox = new SuggestBox();
+		genresPanel = new HorizontalPanel();
+		genresPanel.add(genresLabel);
+		genresPanel.add(genresBox);
+		
+		//Languages
+		languagesLabel = new Label("Languages: ");
+		languagesBox = new SuggestBox();
+		languagesPanel = new HorizontalPanel();
+		languagesPanel.add(languagesLabel);
+		languagesPanel.add(languagesBox);
+		
+		//Countries
+		countriesLabel = new Label("Countries: ");
+		countriesBox = new SuggestBox(getCountrySuggestion());
+		countriesBox.setWidth("200px");
+		countriesPanel = new HorizontalPanel();
+		countriesPanel.add(countriesLabel);
+		countriesPanel.add(countriesBox);
+		
+		
 		vlp.add(titlePanel);
 		vlp.add(dateLabel);
 		vlp.add(dateSlider);
 		vlp.add(durationLabel);
 		vlp.add(durationSlider);
+		vlp.add(genresPanel);
+		vlp.add(languagesPanel);
+		vlp.add(countriesPanel);
 		vlp.add(submitButton);
 
 		initWidget(vlp);
 
 		setStyleName("filterPanel-composite");
+	}
+	
+	public MultiWordSuggestOracle getCountrySuggestion(){
+		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+		
+//		String a = "Afghanistan";
+//		String b = "Albania";
+//		String c= "Algeria";
+//		String d = "Argentina";
+//		String e = "Armenia";
+//		
+//		oracle.add(a);
+//		oracle.add(b);
+//		oracle.add(c);
+//		oracle.add(d);
+//		oracle.add(e);
+		
+		return oracle;
+	}
+	
+	public void setCountrySuggestion(ArrayList<String> countries){
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) countriesBox.getSuggestOracle();
+		
+		for (String country : countries){
+			Window.alert("Country: " + country);
+			oracle.add(country);
+		}
 	}
 
 	public String getSearchBoxCaption() {

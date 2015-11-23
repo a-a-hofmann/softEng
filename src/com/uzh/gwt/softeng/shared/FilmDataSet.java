@@ -383,11 +383,15 @@ public class FilmDataSet implements Serializable{
 //    	ArrayList<FilmData> films;
 		try {
 			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+			
+			for (String country : dataSet.getCountriesList()){
+				System.out.println(country);
+			}
 //			dataSet.printDataSet();
 			
-			dataSet = new FilmDataSet(dataSet.filterByDateRange(2010, 2015));
-			dataSet.printDataSet();
-			System.out.println(dataSet.getFilms().size());
+//			dataSet = new FilmDataSet(dataSet.filterByDateRange(2010, 2015));
+//			dataSet.printDataSet();
+//			System.out.println(dataSet.getFilms().size());
 			
 //			HashMap<String, String> data = dataSet.getCountries();
 //			for (Map.Entry<String, String> cursor : data.entrySet()){

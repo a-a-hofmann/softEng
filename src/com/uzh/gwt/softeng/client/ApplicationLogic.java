@@ -236,6 +236,8 @@ public class ApplicationLogic implements EntryPoint {
 //		    		map.setMaxValue(80000);
 		    		map.setFilmDataSet(dataSet);
 		    		table.setList(dataSet);
+		    		Window.alert("asdfas");
+		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    	}
 		    };
 
