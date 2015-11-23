@@ -191,4 +191,8 @@ public class Table extends Composite {
 	public void setList(FilmDataSet filmDataSet){
 		asyncDataProvider.setList(filmDataSet);
 	}
+	
+	public void reset(){
+		asyncDataProvider.reset();
+	}
 }

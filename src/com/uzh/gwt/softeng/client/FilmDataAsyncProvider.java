@@ -93,7 +93,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	    	filmDataSvc.getFilmData(getAllQuery, callback);
 		}
 		else{
-			Window.alert("Finished loading, using local data");
 			List<FilmData> tmp = new ArrayList<FilmData>();
 			for(int i = start; i < start + length && i < filmDataWrapper.size(); i++){
 				tmp.add(filmDataWrapper.get(i));
@@ -155,5 +154,12 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			updateRowCount(filmDataWrapper.size(), true);
 			onRangeChanged(table);
 		}
+	}
+	
+	public void reset() {
+		isFinishedLoading = false;
+		updateRowCount(80000, true);
+		onRangeChanged(table);
+		
 	}
 }

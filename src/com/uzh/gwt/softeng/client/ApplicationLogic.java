@@ -131,7 +131,6 @@ public class ApplicationLogic implements EntryPoint {
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
 		    		buildMap();
-//		    		map.setMaxValue(80000);
 		    		map.setFilmDataSet(dataSet);
 		    		table.setList(dataSet);
 		    		Window.alert("asdfas");
@@ -190,7 +189,7 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	private void buildFilters() {
-		filterPanel = new FilterPanel();
+		filterPanel = new FilterPanel(table);
 		RootPanel filterSlot = RootPanel.get("filterPanel");
 		if(filterSlot != null)
 			filterSlot.add(filterPanel);

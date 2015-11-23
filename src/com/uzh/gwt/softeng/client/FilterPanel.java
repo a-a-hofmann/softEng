@@ -1,10 +1,13 @@
 package com.uzh.gwt.softeng.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.spiffyui.client.widgets.slider.RangeSlider;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -16,9 +19,17 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
+	
+	/**
+	 * RPC Object
+	 */
+	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
+	
+	private Table table;
 
 	FilmDataSet filmSet;
 	//This widgets main panel
@@ -28,6 +39,7 @@ public class FilterPanel extends Composite {
 	private HorizontalPanel genresPanel;
 	private HorizontalPanel languagesPanel;
 	private HorizontalPanel countriesPanel;
+	private HorizontalPanel buttonsPanel;
 
 	private Label titleLabel;
 	private TextBox titleSearchBox;
@@ -47,6 +59,7 @@ public class FilterPanel extends Composite {
 	private Label countriesLabel;
 	private SuggestBox countriesBox;
 
+	private Button resetButton;
 	private Button submitButton;
 	private StringBuilder filterString;
 
@@ -116,8 +129,29 @@ public class FilterPanel extends Composite {
 				filterString.append( "group by m.movieid;" );
 				
 				//TODO: send query to server
-				Window.alert( filterString.toString() );
+//				Window.alert( filterString.toString() );
+				
+				AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+			    	public void onFailure(Throwable caught) {
+			    		Window.alert("Search Query failed");
+			    		caught.printStackTrace();
+			    	}
+		
+			    	public void onSuccess(FilmDataSet result) {
+			            table.setList(result);	            
+			    	}
+			    };
+		    	filmDataSvc.getFilmData(filterString.toString(), callback);
 			}
+		});
+		
+		resetButton = new Button("Reset", new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				table.reset();
+			}
+			
 		});
 
 		//Genres
@@ -151,11 +185,20 @@ public class FilterPanel extends Composite {
 		vlp.add(genresPanel);
 		vlp.add(languagesPanel);
 		vlp.add(countriesPanel);
-		vlp.add(submitButton);
+		
+		buttonsPanel = new HorizontalPanel();
+		buttonsPanel.add(submitButton);
+		buttonsPanel.add(resetButton);
+		vlp.add(buttonsPanel);
 
 		initWidget(vlp);
 
 		setStyleName("filterPanel-composite");
+	}
+	
+	FilterPanel(Table table){
+		this();
+		this.table = table;
 	}
 	
 	public MultiWordSuggestOracle getCountrySuggestion(){
