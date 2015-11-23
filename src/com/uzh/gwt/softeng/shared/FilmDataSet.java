@@ -41,6 +41,12 @@ public class FilmDataSet implements Serializable{
     private HashMap<String, String> countries;
     
     /**
+     * ArrayList countries for client
+     */
+    private ArrayList<String> countriesList; //
+    
+    
+    /**
 	 * Creates a new FilmDataSet instance.
 	 */
     public FilmDataSet(){
@@ -130,6 +136,26 @@ public class FilmDataSet implements Serializable{
 	    			country = it.next();
 	    			
 	    			results.put(country, id);
+	    		}
+	    	}
+    	return results;
+    }
+    
+    
+    ///
+    public ArrayList<String> getCountriesList(){
+    	if (countriesList != null){
+    		return countriesList;
+    	}
+		ArrayList<String> results = new ArrayList<String>();
+	    	String country;
+	    	for(FilmData film : films){
+	    		Iterator<String> it = film.getCountries().iterator();
+	    		while(it.hasNext()){
+	    			country = it.next();
+	    			if(!results.contains(country)){
+	    				results.add(country);
+	    			}
 	    		}
 	    	}
     	return results;
