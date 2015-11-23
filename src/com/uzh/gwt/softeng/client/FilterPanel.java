@@ -94,16 +94,18 @@ public class FilterPanel extends Composite {
 				
 				//add different filters to query
 				//if title is empty do not include it in query
-				if( !getTitle().equals("") )
-					filterString.append( "m.title = " + getTitle() + " ");
+				if( !getSearchBoxCaption().equals("") )
+					//the " and " at the end 
+					filterString.append( "LOWER(m.title) = like " + "\\%" + getSearchBoxCaption().toLowerCase() + "%\\" + " and " );
 				
-				filterString.append( "m.duration >= " + durationSlider.getMinimum() + " and m.duration <= " + durationSlider.getMaximum() + " " );
+				filterString.append( "m.duration >= " + durationSlider.getMinimum() + " and m.duration <= " + durationSlider.getMaximum() + " and " );
 				filterString.append( "m.date >= " + dateSlider.getMinimum() + " and m.date <= " +dateSlider.getMaximum() + " " );
 				
 				//has to be last String in this chain
 				filterString.append( "group by m.movieid;" );
 				
 				//TODO: send query to server
+				Window.alert( filterString.toString() );
 			}
 		});
 
@@ -176,9 +178,6 @@ public class FilterPanel extends Composite {
 		return titleSearchBox.getText();
 	}
 
-	public String getDateRange() {
-		return new String( dateSlider.getMinimum() + " " + dateSlider.getMaximum() );
-	}
 
 	//	@SuppressWarnings("deprecation")
 	//	public void onClick(ClickEvent event) {
