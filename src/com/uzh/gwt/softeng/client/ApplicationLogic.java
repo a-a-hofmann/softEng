@@ -1,5 +1,8 @@
 package com.uzh.gwt.softeng.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -25,6 +28,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
+
 
 /**
  * The {@code ApplicationLogic} class handles all RPC calls and panels that build the UI of the project.
@@ -316,42 +322,43 @@ public class ApplicationLogic implements EntryPoint {
 		setUpEventHandling();
 		
 		//filterdropdown
+		/*
 		RootPanel filterSlot = RootPanel.get("filterDropdown");
 		if (filterSlot != null)
 			filterSlot.add(onInitialize());
+			*/
+
+
+//////////////////////////////Sugestion box
+		//create the suggestion data 	  
+	      MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();  
+	      
+	      for (String i : dataSet.getCountriesList()){
+				oracle.add(i);
+	      }
+	      //create the suggestion box and pass it the data created above
+	      SuggestBox suggestionBox = new SuggestBox(oracle);
+	 
+	      //set width to 200px.
+	      suggestionBox.setWidth("200");
+	      
+	      // Add suggestionbox to the root panel. 
+	      VerticalPanel panel = new VerticalPanel();
+	      panel.add(suggestionBox);
+
+	      RootPanel.get("gwtContainer").add(panel);
+	    //----------------------------------------------------
+		
+		
 	}
 	
 	//create filterdropdown
-	/**
-	   * The constants used in this Content Widget.
-	   */
-	 /* public static interface CwConstants extends Constants {
-	    String[] cwListBoxCars();
-
-	    String[] cwListBoxCategories();
-
-	    String cwListBoxDescription();
-
-	    String cwListBoxName();
-
-	    String cwListBoxSelectAll();
-
-	    String cwListBoxSelectCategory();
-
-	    String[] cwListBoxSports();
-
-	    String[] cwListBoxVacations();
-	  }
-
-	  /**
-	   * An instance of the constants.
-	   */
-	 // private final CwConstants constants;
-
+	
 	  /**
 	   * Initialize this example.
 	   * @return returns a widget.
 	   */
+	/*
 	  public Widget onInitialize() {
 	    // Create a panel to align the Widgets
 	    HorizontalPanel hPanel = new HorizontalPanel();
@@ -397,13 +404,14 @@ public class ApplicationLogic implements EntryPoint {
 	    return hPanel;
 	    
 	  }
-
+	*/
 	  /**
 	   * Display the options for a given category in the list box.
 	   *
 	   * @param listBox the ListBox to add the options to
 	   * @param category the category index
 	   */
+	/*
 	  private void showCategory(ListBox listBox, int category) {
 	    listBox.clear();
 	    String[] listData = null;
@@ -425,6 +433,7 @@ public class ApplicationLogic implements EntryPoint {
 	      listBox.addItem(listData[i]);
 	    }
 	  }
+	  */
 	
 	
 }
