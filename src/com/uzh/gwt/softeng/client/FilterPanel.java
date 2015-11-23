@@ -96,11 +96,22 @@ public class FilterPanel extends Composite {
 				//if title is empty do not include it in query
 				if( !getSearchBoxCaption().equals("") )
 					//the " and " at the end 
-					filterString.append( "LOWER(m.title) like " + "\"%" + getSearchBoxCaption().toLowerCase() + "%\"" + " and " );
+					filterString.append( "LOWER(m.title) like \"%" + getSearchBoxCaption().toLowerCase() + "%\" and " );
 				
-				filterString.append( "m.duration >= " + durationSlider.getMinimum() + " and m.duration <= " + durationSlider.getMaximum() + " and " );
-				filterString.append( "m.date >= " + dateSlider.getMinimum() + " and m.date <= " +dateSlider.getMaximum() + " " );
+				//countries
+				if( !countriesBox.getText().equals("") )
+					filterString.append( "LOWER(countries) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
 				
+				//genres
+				if( !genresBox.getText().equals("") )
+					filterString.append( "LOWER(genres) like \"%" + genresBox.getText().toLowerCase() + "%\" and " );
+				
+				//languages
+				if( !languagesBox.getText().equals("") )
+					filterString.append( "LOWER(languages) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
+				
+				filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
+				filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
 				//has to be last String in this chain
 				filterString.append( "group by m.movieid;" );
 				
