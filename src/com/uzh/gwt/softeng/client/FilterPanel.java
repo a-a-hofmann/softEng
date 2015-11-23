@@ -96,7 +96,7 @@ public class FilterPanel extends Composite {
 				//if title is empty do not include it in query
 				if( !getSearchBoxCaption().equals("") )
 					//the " and " at the end 
-					filterString.append( "LOWER(m.title) = like " + "\\%" + getSearchBoxCaption().toLowerCase() + "%\\" + " and " );
+					filterString.append( "LOWER(m.title) like " + "\"%" + getSearchBoxCaption().toLowerCase() + "%\"" + " and " );
 				
 				filterString.append( "m.duration >= " + durationSlider.getMinimum() + " and m.duration <= " + durationSlider.getMaximum() + " and " );
 				filterString.append( "m.date >= " + dateSlider.getMinimum() + " and m.date <= " +dateSlider.getMaximum() + " " );
