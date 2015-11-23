@@ -100,15 +100,15 @@ public class FilterPanel extends Composite {
 				
 				//countries
 				if( !countriesBox.getText().equals("") )
-					filterString.append( "LOWER(countries) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
+					filterString.append( "LOWER(l.country) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
 				
 				//genres
 				if( !genresBox.getText().equals("") )
-					filterString.append( "LOWER(genres) like \"%" + genresBox.getText().toLowerCase() + "%\" and " );
+					filterString.append( "LOWER(g.genre) like \"%" + genresBox.getText().toLowerCase() + "%\" and " );
 				
 				//languages
 				if( !languagesBox.getText().equals("") )
-					filterString.append( "LOWER(languages) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
+					filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
 				
 				filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
 				filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
