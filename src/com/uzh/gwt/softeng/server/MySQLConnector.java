@@ -58,7 +58,8 @@ public class MySQLConnector {
 			// Load the class that provides the "jdbc:google:mysql://"
 			// prefix.
 			Class.forName("com.mysql.jdbc.GoogleDriver");
-			url = "jdbc:google:mysql://gwtsofteng:moviedb/test_movie_db?user=softEng";
+			url = "jdbc:google:mysql://gwtsofteng:moviedb/moviedb?user=softeng";
+			conn = DriverManager.getConnection(url);
 		} else {			
 			// Connecting from an external network.
 			//Load driver class from .jar file.
@@ -69,10 +70,8 @@ public class MySQLConnector {
 				
 			//RPI url.
 			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
+			conn = DriverManager.getConnection(url, userName, pwd);
 		}
-	
-		conn = DriverManager.getConnection(url, userName, pwd);
-//		conn = DriverManager.getConnection(url);
 	}
 	
 	/**

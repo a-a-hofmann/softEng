@@ -80,6 +80,7 @@ public class FilterPanel extends Composite {
 		titlePanel = new HorizontalPanel();
 		titlePanel.add(titleLabel);
 		titlePanel.add(titleSearchBox);
+		titlePanel.addStyleName("filter-title-panel");
 
 
 		//Date
@@ -231,6 +232,7 @@ public class FilterPanel extends Composite {
 		genresPanel = new HorizontalPanel();
 		genresPanel.add(genresLabel);
 		genresPanel.add(genresBox);
+		genresPanel.addStyleName("filter-genre-panel");
 		
 		//Languages
 		languagesLabel = new Label("Languages: ");
@@ -238,6 +240,7 @@ public class FilterPanel extends Composite {
 		languagesPanel = new HorizontalPanel();
 		languagesPanel.add(languagesLabel);
 		languagesPanel.add(languagesBox);
+		languagesPanel.addStyleName("filter-language-panel");
 		
 		//Countries
 		countriesLabel = new Label("Countries: ");
@@ -246,6 +249,7 @@ public class FilterPanel extends Composite {
 		countriesPanel = new HorizontalPanel();
 		countriesPanel.add(countriesLabel);
 		countriesPanel.add(countriesBox);
+		countriesPanel.addStyleName("filter-countries-panel");
 		
 		
 		vlp.add(titlePanel);
