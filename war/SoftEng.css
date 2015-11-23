@@ -12,11 +12,11 @@ h1 {
 	padding: 5px 0;
 	background-color: #323B38;
 	width: 100%;
+	clear: both;
 }
 
 #mainHeader { 
-    height: 0px !important
-    ;
+    height: 0px !important;
     display: none; 
 } 
 
@@ -36,9 +36,13 @@ h1 {
    border: 1px black solid;
 }
 
+#filterPanel{
+}
+
 #ad{
 	margin-left: auto;
 	margin-rigth: auto;
+	clear: both;
 }
 
 #search{
@@ -52,6 +56,28 @@ h1 {
    position: absolute;
    top: 35%;
    right: 0%;
+}
+
+#header {
+	clear: both;
+	bottom: 0.5em;	
+}
+
+#heatmap {
+	width: 80%;
+	float: left;
+	position: relative;
+}
+
+#filterPanel {
+	top: 20em;
+	width: 20%;
+	float: right;
+	position: relative;
+}
+
+#table {
+	clear: both;
 }
 
 .normal{
