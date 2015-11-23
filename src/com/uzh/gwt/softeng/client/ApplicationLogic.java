@@ -1,34 +1,15 @@
 package com.uzh.gwt.softeng.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestBox;
 
 
 /**
@@ -107,89 +88,6 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	/**
-	 * Wrap the search button that already exists on the HTML page and store it as the
-	 * previously declared search Button widget.  If the button isn't found create it.
-	 */
-	private void wrapExisitngSearchButton(){
-		// Try and find the DOM element
-		Element el = DOM.getElementById("search");
-		
-		// If the element is not null, then we've found it, so let's wrap it
-		if(el!=null){
-			search = Button.wrap(el);
-		} else {
-			search = new Button("search");
-			RootPanel.get().add(search);
-		}
-	}
-
-	/**
-	 * Here we set up the event handling that we will drive user interaction.
-	 * 
-	 * 1.  A ClickHandler for the search button.
-	 * 
-	 */
-	private void setUpEventHandling(){
-		
-		/**
-		 *  If the search button is clicked, display pop-up panel which allows
-		 *  the user to type in a search term. The TextBox where the user types search terms should 
-		 *  automatically gain focus to make it more user friendly.
-		 */ 
-		search.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event) {
-				FlowPanel qAnswer;
-				final TextBox searchTerm = new TextBox();
-				
-				// If search button is clicked for the first time then the searchRequest Pop-up panel does not yet exist
-				// so we'll build it first as follows:
-				if (searchRequest==null){
-					// Create the PopupPanel widget
-					searchRequest = new PopupPanel();
-					
-					// Create a FlowPanel to hold the question and answer for the search term
-					qAnswer = new FlowPanel();
-					// Add a Label to the Flow Panel that represents the "Search For" text
-					qAnswer.add(new Label("Search For:"));
-					// Add the answer TextBox (which we declared above) to the FlowPanel
-					qAnswer.add(searchTerm);
-					
-					// Add a change handler to the TextBox so that when there is a change to search term 
-					// we start the search.
-					searchTerm.addChangeHandler(new ChangeHandler(){
-						public void onChange(ChangeEvent event) {
-							// Hide the popup panel from the screen
-							searchRequest.hide();
-							
-							String searchTitle = searchTerm.getText();
-							boolean isSearch = searchTitle.equals("") ? false : true;
-							if (isSearch){
-//								filteredDataSet = new FilmDataSet(dataSet.filterByTitle(searchTitle));
-								table.filterByName(searchTitle);
-							}
-							else
-								filteredDataSet = dataSet;
-							table.filter(filteredDataSet, isSearch);
-							
-							searchTerm.setText("");
-						}
-					});
-
-					// Add the question/answer to the search pop-up.
-					searchRequest.add(qAnswer);
-					searchRequest.setAnimationEnabled(true);
-					searchRequest.showRelativeTo(search);
-					searchRequest.setAutoHideEnabled(true);
-				} else {
-					searchRequest.show();
-				}
-				// Set the TextBox of the popup Panel to have focus.
-				searchTerm.setFocus(true);
-			}			
-		});
-	}
-	
-	/**
 	 * Sends RPC to server to fetch film data and refreshes table.
 	 */
 	private void getFilmDataSetAsync(){
@@ -246,16 +144,6 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	/**
-	 * Style the search button.
-	 */
-	private void styleButtonUsingDOM(){
-		// Set up some styling on the button
-		search.getElement().getStyle().setProperty("backgroundColor", "#ff0000");
-		search.getElement().getStyle().setProperty("border", "2px solid");
-		search.getElement().getStyle().setOpacity(0.7);
-	}
-	
-	/**
 	 * Sets up the GUI components used in the application
 	 * 
 	 * 1. A heatmap.
@@ -271,14 +159,8 @@ public class ApplicationLogic implements EntryPoint {
 		buildTable();
 		//Build FilterPanel
 		buildFilters();
-		// Wrap the existing search button
-		wrapExisitngSearchButton();
 		// Insert a logo into a defined slot in the HTML page
 		insertLogo();
-		// Style the Button using low level DOM access
-		styleButtonUsingDOM();
-		
-		
 	}
 	
 	/**
@@ -333,122 +215,6 @@ public class ApplicationLogic implements EntryPoint {
 		getFilmDataSetAsync(query);
 		// Create the user interface
 		setUpGui();		
-		// Set up all the event handling required for the application.
-		setUpEventHandling();
-		
-		//filterdropdown
-		/*
-		RootPanel filterSlot = RootPanel.get("filterDropdown");
-		if (filterSlot != null)
-			filterSlot.add(onInitialize());
-			*/
-
-
-//////////////////////////////Sugestion box
-		//create the suggestion data 	  
-	      MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();  
-	      
-	      for (int i = 0; i< dataSet.getCountriesList().size(); i++){
-	    	  oracle.add(dataSet.getCountriesList().get(i));
-	      }
-	      //create the suggestion box and pass it the data created above
-	      SuggestBox suggestionBox = new SuggestBox(oracle);
-	 
-	      //set width to 200px.
-	      suggestionBox.setWidth("200");
-	      
-	      // Add suggestionbox to the root panel. 
-	      VerticalPanel panel = new VerticalPanel();
-	      panel.add(suggestionBox);
-
-	      RootPanel.get("gwtContainer").add(panel);
-	    //----------------------------------------------------
-		
 		
 	}
-	
-	//create filterdropdown
-	
-	  /**
-	   * Initialize this example.
-	   * @return returns a widget.
-	   */
-	/*
-	  public Widget onInitialize() {
-	    // Create a panel to align the Widgets
-	    HorizontalPanel hPanel = new HorizontalPanel();
-	    hPanel.setSpacing(20);
-
-	    // Add a drop box with the list types
-	    final ListBox dropBox = new ListBox(false);
-	    String[] listTypes = {"Cars", "Sports", "vacation"};//constants.cwListBoxCategories();
-	    for (int i = 0; i < listTypes.length; i++) {
-	      dropBox.addItem(listTypes[i]);
-	    }
-	    dropBox.ensureDebugId("cwListBox-dropBox");
-	    VerticalPanel dropBoxPanel = new VerticalPanel();
-	    dropBoxPanel.setSpacing(4);
-	    dropBoxPanel.add(new HTML("select A cat:"));//constants.cwListBoxSelectCategory()));
-	    dropBoxPanel.add(dropBox);
-	    hPanel.add(dropBoxPanel);
-
-	    // Add a list box with multiple selection enabled
-	    final ListBox multiBox = new ListBox(true);
-	    multiBox.ensureDebugId("cwListBox-multiBox");
-	    multiBox.setWidth("11em");
-	    multiBox.setVisibleItemCount(10);
-	    VerticalPanel multiBoxPanel = new VerticalPanel();
-	    multiBoxPanel.setSpacing(4);
-	    multiBoxPanel.add(new HTML("select several"));//constants.cwListBoxSelectAll()));
-	    multiBoxPanel.add(multiBox);
-	    hPanel.add(multiBoxPanel);
-
-	    // Add a handler to handle drop box events
-	    dropBox.addChangeHandler(new ChangeHandler() {
-	      public void onChange(ChangeEvent event) {
-	        showCategory(multiBox, dropBox.getSelectedIndex());
-	        multiBox.ensureDebugId("cwListBox-multiBox");
-	      }
-	    });
-
-	    // Show default category
-	    showCategory(multiBox, 0);
-	    multiBox.ensureDebugId("cwListBox-multiBox");
-
-	    // Return the panel
-	    return hPanel;
-	    
-	  }
-	*/
-	  /**
-	   * Display the options for a given category in the list box.
-	   *
-	   * @param listBox the ListBox to add the options to
-	   * @param category the category index
-	   */
-	/*
-	  private void showCategory(ListBox listBox, int category) {
-	    listBox.clear();
-	    String[] listData = null;
-	    switch (category) {
-	      case 0:
-	    	String[] cars = {"audi", "fiat"};//constants.cwListBoxCars();
-	    	listData = cars;
-	        break;
-	      case 1:
-	    	  String[] sports = {"volley", "soccer"};
-	        listData = sports;//{"volley", ""}//constants.cwListBoxSports();
-	        break;
-	      case 2:
-	    	  String[] vacations = {"sportive vacation", "other vacation"};
-	        listData = vacations; //constants.cwListBoxVacations();
-	        break;
-	    }
-	    for (int i = 0; i < listData.length; i++) {
-	      listBox.addItem(listData[i]);
-	    }
-	  }
-	  */
-	
-	
 }
