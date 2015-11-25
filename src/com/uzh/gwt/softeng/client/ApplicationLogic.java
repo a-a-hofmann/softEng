@@ -1,5 +1,8 @@
 package com.uzh.gwt.softeng.client;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -17,7 +20,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * 
  */
 public class ApplicationLogic implements EntryPoint {
-	
+	private static final Logger log = Logger.getLogger( ApplicationLogic.class.getName() );
 	/**
 	 * The film data set.
 	 */
@@ -137,7 +140,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    	}
 		    };
-
+		    log.log(Level.INFO, "Sending async query");
 		    // Make the call to the film data service.
 		    filmDataSvc.getFilmData(query, callback);
 	}

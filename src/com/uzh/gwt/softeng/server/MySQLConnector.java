@@ -55,7 +55,9 @@ public class MySQLConnector {
 			// Load the class that provides the "jdbc:google:mysql://"
 			// prefix.
 			Class.forName("com.mysql.jdbc.GoogleDriver");
-			url = "jdbc:google:mysql://gwt-softeng:moviedb/moviedb?user=softeng";
+			url ="jdbc:google:mysql://gwtsoftengtest:moviedb/moviedb?user=root";
+//			url = "jdbc:google:mysql://gwtsofteng:moviedb/moviedb?user=softEng";
+//			url = "jdbc:google:mysql://gwt-softeng:moviedb/moviedb?user=softeng";
 			conn = DriverManager.getConnection(url);
 		} else {			
 			// Connecting from an external network.
@@ -64,12 +66,14 @@ public class MySQLConnector {
 			
 			//Google SQL url.
 			//url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
+			url = "jdbc:mysql://173.194.254.236:3306/moviedb?user=softeng";
 				
 			//RPI url.
 			String userName = "softEng";
 			String pwd = "softEng";
-			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
-			conn = DriverManager.getConnection(url, userName, pwd);
+//			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
+//			conn = DriverManager.getConnection(url, userName, pwd);
+			conn = DriverManager.getConnection(url);
 		}
 	}
 	
@@ -342,68 +346,67 @@ public class MySQLConnector {
 	 * Reads from the database.
 	 * @param query Query to send to database.
 	 * @return Query result.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static ArrayList<FilmData> readFromDB(String query){
+	public static ArrayList<FilmData> readFromDB(String query) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		stmt = null;
 		rs = null;
 		
 		ArrayList<FilmData> result = new ArrayList<FilmData>();
 		
-		try {
-			openConnection();
+		openConnection();
+		
+		//Create a statement object to hold the query.
+		stmt = conn.createStatement();
+		
+		//Executes and saves query result.
+		rs = stmt.executeQuery(query);
+		
+		while (rs.next()) {
+			int id = rs.getInt("movieid");
+			String title = rs.getString("title");
+			int date = rs.getInt("date");
+			Float duration = rs.getFloat("duration");
 			
-			//Create a statement object to hold the query.
-			stmt = conn.createStatement();
+			String genre = rs.getString("genres");
+			String language = rs.getString("languages");
+			String country = rs.getString("countries");
 			
-			//Executes and saves query result.
-			rs = stmt.executeQuery(query);
-			
-			while (rs.next()) {
-				int id = rs.getInt("movieid");
-				String title = rs.getString("title");
-				int date = rs.getInt("date");
-				Float duration = rs.getFloat("duration");
-				
-				String genre = rs.getString("genres");
-				String language = rs.getString("languages");
-				String country = rs.getString("countries");
-				
-				ArrayList<String> genres = null;
-				if (genre != null){
-					genres = new ArrayList<String>(Arrays.asList(genre));
-				}
-				else{
-					genres = new ArrayList<String>();
-					genres.add("");
-				}
-				
-				ArrayList<String> languages = null;
-				if (language != null){
-					languages = new ArrayList<String>(Arrays.asList(language));
-				}
-				else{
-					languages = new ArrayList<String>();
-					languages.add("");
-				}
-				
-				ArrayList<String> countries = null;
-				if (country != null){
-					countries = new ArrayList<String>(Arrays.asList(country));
-				}
-				else{
-					countries = new ArrayList<String>();
-					countries.add("");
-				}
-	
-				FilmData film = new FilmData(id, title, date, duration, languages, countries, genres);
-				result.add(film);
+			ArrayList<String> genres = null;
+			if (genre != null){
+				genres = new ArrayList<String>(Arrays.asList(genre));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeConnection();
-			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+			else{
+				genres = new ArrayList<String>();
+				genres.add("");
+			}
+			
+			ArrayList<String> languages = null;
+			if (language != null){
+				languages = new ArrayList<String>(Arrays.asList(language));
+			}
+			else{
+				languages = new ArrayList<String>();
+				languages.add("");
+			}
+			
+			ArrayList<String> countries = null;
+			if (country != null){
+				countries = new ArrayList<String>(Arrays.asList(country));
+			}
+			else{
+				countries = new ArrayList<String>();
+				countries.add("");
+			}
+
+			FilmData film = new FilmData(id, title, date, duration, languages, countries, genres);
+			result.add(film);
 		}
+		closeConnection();
+		try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
 		return result;
 	} 
 	
@@ -423,22 +426,22 @@ public class MySQLConnector {
 
 	}
 	
-	public static void main(String[] args){
-//		sendAllDataFromFileToDB("movies");
-		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
-				+ "group_concat(DISTINCT l.language) languages, "
-				+ "group_concat(DISTINCT c.country) countries "
-				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
-				+ "left join genres g on g.genreid=mg.genreid "
-				+ "left join movielanguages ml on m.movieid=ml.movieid "
-				+ "left join languages l on l.languageid=ml.languageid "
-				+ "left join moviecountries mc on m.movieid=mc.movieid "
-				+ "left join countries c on c.countryid=mc.countryid "
-				+ "group by m.movieid;";
-		System.out.println(query);
-		ArrayList<FilmData> result = readFromDB(query);
-		for(FilmData film : result){
-			System.out.println(film);
-		}
-	}
+//	public static void main(String[] args){
+////		sendAllDataFromFileToDB("movies");
+//		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+//				+ "group_concat(DISTINCT l.language) languages, "
+//				+ "group_concat(DISTINCT c.country) countries "
+//				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+//				+ "left join genres g on g.genreid=mg.genreid "
+//				+ "left join movielanguages ml on m.movieid=ml.movieid "
+//				+ "left join languages l on l.languageid=ml.languageid "
+//				+ "left join moviecountries mc on m.movieid=mc.movieid "
+//				+ "left join countries c on c.countryid=mc.countryid "
+//				+ "group by m.movieid;";
+//		System.out.println(query);
+//		ArrayList<FilmData> result = readFromDB(query);
+//		for(FilmData film : result){
+//			System.out.println(film);
+//		}
+//	}
 }
