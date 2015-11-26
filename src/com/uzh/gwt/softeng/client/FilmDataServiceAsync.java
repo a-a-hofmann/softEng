@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public interface FilmDataServiceAsync {
-	
-	void getFilmData(AsyncCallback<FilmDataSet> callback);
+
 	void getFilmData(String query, AsyncCallback<FilmDataSet> callback);
 }

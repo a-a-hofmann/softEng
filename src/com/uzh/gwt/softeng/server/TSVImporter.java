@@ -94,8 +94,11 @@ public class TSVImporter {
 	            	token = tok.nextToken();
 	            	
 	            	//If the token matches the given pattern then save it.
-	            	if(token.matches(patterns.get(i))){
-	            		m.set(i++, token);
+	            	if(token.matches(patterns.get(i)) || token.equals("{}")){
+	            		if(token.equals("{}"))
+	            			i++;
+	            		else
+	            			m.set(i++, token);
 	            	}
 	            	else{ 
 	            		//If the token doesn't match the given pattern then some data is missing
@@ -129,4 +132,88 @@ public class TSVImporter {
 		
 		return new FilmDataSet(films);
     }
+    
+    /**
+     * Imports film data from file. Easier implementation
+     * @param filePath The path to the file to parse.
+     * @param numberOfLinesToParse The number of lines to parse from the file.
+     * @throws FileNotFoundException File not found.
+     * @return Imported FilmDataSet.
+     */
+    public static FilmDataSet importFilmDataNew(String filePath) throws IOException{
+    	//Open .tsv file to read.
+    	BufferedReader TSVFile = null;	
+		TSVFile = new BufferedReader(new FileReader(filePath));
+    	
+		ArrayList<FilmData> films = new ArrayList<FilmData>();
+		
+		String line = TSVFile.readLine();
+		
+		while(line != null){
+			FilmData m = new FilmData();
+			
+			String[] tmp = line.split("\t");
+			
+			String id = tmp[0];
+			String title = tmp[2];
+			String date = tmp[3];
+			String duration = tmp[5];
+			String languages = tmp[6];
+			String countries = tmp[7];
+			String genres = tmp[8];
+			
+			m.set(0, id);
+			m.set(1, title);
+			
+			if(!date.isEmpty())
+				m.set(2, date);
+			
+		
+			if(!duration.isEmpty())
+				m.set(3, duration);
+			
+
+			if(!languages.equals("{}"));
+				m.set(4, languages);
+			
+		
+			if(!countries.equals("{}"))
+				m.set(5, countries);
+			
+			if(!genres.equals("{}"))
+				m.set(6, genres);
+			
+			films.add(m);
+			
+			line = TSVFile.readLine();
+		}
+		TSVFile.close();
+		
+    	return new FilmDataSet(films);
+    }
+    
+//    public static void main(String[] args) throws FileNotFoundException, IOException{
+//    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
+    	
+//    	FileWriter fileWriter = new FileWriter("war/WEB-INF/Resources/tmp.txt");
+//
+//            // Always wrap FileWriter in BufferedWriter.
+//            BufferedWriter bufferedWriter =
+//                new BufferedWriter(fileWriter);
+//            
+//        for (FilmData film : result.getFilms())
+//        	bufferedWriter.write(film.toString());
+//    	result.printDataSet();
+    	
+//    	String s = "21687004\t/m/05mr0sv\tThe Stickpin\t\tDate\t\t{}\t{\"/m/07ssc\": \"United Kingdom\"}\t{\"/m/02hmvc\": \"Short Film\", \"/m/0lsxr\": \"Crime Fiction\"}";
+////    	String s = "1 \tID \tTitle \t \t \t{} \tSomething";
+//    	String[] tmp = s.split("\t");
+//    	System.out.println(tmp.length);
+//    	for(String s1 : tmp){
+//    		if(s1.isEmpty())
+//    			System.out.println();
+//    		else
+//    			System.out.println(s1);
+//    	}
+//    }
 }

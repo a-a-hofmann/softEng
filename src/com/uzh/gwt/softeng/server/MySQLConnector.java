@@ -66,14 +66,14 @@ public class MySQLConnector {
 			
 			//Google SQL url.
 			//url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
-			url = "jdbc:mysql://173.194.254.236:3306/moviedb?user=softeng";
+//			url = "jdbc:mysql://173.194.254.236:3306/moviedb?user=softeng";
 				
 			//RPI url.
 			String userName = "softEng";
 			String pwd = "softEng";
-//			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
-//			conn = DriverManager.getConnection(url, userName, pwd);
-			conn = DriverManager.getConnection(url);
+			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
+			conn = DriverManager.getConnection(url, userName, pwd);
+//			conn = DriverManager.getConnection(url);
 		}
 	}
 	
@@ -302,45 +302,6 @@ public class MySQLConnector {
 			closeConnection();
 		}
 	}
-		
-	/**
-	 * Reads all data from the database table.
-	 * @param table Table from which to read all data.
-	 * @return A list containing all FilmData read from db/table.
-	 */
-	public static ArrayList<FilmData> readAllDataFromDB(String table){
-		stmt = null;
-		rs = null;
-		
-		ArrayList<FilmData> result = new ArrayList<FilmData>();
-		FilmData film = null;
-		
-		try {
-			openConnection();
-			
-			//Create a statement object to hold the query.
-			stmt = conn.createStatement();
-			
-			//Executes and saves query result.
-			rs = stmt.executeQuery("SELECT * FROM " + table + ";");
-			
-			while (rs.next()) {
-				String id = rs.getString("movieid");
-				String title = rs.getString("title");
-				String duration = rs.getString("date");
-				String country = rs.getString("duration");
-				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.split(",")));
-				film = new FilmData(Integer.parseInt(id), title, Float.parseFloat(duration), countries);
-				result.add(film);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeConnection();
-			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-		}
-		return result;
-	}
 	
 	/**
 	 * Reads from the database.
@@ -377,7 +338,7 @@ public class MySQLConnector {
 			
 			ArrayList<String> genres = null;
 			if (genre != null){
-				genres = new ArrayList<String>(Arrays.asList(genre));
+				genres = new ArrayList<String>(Arrays.asList(genre.split(",")));
 			}
 			else{
 				genres = new ArrayList<String>();
@@ -386,7 +347,7 @@ public class MySQLConnector {
 			
 			ArrayList<String> languages = null;
 			if (language != null){
-				languages = new ArrayList<String>(Arrays.asList(language));
+				languages = new ArrayList<String>(Arrays.asList(language.split(",")));
 			}
 			else{
 				languages = new ArrayList<String>();
@@ -395,7 +356,7 @@ public class MySQLConnector {
 			
 			ArrayList<String> countries = null;
 			if (country != null){
-				countries = new ArrayList<String>(Arrays.asList(country));
+				countries = new ArrayList<String>(Arrays.asList(country.split(",")));
 			}
 			else{
 				countries = new ArrayList<String>();
@@ -420,7 +381,6 @@ public class MySQLConnector {
 			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 			sendToDB(films, table);
 		} catch (IOException | SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

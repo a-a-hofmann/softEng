@@ -6,9 +6,8 @@
 	 <inherits name="com.googlecode.gwt.charts.Charts"/>
 	 <inherits name="org.spiffyui.spiffyui" />
 
-	<!-- We tell the GWT compiler to compile all code in and below the client package -->
+	<!-- We tell the GWT compiler which packages to translate -->
 	<source path="client" />
-	<source path="server" />
 	<source path='shared'/>
 	
 	<!--  We choose to use the built in CSS Chrome theme -->

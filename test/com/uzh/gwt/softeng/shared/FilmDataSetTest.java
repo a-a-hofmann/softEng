@@ -48,6 +48,19 @@ public class FilmDataSetTest {
 		assertNotEquals(movies.getFilms(), null);
 		assertEquals(movies.getFilms().size(), 0);
 	}
+	
+//	@Test
+//	public void testGetCountriesList(){
+//		FilmData f1 = new FilmData(1, "a", 180, new ArrayList<String>(Arrays.asList("Switzerland", "USA")));
+//		FilmData f2 = new FilmData(2, "b", 180, new ArrayList<String>(Arrays.asList("Italy", "Japan")));
+//		FilmData f3 = new FilmData(3, "c", 180, new ArrayList<String>(Arrays.asList("Japan")));
+//		FilmDataSet movies = new FilmDataSet(new ArrayList<FilmData>(Arrays.asList(f1, f2, f3)));
+//		
+//		ArrayList<String> result = movies.getCountriesList();
+//		for(String tmp : result){
+//			System.out.println(tmp);
+//		}
+//	}
 
 	@Test
 	public void testPrintDataSet(){

@@ -8,8 +8,12 @@ import java.util.Arrays;
  * The {@code FilmData} class is responsible for managing and displaying the
  * contents of a single Film.
  */
-@SuppressWarnings("serial")
 public class FilmData implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5193012527433015803L;
+
 	/**
 	 * ID.
 	 */
@@ -291,7 +295,7 @@ public class FilmData implements Serializable {
 	ArrayList<String> prepareLanguagesCountriesGenresTokens(String token){
 		ArrayList<String> results = new ArrayList<String>();
 		if(token.equals("{}")){
-			results.add(token);
+//			results.add(token);
 		}
 		else{
 			results = filterLanguagesCountriesGenres(token);

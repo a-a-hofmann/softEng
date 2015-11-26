@@ -1,8 +1,5 @@
 package com.uzh.gwt.softeng.client;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
@@ -20,7 +17,6 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * 
  */
 public class ApplicationLogic implements EntryPoint {
-	private static final Logger log = Logger.getLogger( ApplicationLogic.class.getName() );
 	/**
 	 * The film data set.
 	 */
@@ -29,7 +25,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * Filtered data set.
 	 */
-	private FilmDataSet filteredDataSet = new FilmDataSet();
+//	private FilmDataSet filteredDataSet = new FilmDataSet();
 	
 	/**
 	 * FilmDataServiceAsync object for RPC.
@@ -91,31 +87,6 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	/**
-	 * Sends RPC to server to fetch film data and refreshes table.
-	 */
-	private void getFilmDataSetAsync(){
-		if (filmDataSvc == null) {
-		      filmDataSvc = GWT.create(FilmDataService.class);
-		    }
-
-		     // Set up the callback object.
-		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-		      public void onFailure(Throwable caught) {
-		    	  Window.alert("I failed");
-		    	  caught.printStackTrace();
-		      }
-
-		      public void onSuccess(FilmDataSet result) {
-		    	  dataSet = result;
-		    	  buildMap();
-		      }
-		    };
-
-		     // Make the call to the stock price service.
-		    filmDataSvc.getFilmData(callback);
-	}
-	
-	/**
 	 * Sends RPC to server with specific query to fetch film data and refreshes table.
 	 * @param query The query to send to the database.
 	 */
@@ -134,13 +105,13 @@ public class ApplicationLogic implements EntryPoint {
 		    	public void onSuccess(FilmDataSet result) {
 		    		dataSet = result;
 		    		buildMap();
-		    		map.setFilmDataSet(dataSet);
-		    		table.setList(dataSet);
-		    		Window.alert("asdfas");
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
+		    		table.setList(dataSet);
+		    		
+		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
+		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
-		    log.log(Level.INFO, "Sending async query");
 		    // Make the call to the film data service.
 		    filmDataSvc.getFilmData(query, callback);
 	}
@@ -213,7 +184,6 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join moviecountries mc on m.movieid=mc.movieid "
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
-		
 		getFilmDataSetAsync(query);
 		// Create the user interface
 		setUpGui();		

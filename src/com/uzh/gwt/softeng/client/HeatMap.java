@@ -22,7 +22,7 @@ import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class HeatMap extends Composite {
-	
+
 	/**
 	 * The actual heatmap.
 	 */
@@ -188,8 +188,6 @@ public class HeatMap extends Composite {
 	 */
 	private void fillDataTable(){
 		int size = filteredSet.getFilmsPerCountry().size();
-		if(size > maxSize)
-			size = maxSize;
 		
 		// Prepare the data
 		dataTable = DataTable.create();	
@@ -204,6 +202,19 @@ public class HeatMap extends Composite {
 	}
 	
 	/**
+	 * Computes size of data set to be represented.
+	 * @return number of films in set.
+	 */
+	private int computeDataSetSize(){
+		int result = 0;
+		Map<String, Integer> data = filteredSet.getFilmsPerCountry();
+		for (Map.Entry<String, Integer> cursor : data.entrySet()){
+			result += cursor.getValue();
+		}
+		return result;
+	}
+	
+	/**
 	 * Draw data
 	 */
 	private void draw() {
@@ -211,7 +222,13 @@ public class HeatMap extends Composite {
 		GeoChartOptions options = GeoChartOptions.create();
 		GeoChartColorAxis geoChartColorAxis = GeoChartColorAxis.create();
 		geoChartColorAxis.setColors("green", "yellow", "red");
-		geoChartColorAxis.setMaxValue(maxSize);
+		
+		int size = computeDataSetSize();
+		if(size > maxSize)
+			size = maxSize;
+		geoChartColorAxis.setMaxValue(size);
+		
+		//Update new color axis
 		options.setColorAxis(geoChartColorAxis);
 		options.setDatalessRegionColor("gray");
 

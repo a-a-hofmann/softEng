@@ -192,6 +192,9 @@ public class Table extends Composite {
 		asyncDataProvider.setList(filmDataSet);
 	}
 	
+	/**
+	 * Resets table view.
+	 */
 	public void reset(){
 		asyncDataProvider.reset();
 	}

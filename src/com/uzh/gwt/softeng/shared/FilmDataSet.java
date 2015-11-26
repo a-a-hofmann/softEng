@@ -12,9 +12,13 @@ import com.uzh.gwt.softeng.server.TSVImporter;
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films.
  */
-@SuppressWarnings("serial")
 public class FilmDataSet implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5765170337279868452L;
+
 	/**
 	 * List of filmData.
 	 */
@@ -201,7 +205,7 @@ public class FilmDataSet implements Serializable{
     		return countriesList;
     	}
 		ArrayList<String> results = new ArrayList<String>();
-	    	String country;
+	    String country;
 	    	for(FilmData film : films){
 	    		Iterator<String> it = film.getCountries().iterator();
 	    		while(it.hasNext()){
@@ -211,6 +215,8 @@ public class FilmDataSet implements Serializable{
 	    			}
 	    		}
 	    	}
+	    
+	    countriesList = results;
     	return results;
     }
     
@@ -225,11 +231,13 @@ public class FilmDataSet implements Serializable{
 		filmsPerCountry = new HashMap<String, Integer>();
 		for (FilmData film : films){
 			for (String country : film.getCountries()){
-				if (filmsPerCountry.containsKey(country))
+				if (filmsPerCountry.containsKey(country) && !country.isEmpty()){
 					filmsPerCountry.put(country, filmsPerCountry.get(country) + 1);
-				else
+				}
+				else{
 					filmsPerCountry.put(country, 1);
-			}
+				}
+			}	
 		}
     	return filmsPerCountry;
     }
@@ -378,15 +386,15 @@ public class FilmDataSet implements Serializable{
     return filteredSet;
     }
     
-    public static void main(String[] args){
-    	FilmDataSet dataSet;
-//    	ArrayList<FilmData> films;
-		try {
-			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-			
-			for (String country : dataSet.getCountriesList()){
-				System.out.println(country);
-			}
+//    public static void main(String[] args){
+//    	FilmDataSet dataSet;
+////    	ArrayList<FilmData> films;
+//		try {
+//			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+//			
+//			for (String country : dataSet.getCountriesList()){
+//				System.out.println(country);
+//			}
 //			dataSet.printDataSet();
 			
 //			dataSet = new FilmDataSet(dataSet.filterByDateRange(2010, 2015));
@@ -441,9 +449,9 @@ public class FilmDataSet implements Serializable{
 //	    	for(FilmData film : films)
 //	    		System.out.println(film);
 //	    	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//    }
 }
