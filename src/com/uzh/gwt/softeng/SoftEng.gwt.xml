@@ -3,10 +3,11 @@
 <module rename-to="SoftEng">
 	<!--  As always, we need to inherit the User module -->
 	<inherits name="com.google.gwt.user.User"/>
+	 <inherits name="com.googlecode.gwt.charts.Charts"/>
+	 <inherits name="org.spiffyui.spiffyui" />
 
-	<!-- We tell the GWT compiler to compile all code in and below the client package -->
+	<!-- We tell the GWT compiler which packages to translate -->
 	<source path="client" />
-	<source path="server" />
 	<source path='shared'/>
 	
 	<!--  We choose to use the built in CSS Chrome theme -->
@@ -17,6 +18,7 @@
     
     <!-- Here we define the class that contains the entry point -->
 	<entry-point class="com.uzh.gwt.softeng.client.ApplicationLogic"/>
+	
 	
 	
 </module>

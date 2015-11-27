@@ -9,7 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+
 import com.google.appengine.api.utils.SystemProperty;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
@@ -47,30 +50,32 @@ public class MySQLConnector {
 		rs = null;
 		String url = null;
 		
-//		String userName = "softEng";
-//		String pwd = "softEng";
-		
 		if (SystemProperty.environment.value() ==
 		    SystemProperty.Environment.Value.Production) {
 			// Connecting from App Engine.
 			// Load the class that provides the "jdbc:google:mysql://"
 			// prefix.
 			Class.forName("com.mysql.jdbc.GoogleDriver");
-			url = "jdbc:google:mysql://gwtsofteng:moviedb/test_movie_db?user=softEng";
+			url ="jdbc:google:mysql://gwtsoftengtest:moviedb/newmoviedb?user=root";
+			conn = DriverManager.getConnection(url);
 		} else {			
 			// Connecting from an external network.
 			//Load driver class from .jar file.
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			
 			//Google SQL url.
-			url = "jdbc:mysql://173.194.238.0:3306/test_movie_db?user=softEng";
+			//url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
+			
+			//New GSQL Trial url.
+//			url = "jdbc:mysql://173.194.254.236:3306/moviedb?user=softeng";
 				
 			//RPI url.
-//			url = "jdbc:mysql://77.56.2.160:3306/test_movie_db";
+			String userName = "softEng";
+			String pwd = "softEng";
+			url = "jdbc:mysql://77.56.2.160:3306/newmoviedb";
+			conn = DriverManager.getConnection(url, userName, pwd);
+//			conn = DriverManager.getConnection(url);
 		}
-	
-//		conn = DriverManager.getConnection(url, userName, pwd);
-		conn = DriverManager.getConnection(url);
 	}
 	
 	/**
@@ -81,6 +86,74 @@ public class MySQLConnector {
 		try { if (conn != null) conn.close(); } catch (SQLException e) { e.printStackTrace(); }
 	}
 	
+	/**
+	 * Creates query to use to insert into movies table.
+	 * @return String containing query placeholder.
+	 */
+	private static String getMoviesPlaceholder(){
+		String startOfQuery = "INSERT INTO movies (movieid, title, date, duration) VALUES ";
+		String placeholder = "(?, ?, ?, ?), ";
+		StringBuilder sb = new StringBuilder("");
+		int counter = 10000;
+		for(int i = 0; i < counter; i++)
+			sb.append(placeholder);
+		
+		String query = startOfQuery + sb.toString();
+		query = query.substring(0, query.length()- 2).concat(";");
+		
+		return query;
+	}
+	
+	/**
+	 * Creates query to use to insert into countries table.
+	 * @param filmDataSet FilmDataSet to use to get all countries in the FilmDataSet.
+	 * @return String containing query placeholder.
+	 */
+	private static String getCountriesPlaceholder(FilmDataSet filmDataSet){
+		String startOfQuery = "INSERT INTO countries (countryid, country) VALUES ";
+		String placeholder = "(?, ?), ";
+		StringBuilder sb = new StringBuilder("");
+		for(int i = 0; i < filmDataSet.getCountries().size(); i++)
+			sb.append(placeholder);
+		String query = startOfQuery + sb.toString();
+		query = query.substring(0, query.length() - 2).concat(";");
+		
+		return query;
+	}
+
+	/**
+	 * Creates query to use to insert into genres table.
+	 * @param filmDataSet FilmDataSet to use to get all genres in the FilmDataSet.
+	 * @return String containing query placeholder.
+	 */
+	private static String getGenresPlaceholder(FilmDataSet filmDataSet){
+		String startOfQuery = "INSERT INTO genres (genreid, genre) VALUES ";
+		String placeholder = "(?, ?), ";
+		StringBuilder sb = new StringBuilder("");
+		for(int i = 0; i < filmDataSet.getGenres().size(); i++)
+			sb.append(placeholder);
+		String query = startOfQuery + sb.toString();
+		query = query.substring(0, query.length() - 2).concat(";");
+		
+		return query;
+	}
+	
+	/**
+	 * Creates query to use to insert into languages table.
+	 * @param filmDataSet FilmDataSet to use to get all languages in the FilmDataSet.
+	 * @return String containing query placeholder.
+	 */
+	private static String getLanguagesPlaceholder(FilmDataSet filmDataSet){
+		String startOfQuery = "INSERT INTO languages (languageid, language) VALUES ";
+		String placeholder = "(?, ?), ";
+		StringBuilder sb = new StringBuilder("");
+		for(int i = 0; i < filmDataSet.getLanguages().size(); i++)
+			sb.append(placeholder);
+		String query = startOfQuery + sb.toString();
+		query = query.substring(0, query.length() - 2).concat(";");
+		
+		return query;
+	}
 	
 	/**
 	 * Sends data to the database.
@@ -88,149 +161,421 @@ public class MySQLConnector {
 	 * @param table The table of the database.
 	 * @throws SQLException Database access error.
 	 */
-	public static void sendToDB(ArrayList<FilmData> data, String table) throws SQLException{
+	public static void sendToDB(FilmDataSet data) throws SQLException{
 		conn = null;
 		rs = null;
 		stmt = null;
 		
 		//Build placeholder query for PreparedStatement.
 		//Send 10000 filmData objects per query.
-		String startOfQuery = "INSERT INTO " + table + " (movieid, title, duration, country) VALUES ";
-		String placeholder = ("(?, ?, ?, ?), ");
-		StringBuilder sb = new StringBuilder(placeholder);
-		int counter = 9999;
-		for(int i = 0; i < counter; i++)
-			sb.append(placeholder);
-		
-		String query = startOfQuery + sb.toString();
-		query = query.substring(0, query.length()- 2).concat(";");
+		String moviesTableQuery = getMoviesPlaceholder();
+		String countriesTableQuery = getCountriesPlaceholder(data);
+		String genresTableQuery = getGenresPlaceholder(data);
+		String languagesTableQuery = getLanguagesPlaceholder(data);
 
 		//Counter to use with preparedStmt.set*(int, Obj);
-		int placeholderCounter = 0;
+		int moviesPlaceholderCounter = 0;
+		int countriesPlaceholderCounter = 0;
+		int genresPlaceholderCounter = 0;
+		int languagesPlaceholderCounter = 0;
+		
 		try {
 			//Open connection to db.
 			openConnection();
+			conn.setAutoCommit(false);
+			
+			//Send Countries.
+			PreparedStatement countriesPreparedStatement = conn.prepareStatement(countriesTableQuery);
+			for(Map.Entry<String, String> cursor : data.getCountries().entrySet()){
+				countriesPreparedStatement.setString(++countriesPlaceholderCounter, cursor.getValue());
+				countriesPreparedStatement.setString(++countriesPlaceholderCounter, cursor.getKey());
+			}
+			countriesPreparedStatement.execute();
+			
+			//Send Languages.
+			PreparedStatement languagesPreparedStatement = conn.prepareStatement(languagesTableQuery);
+			for(Map.Entry<String, String> cursor : data.getLanguages().entrySet()){
+				languagesPreparedStatement.setString(++languagesPlaceholderCounter, cursor.getValue());
+				languagesPreparedStatement.setString(++languagesPlaceholderCounter, cursor.getKey());
+			}
+			languagesPreparedStatement.execute();
+			System.out.println("Finished sending languages data.");
+			
+			//Send Genres.
+			PreparedStatement genresPreparedStatement = conn.prepareStatement(genresTableQuery);
+			for(Map.Entry<String, String> cursor : data.getGenres().entrySet()){
+				genresPreparedStatement.setString(++genresPlaceholderCounter, cursor.getValue());
+				genresPreparedStatement.setString(++genresPlaceholderCounter, cursor.getKey());
+			}
+			genresPreparedStatement.execute();
+			System.out.println("Finished sending genres data.");
+			
+//			Send moviecountries data.
+			String moviesCountriesQuery = "INSERT INTO moviecountries (mcid, movieid, countryid) VALUES (?, ?, ?);";
+			int j = 0;
+			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getCountries().size()/2; i+=2){
+					movieCountriesPreparedStatement.setInt(1, ++j); 
+					movieCountriesPreparedStatement.setInt(2, movieID);
+					movieCountriesPreparedStatement.setString(3, film.getCountries().get(i));
+					
+					movieCountriesPreparedStatement.addBatch();
+				}
+				
+				if (j % 1000 == 0 || j == data.getFilms().size()){
+					System.out.println(j/800.0 + "% completed.");
+					movieCountriesPreparedStatement.executeBatch();
+				}
+			}
+			movieCountriesPreparedStatement.executeBatch();
+			System.out.println("Finished sending countries data.");
+			
+			//Send movielanguages data.
+			String movieLanguagesQuery = "INSERT INTO movielanguages (mlid, movieid, languageid) VALUES (?, ?, ?);";
+			j = 0;
+			PreparedStatement movieLanguagesPreparedStatement = conn.prepareStatement(movieLanguagesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
+					movieLanguagesPreparedStatement.setInt(1, ++j); 
+					movieLanguagesPreparedStatement.setInt(2, movieID);
+					movieLanguagesPreparedStatement.setString(3, film.getLanguages().get(i));
+					
+					movieLanguagesPreparedStatement.addBatch();
+				}
+				
+				if (j % 10000 == 0 || j == data.getFilms().size()){
+					System.out.println(j/800.0 + "% completed.");
+					movieLanguagesPreparedStatement.executeBatch();
+				}
+			}
+			movieLanguagesPreparedStatement.executeBatch();
+			System.out.println("Finished sending languages data.");
+			
+			//Send moviegenres data.
+			String movieGenresQuery = "INSERT INTO moviegenres (mgid, movieid, genreid) VALUES (?, ?, ?);";
+			j = 0;
+			PreparedStatement movieGenresPreparedStatement = conn.prepareStatement(movieGenresQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getGenres().size()/2; i+=2){
+					movieGenresPreparedStatement.setInt(1, ++j); 
+					movieGenresPreparedStatement.setInt(2, movieID);
+					movieGenresPreparedStatement.setString(3, film.getGenres().get(i));
+					
+					movieGenresPreparedStatement.addBatch();
+				}
+				
+				if (j % 10000 == 0 || j == data.getFilms().size()){
+					System.out.println(j/800.0 + "% completed.");
+					movieGenresPreparedStatement.executeBatch();
+				}
+			}
+			movieGenresPreparedStatement.executeBatch();
+			System.out.println("Finished sending genres data.");
+			
 			
 			//For each movie in the film data set, prepare the query.
 			//Each 10000 films send a single query.
-			stmt = conn.createStatement();
 			int i = 0;
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			for (FilmData movie: data){
+			moviesTableQuery = "INSERT INTO movies (movieid, title, date, duration) VALUE(?, ?, ?, ?);";
+			PreparedStatement preparedStmt = conn.prepareStatement(moviesTableQuery);
+			for (FilmData movie: data.getFilms()){
 				
-				preparedStmt.setInt(++placeholderCounter, (int) movie.getID());
-				preparedStmt.setString(++placeholderCounter, movie.getTitle());
-				preparedStmt.setFloat(++placeholderCounter, movie.getDuration());
-				preparedStmt.setString(++placeholderCounter, movie.getCountries().get(0));
-				
+				preparedStmt.setInt(++moviesPlaceholderCounter, movie.getID());
+				preparedStmt.setString(++moviesPlaceholderCounter, movie.getTitle());
+				preparedStmt.setFloat(++moviesPlaceholderCounter, movie.getDate());
+				preparedStmt.setFloat(++moviesPlaceholderCounter, movie.getDuration());
+							
 				if(++i % 10000 == 0){
 					System.out.println((i / 800.0) + "% completed.");
 					preparedStmt.execute();
 					preparedStmt.clearParameters();
-					placeholderCounter = 0;
+					moviesPlaceholderCounter = 0;
 				}
 			}
+			preparedStmt.executeBatch();
+			System.out.println("Finished movies");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
 	}
-		
-	/**
-	 * Reads all data from the database table.
-	 * @param table Table from which to read all data.
-	 * @return A list containing all FilmData read from db/table.
-	 */
-	public static ArrayList<FilmData> readAllDataFromDB(String table){
-		stmt = null;
-		rs = null;
-		
-		ArrayList<FilmData> result = new ArrayList<FilmData>();
-		FilmData film = null;
-		
-		try {
+	
+	
+	public static void sendToDBExtendedFileSet(FilmDataSet data) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+			
 			openConnection();
+			conn.setAutoCommit(false);
 			
-			//Create a statement object to hold the query.
-			stmt = conn.createStatement();
-			
-			//Executes and saves query result.
-			rs = stmt.executeQuery("SELECT * FROM " + table + ";");
-			
-			while (rs.next()) {
-				String id = rs.getString("movieid");
-				String title = rs.getString("title");
-				String duration = rs.getString("duration");
-				String country = rs.getString("country");
-				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
-				film = new FilmData(Long.parseLong(id), title, Float.parseFloat(duration), countries);
-				result.add(film);
+			//Send Countries.
+			String countriesQuery = "INSERT INTO countries (countryid, country) VALUE (?, ?);";
+			PreparedStatement countriesPreparedStatement = conn.prepareStatement(countriesQuery);
+			for(Map.Entry<String, String> cursor : data.getCountries().entrySet()){
+				try{
+					countriesPreparedStatement.setString(1, cursor.getValue());
+					countriesPreparedStatement.setString(2, cursor.getKey());
+					countriesPreparedStatement.addBatch();
+				}catch(MySQLIntegrityConstraintViolationException e){
+					//Happens when a key is already present in db. In this case just ignore error.
+				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+			countriesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending countries data.");
+			
+			//Send Languages.
+			String languagesQuery = "INSERT INTO languages (languageid, language) VALUE (?, ?);";
+			PreparedStatement languagesPreparedStatement = conn.prepareStatement(languagesQuery);
+			for(Map.Entry<String, String> cursor : data.getLanguages().entrySet()){
+				try{
+					languagesPreparedStatement.setString(1, cursor.getValue());
+					languagesPreparedStatement.setString(2, cursor.getKey());
+					languagesPreparedStatement.addBatch();
+				}catch(MySQLIntegrityConstraintViolationException e){
+					//Happens when a key is already present in db. In this case just ignore error.
+				}
+			}
+			languagesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending languages data.");
+			
+			//Send Genres.
+			String genresQuery = "INSERT INTO genres (genreid, genre) VALUE (?, ?);";
+			PreparedStatement genresPreparedStatement = conn.prepareStatement(genresQuery);
+			for(Map.Entry<String, String> cursor : data.getGenres().entrySet()){
+				try{
+					genresPreparedStatement.setString(1, cursor.getValue());
+					genresPreparedStatement.setString(2, cursor.getKey());
+					genresPreparedStatement.addBatch();
+				}catch(MySQLIntegrityConstraintViolationException e){
+					//Happens when a key is already present in db. In this case just ignore error.
+				}
+			}
+			genresPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending genres data.");
+			
+//			Send moviecountries data.
+			String moviesCountriesQuery = "INSERT INTO moviecountries (movieid, countryid) VALUES (?, ?);";
+			int j = 0;
+			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getCountries().size()/2; i+=2){
+					movieCountriesPreparedStatement.setInt(1, movieID);
+					movieCountriesPreparedStatement.setString(2, film.getCountries().get(i));
+					
+					movieCountriesPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieCountriesPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieCountriesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending moviecountries data.");
+			
+			//Send movielanguages data.
+			String movieLanguagesQuery = "INSERT INTO movielanguages (movieid, languageid) VALUES (?, ?);";
+			j = 0;
+			PreparedStatement movieLanguagesPreparedStatement = conn.prepareStatement(movieLanguagesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
+					movieLanguagesPreparedStatement.setInt(1, movieID);
+					movieLanguagesPreparedStatement.setString(2, film.getLanguages().get(i));
+					
+					movieLanguagesPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieLanguagesPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieLanguagesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending movielanguages data.");
+			
+			//Send moviegenres data.
+			String movieGenresQuery = "INSERT INTO moviegenres (movieid, genreid) VALUES (?, ?);";
+			j = 0;
+			PreparedStatement movieGenresPreparedStatement = conn.prepareStatement(movieGenresQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getGenres().size()/2; i+=2){
+					movieGenresPreparedStatement.setInt(1, movieID);
+					movieGenresPreparedStatement.setString(2, film.getGenres().get(i));
+					
+					movieGenresPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieGenresPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieGenresPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending moviegenres data.");
+		
+			//Movies
+			j = 0;
+			String moviesTableQuery = "INSERT INTO movies (movieid, title, date, duration) VALUE(?, ?, ?, ?);";
+			PreparedStatement preparedStmt = conn.prepareStatement(moviesTableQuery);
+			for (FilmData movie: data.getFilms()){
+				preparedStmt.setInt(1, movie.getID());
+				preparedStmt.setString(2, movie.getTitle());
+				preparedStmt.setInt(3, movie.getDate());
+				preparedStmt.setFloat(4, movie.getDuration());
+				preparedStmt.addBatch();
+				if(j++ % 5000 == 0){
+					System.out.println(j/1600.0 + "% completed");
+					preparedStmt.executeBatch();
+					conn.commit();
+				}
+			}
+			preparedStmt.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending movies data.");
+		
 			closeConnection();
-			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-		}
-		return result;
-	} 
+		
+	}
 	
 	/**
 	 * Reads from the database.
 	 * @param query Query to send to database.
 	 * @return Query result.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static ArrayList<FilmData> readFromDB(String query){
+	public static ArrayList<FilmData> readFromDB(String query) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		stmt = null;
 		rs = null;
 		
 		ArrayList<FilmData> result = new ArrayList<FilmData>();
 		
-		try {
-			openConnection();
+		openConnection();
+		
+		//Create a statement object to hold the query.
+		stmt = conn.createStatement();
+		
+		//Executes and saves query result.
+		rs = stmt.executeQuery(query);
+		
+		while (rs.next()) {
+			int id = rs.getInt("movieid");
+			String title = rs.getString("title");
+			int date = rs.getInt("date");
+			Float duration = rs.getFloat("duration");
 			
-			//Create a statement object to hold the query.
-			stmt = conn.createStatement();
+			String genre = rs.getString("genres");
+			String language = rs.getString("languages");
+			String country = rs.getString("countries");
 			
-			//Executes and saves query result.
-			rs = stmt.executeQuery(query);
-			
-			while (rs.next()) {
-				String id = rs.getString("movieid");
-				String title = rs.getString("title");
-				String duration = rs.getString("duration");
-				String country = rs.getString("country");
-				ArrayList<String> countries = new ArrayList<String>(Arrays.asList(country.replace("{", "").replace("}", "").split(",")));
-				FilmData film = new FilmData(Long.parseLong(id), title, Float.parseFloat(duration), countries);
-				result.add(film);
+			ArrayList<String> genres = null;
+			if (genre != null){
+				genres = new ArrayList<String>(Arrays.asList(genre.split(",")));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeConnection();
-			try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+			else{
+				genres = new ArrayList<String>();
+				genres.add("");
+			}
+			
+			ArrayList<String> languages = null;
+			if (language != null){
+				languages = new ArrayList<String>(Arrays.asList(language.split(",")));
+			}
+			else{
+				languages = new ArrayList<String>();
+				languages.add("");
+			}
+			
+			ArrayList<String> countries = null;
+			if (country != null){
+				countries = new ArrayList<String>(Arrays.asList(country.split(",")));
+			}
+			else{
+				countries = new ArrayList<String>();
+				countries.add("");
+			}
+
+			FilmData film = new FilmData(id, title, date, duration, languages, countries, genres);
+			result.add(film);
 		}
+		closeConnection();
+		try { if (stmt != null) stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
 		return result;
 	} 
+	
+	public static Integer getFilmDataSetSize() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+		Integer result = -1;
+		String query = "SELECT COUNT(*) FROM movies;";
+		
+		openConnection();
+		
+		stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		
+		if(rs.next())
+			result = rs.getInt(1);
+		
+		
+		return result;
+	}
 	
 	/**
 	 * Open tsv file and send all data to database.
 	 * @param table Table to send data to.
 	 */
-	public static void sendAllDataFromFileToDB(String table){
+	public static void sendAllDataFromFileToDB(){
 		FilmDataSet films;
 		try {
-			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-			sendToDB(films.getFilms(), table);
+			//Original data set.
+//			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
+			
+			//Extra data set.
+			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
+			System.out.println("Sending to db");
+			sendToDB(films);
 		} catch (IOException | SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 	}
 	
 	public static void main(String[] args){
-		sendAllDataFromFileToDB("movies");
+		
+//		sendAllDataFromFileToDB();
+//		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+//				+ "group_concat(DISTINCT l.language) languages, "
+//				+ "group_concat(DISTINCT c.country) countries "
+//				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+//				+ "left join genres g on g.genreid=mg.genreid "
+//				+ "left join movielanguages ml on m.movieid=ml.movieid "
+//				+ "left join languages l on l.languageid=ml.languageid "
+//				+ "left join moviecountries mc on m.movieid=mc.movieid "
+//				+ "left join countries c on c.countryid=mc.countryid "
+//				+ "group by m.movieid;";
+//		System.out.println(query);
+//		ArrayList<FilmData> result = readFromDB(query);
+//		for(FilmData film : result){
+//			System.out.println(film);
+//		}
 	}
 }

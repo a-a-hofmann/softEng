@@ -8,12 +8,17 @@ import java.util.Arrays;
  * The {@code FilmData} class is responsible for managing and displaying the
  * contents of a single Film.
  */
-@SuppressWarnings("serial")
 public class FilmData implements Serializable {
+	
+	/**
+	 * Serial UID.
+	 */
+	private static final long serialVersionUID = 5193012527433015803L;
+
 	/**
 	 * ID.
 	 */
-	private long ID;
+	private int ID;
 
 	/**
 	 * Film title.
@@ -55,7 +60,6 @@ public class FilmData implements Serializable {
     	duration = 0;
     	languages = new ArrayList<String>();
     	countries = new ArrayList<String>();
-    	countries.add("{}");
     	genres = new ArrayList<String>();
     }
     
@@ -70,10 +74,10 @@ public class FilmData implements Serializable {
 	 * @param countries The countries of a film.
 	 * @param genres The genres of a film.
 	 */
-    public FilmData(long ID, String title, int date, 
+    public FilmData(int ID, String title, int date, 
     		float duration, ArrayList<String> languages, ArrayList<String> countries, ArrayList<String> genres){
     	this.ID = ID;
-    	setTitle(title);
+    	this.title = title;
     	this.date = date;
     	this.duration = duration;
     	this.languages = languages;
@@ -89,20 +93,36 @@ public class FilmData implements Serializable {
 	 * @param duration The duration of a film.
 	 * @param countries The countries of a film.
 	 */
-    public FilmData(long ID, String title, 
+    public FilmData(int ID, String title, 
     		float duration, ArrayList<String> countries){
     	this();
     	this.ID = ID;
-    	setTitle(title);
+    	this.title = title;
     	this.duration = duration;
     	this.countries = countries;
     }
+    
+    /**
+   	 * Creates a new FilmData instance.
+   	 * To use only for testing.
+   	 * @param ID The ID of a film.
+   	 * @param title The title of a film.
+   	 * @param date The release date of a film.
+   	 */
+       public FilmData(int ID, String title, 
+       		int date){
+       	this();
+       	this.ID = ID;
+       	this.title = title;
+       	this.date = date;
+       }
+    
 
     /**
 	 * Gets the ID of a film.
 	 * @return Film ID.
 	 */
-    public long getID(){
+    public int getID(){
     	return this.ID;
     }
 
@@ -174,7 +194,7 @@ public class FilmData implements Serializable {
 
     	switch(instance){
 	    	case ID:
-	    		setID(Long.parseLong(value));
+	    		setID(Integer.parseInt(value));
 	    		break;
 	    	case title:
 				setTitle(value);
@@ -204,7 +224,7 @@ public class FilmData implements Serializable {
 	 * @param id The positive new id of a film.
 	 * @throws IllegalArgumentException if id is negative.
 	 */
-    void setID(long id) {
+    void setID(int id) {
     	if(id >= 0){
     		this.ID = id;
     	}
@@ -276,7 +296,7 @@ public class FilmData implements Serializable {
 	ArrayList<String> prepareLanguagesCountriesGenresTokens(String token){
 		ArrayList<String> results = new ArrayList<String>();
 		if(token.equals("{}")){
-			results.add(token);
+//			results.add(token);
 		}
 		else{
 			results = filterLanguagesCountriesGenres(token);
@@ -301,17 +321,15 @@ public class FilmData implements Serializable {
         for (String str : genres) {
             g.add(new ArrayList<String>(Arrays.asList(str.split(": "))));
         }
-        
-
-
+       
         genres.clear();
-        //Keep only genre.
-        int i = 0;
+        //Keep id and genre.
+//        int i = 0;
         for (ArrayList<String> str : g) {
             for (String tmp : str) {
-                if(i % 2 != 0)
+//                if(i % 2 != 0)
                     genres.add(tmp.replace("\"", ""));
-                i++;
+//                i++;
             }
         }
         

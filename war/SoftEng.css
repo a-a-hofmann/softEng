@@ -1,9 +1,9 @@
-.gwt-TabLayoutPanel{
-   width: 90%;
-   margin: 15px;
+wrapper{
+	width: 95%;
+	margin: 0 2.5%;
 }
 
-H1 {
+h1 {
 	font-family: Verdana, sans-serif;
 	color: #ffffff;
 	font-weight: bold;
@@ -12,17 +12,35 @@ H1 {
 	padding: 5px 0;
 	background-color: #323B38;
 	width: 100%;
+	clear: both;
+}
+
+.pager {
+	position: static !important;
+	margin: auto !important;
+}
+
+#mainHeader { 
+    height: 0px !important;
+    display: none; 
+} 
+
+.SliderPanel{
+	padding: 0 10em !important;
+	text-align: center;
 }
 
 .htmlPanel{
 	background-color : lightgray;
 }
 
-.gwt-Image{
-   width: 50%;
-   height: 25%;
-   margin: 25px;
-   border: 1px black solid;
+#filterPanel{
+}
+
+#ad{
+	margin-left: auto;
+	margin-rigth: auto;
+	clear: both;
 }
 
 #search{
@@ -36,6 +54,28 @@ H1 {
    position: absolute;
    top: 35%;
    right: 0%;
+}
+
+#header {
+	clear: both;
+	bottom: 0.5em;	
+}
+
+#heatmap {
+	width: 80%;
+	float: left;
+	position: relative;
+}
+
+#filterPanel {
+	top: 20em;
+	width: 20%;
+	float: right;
+	position: relative;
+}
+
+#table {
+	clear: both;
 }
 
 .normal{

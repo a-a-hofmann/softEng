@@ -6,6 +6,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 @RemoteServiceRelativePath("filmData")
 public interface FilmDataService extends RemoteService {
-
-      FilmDataSet getFilmData();
+	
+      FilmDataSet getFilmData(String query);
+      Integer getFilmDataSetSize();
 }
