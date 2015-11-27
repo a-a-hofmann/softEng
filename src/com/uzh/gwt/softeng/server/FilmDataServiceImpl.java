@@ -28,6 +28,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			// TODO Auto-generated catch block
 			log.log(Level.SEVERE, e.toString());
 		}
+		log.log(Level.INFO, "Finished reading from db");
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		return newDataSet;
 	}

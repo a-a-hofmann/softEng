@@ -338,18 +338,6 @@ public class FilterPanel extends Composite {
 	public MultiWordSuggestOracle getCountrySuggestion(){
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 		
-//		String a = "Afghanistan";
-//		String b = "Albania";
-//		String c= "Algeria";
-//		String d = "Argentina";
-//		String e = "Armenia";
-//		
-//		oracle.add(a);
-//		oracle.add(b);
-//		oracle.add(c);
-//		oracle.add(d);
-//		oracle.add(e);
-		
 		return oracle;
 	}
 	

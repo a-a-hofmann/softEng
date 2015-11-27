@@ -56,8 +56,6 @@ public class MySQLConnector {
 			// prefix.
 			Class.forName("com.mysql.jdbc.GoogleDriver");
 			url ="jdbc:google:mysql://gwtsoftengtest:moviedb/moviedb?user=root";
-//			url = "jdbc:google:mysql://gwtsofteng:moviedb/moviedb?user=softEng";
-//			url = "jdbc:google:mysql://gwt-softeng:moviedb/moviedb?user=softeng";
 			conn = DriverManager.getConnection(url);
 		} else {			
 			// Connecting from an external network.
@@ -66,12 +64,14 @@ public class MySQLConnector {
 			
 			//Google SQL url.
 			//url = "jdbc:mysql://173.194.238.0:3306/moviedb?user=softEng";
+			
+			//New GSQL Trial url.
 //			url = "jdbc:mysql://173.194.254.236:3306/moviedb?user=softeng";
 				
 			//RPI url.
 			String userName = "softEng";
 			String pwd = "softEng";
-			url = "jdbc:mysql://77.56.2.160:3306/moviedb";
+			url = "jdbc:mysql://77.56.2.160:3306/newmoviedb";
 			conn = DriverManager.getConnection(url, userName, pwd);
 //			conn = DriverManager.getConnection(url);
 		}
@@ -160,7 +160,7 @@ public class MySQLConnector {
 	 * @param table The table of the database.
 	 * @throws SQLException Database access error.
 	 */
-	public static void sendToDB(FilmDataSet data, String table) throws SQLException{
+	public static void sendToDB(FilmDataSet data) throws SQLException{
 		conn = null;
 		rs = null;
 		stmt = null;
@@ -375,19 +375,20 @@ public class MySQLConnector {
 	 * Open tsv file and send all data to database.
 	 * @param table Table to send data to.
 	 */
-	public static void sendAllDataFromFileToDB(String table){
+	public static void sendAllDataFromFileToDB(){
 		FilmDataSet films;
 		try {
-			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-			sendToDB(films, table);
+			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
+			System.out.println("Sending to db");
+			sendToDB(films);
 		} catch (IOException | SQLException e1) {
 			e1.printStackTrace();
 		}
 
 	}
 	
-//	public static void main(String[] args){
-////		sendAllDataFromFileToDB("movies");
+	public static void main(String[] args){
+		sendAllDataFromFileToDB();
 //		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 //				+ "group_concat(DISTINCT l.language) languages, "
 //				+ "group_concat(DISTINCT c.country) countries "
@@ -403,5 +404,5 @@ public class MySQLConnector {
 //		for(FilmData film : result){
 //			System.out.println(film);
 //		}
-//	}
+	}
 }

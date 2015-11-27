@@ -192,7 +192,7 @@ public class TSVImporter {
     	return new FilmDataSet(films);
     }
     
-//    public static void main(String[] args) throws FileNotFoundException, IOException{
+    public static void main(String[] args) throws FileNotFoundException, IOException{
 //    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
     	
 //    	FileWriter fileWriter = new FileWriter("war/WEB-INF/Resources/tmp.txt");
@@ -215,5 +215,5 @@ public class TSVImporter {
 //    		else
 //    			System.out.println(s1);
 //    	}
-//    }
+    }
 }
