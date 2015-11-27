@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -194,6 +195,15 @@ public class TSVImporter {
     
     public static void main(String[] args) throws FileNotFoundException, IOException{
 //    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
+    	
+    	FilmDataSet newData = importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
+//    	newData.printDataSet();
+    	try {
+			MySQLConnector.sendToDBExtendedFileSet(newData);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
 //    	FileWriter fileWriter = new FileWriter("war/WEB-INF/Resources/tmp.txt");
 //
