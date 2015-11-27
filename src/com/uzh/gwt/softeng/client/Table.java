@@ -1,9 +1,10 @@
 package com.uzh.gwt.softeng.client;
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
@@ -26,7 +27,7 @@ public class Table extends Composite {
 	/**
 	 * Table.
 	 */
-	private CellTable<FilmData> table = new CellTable<FilmData> ();
+	private DataGrid<FilmData> table = new DataGrid<FilmData> (15);
 	
 	/**
 	 * Table and pager container.
@@ -52,15 +53,17 @@ public class Table extends Composite {
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
 		table.setWidth("100%");
-		table.setRowCount(80000, false);
+		table.setRowCount(81741, true);
 		
 		asyncDataProvider = new FilmDataAsyncProvider(table);
 		
 		lp = new DockLayoutPanel(Unit.PCT);
-		lp.setHeight("700px");
-	
-		pager = new SimplePager(TextLocation.CENTER, true, true);
+		lp.setHeight("800px");
+		
+		SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
+		pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
 		pager.setDisplay(table);
+		pager.addStyleName("pager");
 		lp.addSouth(pager, 25);
 		lp.add(table);
 		initTable();
@@ -172,20 +175,11 @@ public class Table extends Composite {
 	}
 	
 	/**
-	 * Shows filtered results.
-	 * @param filmDataSet Filtered FilmDataSet.
-	 * @param isSearch If it is a search or reset (not working).
-	 */
-	public void filter(FilmDataSet filmDataSet, boolean isSearch){
-		asyncDataProvider.filter(filmDataSet, isSearch);
-	}
-	
-	/**
 	 * Sets a list in the data provider to be used as cache.
 	 * @param filmDataSet FilmDataSet containing list to be set.
 	 */
-	public void setList(FilmDataSet filmDataSet){
-		asyncDataProvider.setList(filmDataSet);
+	public void setList(FilmDataSet filmDataSet, boolean isSearch){
+		asyncDataProvider.setList(filmDataSet, isSearch);
 	}
 	
 	/**
@@ -193,5 +187,12 @@ public class Table extends Composite {
 	 */
 	public void reset(){
 		asyncDataProvider.reset();
+	}
+	
+	/**
+	 * Updates table row count.
+	 */
+	public void updateRowCount(int size){
+		asyncDataProvider.updateRowCount(size, true);
 	}
 }

@@ -327,7 +327,7 @@ public class FilterPanel extends Composite {
 			    	}
 		
 			    	public void onSuccess(FilmDataSet result) {
-			            table.setList(result);	            
+			            table.setList(result, true);	            
 			    	}
 			    };
 		    	filmDataSvc.getFilmData(filterString.toString(), callback);

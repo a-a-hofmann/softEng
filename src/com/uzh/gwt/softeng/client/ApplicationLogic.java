@@ -17,15 +17,11 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * 
  */
 public class ApplicationLogic implements EntryPoint {
+	
 	/**
 	 * The film data set.
 	 */
 	private FilmDataSet dataSet = new FilmDataSet();
-	
-	/**
-	 * Filtered data set.
-	 */
-//	private FilmDataSet filteredDataSet = new FilmDataSet();
 	
 	/**
 	 * FilmDataServiceAsync object for RPC.
@@ -42,8 +38,8 @@ public class ApplicationLogic implements EntryPoint {
 	 */
 	private HeatMap map;
 	
-	/*
-	 * the FilterPanel
+	/**
+	 * The Filter panel.
 	 */
 	private FilterPanel filterPanel;
 	
@@ -106,7 +102,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		dataSet = result;
 		    		buildMap();
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
-		    		table.setList(dataSet);
+		    		table.setList(dataSet, false);
 		    		
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
 		    		map.setFilmDataSet(dataSet);
@@ -117,12 +113,36 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	/**
+	 * Sends RPC to server to retrieve film data set size.
+	 */
+	private void getFilmDataSetSizeAsync(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		    // Set up the callback object.
+		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert("I failed");
+		    		caught.printStackTrace();
+		    	}
+
+		    	public void onSuccess(Integer result) {
+		    		table.updateRowCount(result);
+		    	}
+		    };
+		    
+		    // Make the call to the film data service.
+		    filmDataSvc.getFilmDataSetSize(callback);
+	}
+	
+	/**
 	 * Sets up the GUI components used in the application
 	 * 
 	 * 1. A heatmap.
-	 * 1. A Table to contain the dataSet.
-	 * 2. A search button that is from the original HTML page.
-	 * 3. An image for the logo.
+	 * 2. A Table to contain the dataSet.
+	 * 3. A filter panel containing various filtering options.
+	 * 4. An image for the ad.
 	 * 
 	 */
 	private void setUpGui() {
@@ -162,6 +182,9 @@ public class ApplicationLogic implements EntryPoint {
 			contentSlot.add(table);	
 	}
 	
+	/**
+	 * Creates filter panel.
+	 */
 	private void buildFilters() {
 		filterPanel = new FilterPanel(table);
 		RootPanel filterSlot = RootPanel.get("filterPanel");
@@ -173,7 +196,8 @@ public class ApplicationLogic implements EntryPoint {
 	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
 	 */
 	public void onModuleLoad() {
-		// Load the rest.
+		
+		// Get film data set
 		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 				+ "group_concat(DISTINCT l.language) languages, "
 				+ "group_concat(DISTINCT c.country) countries "
@@ -185,6 +209,10 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
+		
+		// Get film data set size
+		getFilmDataSetSizeAsync();
+		
 		// Create the user interface
 		setUpGui();		
 		

@@ -1,12 +1,10 @@
 package com.uzh.gwt.softeng.shared;
 
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import com.uzh.gwt.softeng.server.TSVImporter;
 
 
 /**
@@ -15,7 +13,7 @@ import com.uzh.gwt.softeng.server.TSVImporter;
 public class FilmDataSet implements Serializable{
 	
 	/**
-	 * 
+	 * Serial UID.
 	 */
 	private static final long serialVersionUID = 5765170337279868452L;
 
@@ -58,7 +56,6 @@ public class FilmDataSet implements Serializable{
      * ArrayList countries for client
      */
     private ArrayList<String> countriesList;
-    
     
     /**
 	 * Creates a new FilmDataSet instance.
@@ -341,10 +338,19 @@ public class FilmDataSet implements Serializable{
     	return filteredSet;
     }
     
-    
+    /**
+     * /**
+     * Returns an ArrayList containing the filmData filtered over a given date range.
+     * @param low Lower limit.
+     * @param high Upper limit.
+     * @return ArrayList containing filtered film data set.
+	**/
     public ArrayList<FilmData> filterByDateRange(int low, int high){
     	if(low < 0){
     		throw new IllegalArgumentException("Low < 0");
+    	}
+    	else if(low > high){
+    		throw new IllegalArgumentException("Low > High");
     	}
     	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
     	

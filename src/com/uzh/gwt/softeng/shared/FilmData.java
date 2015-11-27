@@ -9,8 +9,9 @@ import java.util.Arrays;
  * contents of a single Film.
  */
 public class FilmData implements Serializable {
+	
 	/**
-	 * 
+	 * Serial UID.
 	 */
 	private static final long serialVersionUID = 5193012527433015803L;
 

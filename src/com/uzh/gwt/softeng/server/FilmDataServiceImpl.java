@@ -10,8 +10,16 @@ import com.uzh.gwt.softeng.client.FilmDataService;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
-@SuppressWarnings("serial")
+
 public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDataService{
+	/**
+	 * Serial UID.
+	 */
+	private static final long serialVersionUID = 4162121558926044280L;
+	
+	/**
+	 * Logger.
+	 */
 	private static final Logger log = Logger.getLogger( FilmDataServiceImpl.class.getName() );
 	
 	/**
@@ -19,6 +27,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 * Send query and returns the resulting FilmDataSet.
 	 * @return Query result.
 	 */
+	@Override
 	public FilmDataSet getFilmData(String query){
 		log.log(Level.INFO, "about to read from db");
 		ArrayList<FilmData> result = null;
@@ -31,5 +40,18 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		log.log(Level.INFO, "Finished reading from db");
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		return newDataSet;
+	}
+
+	@Override
+	public Integer getFilmDataSetSize() {
+		log.log(Level.INFO, "Fetching data set size");
+		Integer result = -1;
+		try {
+			result = MySQLConnector.getFilmDataSetSize();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
+			log.log(Level.SEVERE, e.toString());
+		}
+		
+		return result;
 	}
 }

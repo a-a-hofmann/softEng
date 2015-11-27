@@ -15,6 +15,10 @@ h1 {
 	clear: both;
 }
 
+.pager {
+	position: static !important;
+	margin: auto !important;
+}
 
 #mainHeader { 
     height: 0px !important;
@@ -28,13 +32,6 @@ h1 {
 
 .htmlPanel{
 	background-color : lightgray;
-}
-
-.gwt-Image{
-   width: 50%;
-   height: 25%;
-   margin: 25px;
-   border: 1px black solid;
 }
 
 #filterPanel{

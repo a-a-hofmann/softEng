@@ -8,4 +8,5 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 public interface FilmDataService extends RemoteService {
 	
       FilmDataSet getFilmData(String query);
+      Integer getFilmDataSetSize();
 }

@@ -93,7 +93,7 @@ public class HeatMap extends Composite {
 	}
 
 	/**
-	 * Set heatmap parameters.
+	 * Sets heatmap parameters.
 	 */
 	private void initialize() {
 		ChartLoader chartLoader = new ChartLoader(ChartPackage.GEOCHART);
@@ -119,7 +119,7 @@ public class HeatMap extends Composite {
 	}
 
 	/**
-	 * Initialize panel containing slider and labels.
+	 * Initializes panel containing slider and labels.
 	 */
 	private void initializeSliderPanel() {
 		sliderPanel = new DockLayoutPanel(Unit.PCT);
@@ -174,7 +174,7 @@ public class HeatMap extends Composite {
 	}
 	
 	/**
-	 * Set new FilmDataSet
+	 * Sets new FilmDataSet.
 	 * @param filmSet New FilmDataSet.
 	 */
 	public void setFilmDataSet(FilmDataSet filmSet){
@@ -184,7 +184,7 @@ public class HeatMap extends Composite {
 	}
 	
 	/**
-	 * Fill data table.
+	 * Fills data table.
 	 */
 	private void fillDataTable(){
 		int size = filteredSet.getFilmsPerCountry().size();
@@ -215,7 +215,7 @@ public class HeatMap extends Composite {
 	}
 	
 	/**
-	 * Draw data
+	 * Draw data.
 	 */
 	private void draw() {
 		// Set options
@@ -224,8 +224,8 @@ public class HeatMap extends Composite {
 		geoChartColorAxis.setColors("green", "yellow", "red");
 		
 		int size = computeDataSetSize();
-		if(size > maxSize)
-			size = maxSize;
+//		if(size > maxSize)
+//			size = maxSize;
 		geoChartColorAxis.setMaxValue(size);
 		
 		//Update new color axis

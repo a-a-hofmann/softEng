@@ -495,6 +495,22 @@ public class MySQLConnector {
 		return result;
 	} 
 	
+	public static Integer getFilmDataSetSize() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+		Integer result = -1;
+		String query = "SELECT COUNT(*) FROM movies;";
+		
+		openConnection();
+		
+		stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		
+		if(rs.next())
+			result = rs.getInt(1);
+		
+		
+		return result;
+	}
+	
 	/**
 	 * Open tsv file and send all data to database.
 	 * @param table Table to send data to.
@@ -516,7 +532,8 @@ public class MySQLConnector {
 	}
 	
 	public static void main(String[] args){
-		sendAllDataFromFileToDB();
+		
+//		sendAllDataFromFileToDB();
 //		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 //				+ "group_concat(DISTINCT l.language) languages, "
 //				+ "group_concat(DISTINCT c.country) countries "
