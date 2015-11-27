@@ -182,6 +182,7 @@ public class MySQLConnector {
 		try {
 			//Open connection to db.
 			openConnection();
+			conn.setAutoCommit(false);
 			
 			//Send Countries.
 			PreparedStatement countriesPreparedStatement = conn.prepareStatement(countriesTableQuery);
@@ -311,62 +312,7 @@ public class MySQLConnector {
 	public static void sendToDBExtendedFileSet(FilmDataSet data) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 			
 			openConnection();
-			
-//			Send moviecountries data.
-			String moviesCountriesQuery = "INSERT INTO moviecountries (mcid, movieid, countryid) VALUES (?, ?, ?);";
-			int j = 74001;
-			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);
-			for(FilmData film : data.getFilms()){
-				int movieID = film.getID();
-				
-				for(int i = 0; i < film.getCountries().size()/2; i+=2){
-					movieCountriesPreparedStatement.setInt(1, ++j); 
-					movieCountriesPreparedStatement.setInt(2, movieID);
-					movieCountriesPreparedStatement.setString(3, film.getCountries().get(i));
-					
-					movieCountriesPreparedStatement.addBatch();
-				}
-			}
-			movieCountriesPreparedStatement.executeBatch();
-			System.out.println("Finished sending countries data.");
-			
-			//Send movielanguages data.
-			String movieLanguagesQuery = "INSERT INTO movielanguages (mlid, movieid, languageid) VALUES (?, ?, ?);";
-			j = 60001;
-			PreparedStatement movieLanguagesPreparedStatement = conn.prepareStatement(movieLanguagesQuery);
-			for(FilmData film : data.getFilms()){
-				int movieID = film.getID();
-				
-				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
-					movieLanguagesPreparedStatement.setInt(1, ++j); 
-					movieLanguagesPreparedStatement.setInt(2, movieID);
-					movieLanguagesPreparedStatement.setString(3, film.getLanguages().get(i));
-					
-					movieLanguagesPreparedStatement.addBatch();
-				}
-			}
-			movieLanguagesPreparedStatement.executeBatch();
-			System.out.println("Finished sending languages data.");
-			
-			//Send moviegenres data.
-			String movieGenresQuery = "INSERT INTO moviegenres (mgid, movieid, genreid) VALUES (?, ?, ?);";
-			j = 140001;
-			PreparedStatement movieGenresPreparedStatement = conn.prepareStatement(movieGenresQuery);
-			for(FilmData film : data.getFilms()){
-				int movieID = film.getID();
-				
-				for(int i = 0; i < film.getGenres().size()/2; i+=2){
-					movieGenresPreparedStatement.setInt(1, ++j); 
-					movieGenresPreparedStatement.setInt(2, movieID);
-					movieGenresPreparedStatement.setString(3, film.getGenres().get(i));
-					
-					movieGenresPreparedStatement.addBatch();
-				}
-			}
-			movieGenresPreparedStatement.executeBatch();
-			System.out.println("Finished sending genres data.");
-			
-			
+			conn.setAutoCommit(false);
 			
 			//Send Countries.
 			String countriesQuery = "INSERT INTO countries (countryid, country) VALUE (?, ?);";
@@ -375,11 +321,13 @@ public class MySQLConnector {
 				try{
 					countriesPreparedStatement.setString(1, cursor.getValue());
 					countriesPreparedStatement.setString(2, cursor.getKey());
-					countriesPreparedStatement.execute();
+					countriesPreparedStatement.addBatch();
 				}catch(MySQLIntegrityConstraintViolationException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
+			countriesPreparedStatement.executeBatch();
+			conn.commit();
 			System.out.println("Finished sending countries data.");
 			
 			//Send Languages.
@@ -389,11 +337,13 @@ public class MySQLConnector {
 				try{
 					languagesPreparedStatement.setString(1, cursor.getValue());
 					languagesPreparedStatement.setString(2, cursor.getKey());
-					languagesPreparedStatement.execute();
+					languagesPreparedStatement.addBatch();
 				}catch(MySQLIntegrityConstraintViolationException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
+			languagesPreparedStatement.executeBatch();
+			conn.commit();
 			System.out.println("Finished sending languages data.");
 			
 			//Send Genres.
@@ -403,13 +353,86 @@ public class MySQLConnector {
 				try{
 					genresPreparedStatement.setString(1, cursor.getValue());
 					genresPreparedStatement.setString(2, cursor.getKey());
-					genresPreparedStatement.execute();
+					genresPreparedStatement.addBatch();
 				}catch(MySQLIntegrityConstraintViolationException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
+			genresPreparedStatement.executeBatch();
+			conn.commit();
 			System.out.println("Finished sending genres data.");
 			
+//			Send moviecountries data.
+			String moviesCountriesQuery = "INSERT INTO moviecountries (movieid, countryid) VALUES (?, ?);";
+			int j = 0;
+			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getCountries().size()/2; i+=2){
+					movieCountriesPreparedStatement.setInt(1, movieID);
+					movieCountriesPreparedStatement.setString(2, film.getCountries().get(i));
+					
+					movieCountriesPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieCountriesPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieCountriesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending moviecountries data.");
+			
+			//Send movielanguages data.
+			String movieLanguagesQuery = "INSERT INTO movielanguages (movieid, languageid) VALUES (?, ?);";
+			j = 0;
+			PreparedStatement movieLanguagesPreparedStatement = conn.prepareStatement(movieLanguagesQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
+					movieLanguagesPreparedStatement.setInt(1, movieID);
+					movieLanguagesPreparedStatement.setString(2, film.getLanguages().get(i));
+					
+					movieLanguagesPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieLanguagesPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieLanguagesPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending movielanguages data.");
+			
+			//Send moviegenres data.
+			String movieGenresQuery = "INSERT INTO moviegenres (movieid, genreid) VALUES (?, ?);";
+			j = 0;
+			PreparedStatement movieGenresPreparedStatement = conn.prepareStatement(movieGenresQuery);
+			for(FilmData film : data.getFilms()){
+				int movieID = film.getID();
+				
+				for(int i = 0; i < film.getGenres().size()/2; i+=2){
+					movieGenresPreparedStatement.setInt(1, movieID);
+					movieGenresPreparedStatement.setString(2, film.getGenres().get(i));
+					
+					movieGenresPreparedStatement.addBatch();
+				}
+				if(++j % 500 == 0){
+					System.out.println(j/800.0 + "% completed");
+					movieGenresPreparedStatement.executeBatch();
+					conn.commit();
+				}
+			}
+			movieGenresPreparedStatement.executeBatch();
+			conn.commit();
+			System.out.println("Finished sending moviegenres data.");
+		
+			//Movies
+			j = 0;
 			String moviesTableQuery = "INSERT INTO movies (movieid, title, date, duration) VALUE(?, ?, ?, ?);";
 			PreparedStatement preparedStmt = conn.prepareStatement(moviesTableQuery);
 			for (FilmData movie: data.getFilms()){
@@ -417,11 +440,16 @@ public class MySQLConnector {
 				preparedStmt.setString(2, movie.getTitle());
 				preparedStmt.setInt(3, movie.getDate());
 				preparedStmt.setFloat(4, movie.getDuration());
-				
 				preparedStmt.addBatch();
+				if(j++ % 5000 == 0){
+					System.out.println(j/1600.0 + "% completed");
+					preparedStmt.executeBatch();
+					conn.commit();
+				}
 			}
 			preparedStmt.executeBatch();
-			System.out.println("Finished movies");
+			conn.commit();
+			System.out.println("Finished sending movies data.");
 		
 			closeConnection();
 		
