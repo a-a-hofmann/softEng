@@ -61,7 +61,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * The filename of our logo image
 	 */
-	private static final String LOGO_IMAGE_NAME = "ads.png";
+	private static final String LOGO_IMAGE_NAME = "banana_2.gif";
 	
 	/**
 	 * A popup panel that will be displayed if the search button is selected. 
@@ -83,7 +83,7 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
 			logoSlot.add(logo);
-		logo.setWidth("60em");
+		logo.setWidth("30em");
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public class ApplicationLogic implements EntryPoint {
 		//Build FilterPanel
 		buildFilters();
 		// Insert a logo into a defined slot in the HTML page
-//		insertLogo();
+		insertLogo();
 	}
 	
 	/**
