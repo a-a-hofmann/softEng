@@ -262,10 +262,10 @@ public class HeatMap extends Composite {
 		sliderPanel.addWest(minValueLabel, 15);
 		sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
+		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
 		sliderPanel.setHeight("60px");
 		sliderPanel.setWidth("900px");
-		sliderPanel.getElement().getStyle().setOverflow(Overflow.VISIBLE);
 	}
 	
 	/**
