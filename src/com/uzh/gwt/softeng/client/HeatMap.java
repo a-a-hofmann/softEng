@@ -128,7 +128,7 @@ public class HeatMap extends Composite {
 				// Create and attach the chart
 				geoChart = new GeoChart();
 				
-				dlp.addSouth(sliderPanel, 10);
+				dlp.addSouth(sliderPanel, 20);
 				dlp.add(geoChart);
 				fillDataTable();
 				draw();
@@ -198,16 +198,17 @@ public class HeatMap extends Composite {
 		fromToYearControls.add(fromYearTextBox);
 		fromToYearControls.add(toYearLabel);
 		fromToYearControls.add(toYearTextBox);
+		fromToYearControls.setStyleName("SliderControls");
 		
 		//Slider Part
 		sliderPanel = new DockLayoutPanel(Unit.PCT);
 		sliderPanel.setWidth("600px");
 		sliderPanel.addStyleName("SliderPanel");
 		
-		minValueLabel = new Label("Min: 1850");
-		minValueLabel.setHeight("20px");
-		maxValueLabel = new Label("Max: 2020");
-		maxValueLabel.setHeight("20px");
+//		minValueLabel = new Label("Min: 1850");
+//		minValueLabel.setHeight("20px");
+//		maxValueLabel = new Label("Max: 2020");
+//		maxValueLabel.setHeight("20px");
 		
 		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
@@ -225,8 +226,8 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
 				
-				minValueLabel.setText("Min: " + min);
-				maxValueLabel.setText("Max: " + max);
+				//minValueLabel.setText("Min: " + min);
+				//maxValueLabel.setText("Max: " + max);
 				return true;
 			}
 
@@ -236,8 +237,8 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
 				
-				minValueLabel.setText("Min: " + min);
-				maxValueLabel.setText("Max: " + max);
+				//minValueLabel.setText("Min: " + min);
+				//maxValueLabel.setText("Max: " + max);
 				fillDataTable();
 				draw();
 			}
@@ -259,13 +260,14 @@ public class HeatMap extends Composite {
 		//first arg: widget name
 		//second arg: size in percent
 		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
-		sliderPanel.addWest(minValueLabel, 15);
-		sliderPanel.addEast(maxValueLabel, 15);
+		//sliderPanel.addWest(minValueLabel, 15);
+		//sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
 		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
 		sliderPanel.setHeight("60px");
-		sliderPanel.setWidth("900px");
+		sliderPanel.setWidth("500px");
+		
 	}
 	
 	/**
