@@ -115,9 +115,19 @@ h1 {
 }
 /* End of filterPanel Section */
 
+/* table Section */
 #table {
 	clear: both;
 }
+
+#table thead{
+	height: 30px;
+	letter-spacing: 2px;
+	font-size: 18px;
+	font-variant: small-caps;
+	background-color: rgba(255,153,0, 0.2);
+}
+/* End of table Section */
 
 .gwt-Label {
 	letter-spacing: 3px;
