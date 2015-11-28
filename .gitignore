@@ -1,6 +1,8 @@
 *target*
 *.ear
 *.class
+*.cache.html
+*.symbolMap
 
 # eclipse specific git ignore
 *.pydevproject
