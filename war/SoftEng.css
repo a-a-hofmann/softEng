@@ -30,6 +30,7 @@ h1 {
 	text-align: center;
 }
 
+
 .htmlPanel{
 	background-color : lightgray;
 }
@@ -63,8 +64,22 @@ h1 {
 
 #heatmap {
 	width: 80%;
+	height: 50%;
 	float: left;
 	position: relative;
+	overflow: show;
+}
+
+
+
+#heatmap .ui-slider-handle {
+	background: #ef2929;
+	cursor: move;
+	width: 20px;
+}
+
+#heatmap > .ui-slider-handle {
+	overflow: visible !important;
 }
 
 #filterPanel {

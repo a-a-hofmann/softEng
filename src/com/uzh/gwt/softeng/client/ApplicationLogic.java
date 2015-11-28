@@ -165,9 +165,9 @@ public class ApplicationLogic implements EntryPoint {
 			mapSlot.remove(map);
 		}
 		map = new HeatMap(dataSet);
-		if (mapSlot != null)
+		if (mapSlot != null) {
 			mapSlot.add(map);
-		else{
+		} else {
 			System.out.println("Heatmap id not found!");
 		}
 	}
