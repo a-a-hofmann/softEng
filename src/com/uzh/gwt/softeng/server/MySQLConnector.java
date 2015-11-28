@@ -73,6 +73,7 @@ public class MySQLConnector {
 			String userName = "softEng";
 			String pwd = "softEng";
 			url = "jdbc:mysql://77.56.2.160:3306/newmoviedb";
+//			url = "jdbc:mysql://raspy.local:3306/newmoviedb";
 			conn = DriverManager.getConnection(url, userName, pwd);
 //			conn = DriverManager.getConnection(url);
 		}
@@ -369,7 +370,7 @@ public class MySQLConnector {
 			for(FilmData film : data.getFilms()){
 				int movieID = film.getID();
 				
-				for(int i = 0; i < film.getCountries().size()/2; i+=2){
+				for(int i = 0; i < film.getCountries().size(); i+=2){
 					movieCountriesPreparedStatement.setInt(1, movieID);
 					movieCountriesPreparedStatement.setString(2, film.getCountries().get(i));
 					
@@ -392,7 +393,7 @@ public class MySQLConnector {
 			for(FilmData film : data.getFilms()){
 				int movieID = film.getID();
 				
-				for(int i = 0; i < film.getLanguages().size()/2; i+=2){
+				for(int i = 0; i < film.getLanguages().size(); i+=2){
 					movieLanguagesPreparedStatement.setInt(1, movieID);
 					movieLanguagesPreparedStatement.setString(2, film.getLanguages().get(i));
 					
@@ -415,7 +416,7 @@ public class MySQLConnector {
 			for(FilmData film : data.getFilms()){
 				int movieID = film.getID();
 				
-				for(int i = 0; i < film.getGenres().size()/2; i+=2){
+				for(int i = 0; i < film.getGenres().size(); i+=2){
 					movieGenresPreparedStatement.setInt(1, movieID);
 					movieGenresPreparedStatement.setString(2, film.getGenres().get(i));
 					
@@ -441,8 +442,8 @@ public class MySQLConnector {
 				preparedStmt.setInt(3, movie.getDate());
 				preparedStmt.setFloat(4, movie.getDuration());
 				preparedStmt.addBatch();
-				if(j++ % 5000 == 0){
-					System.out.println(j/1600.0 + "% completed");
+				if(++j % 5000 == 0){
+					System.out.println(j/800.0 + "% completed");
 					preparedStmt.executeBatch();
 					conn.commit();
 				}

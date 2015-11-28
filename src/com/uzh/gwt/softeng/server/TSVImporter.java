@@ -1,8 +1,10 @@
 package com.uzh.gwt.softeng.server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -196,11 +198,11 @@ public class TSVImporter {
     
     public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
     	
-    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
-    	FilmDataSet newData = importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
-    	result.getFilms().addAll(newData.getFilms());
-    	FilmDataSet superDataSet = new FilmDataSet(result.getFilms());
-    	MySQLConnector.sendToDBExtendedFileSet(superDataSet);
+//    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
+//    	FilmDataSet newData = importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
+//    	result.getFilms().addAll(newData.getFilms());
+//    	FilmDataSet superDataSet = new FilmDataSet(result.getFilms());
+//    	MySQLConnector.sendToDBExtendedFileSet(superDataSet);
     	
 
 ////    	newData.printDataSet();
@@ -210,14 +212,14 @@ public class TSVImporter {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-    	
+//    	
 //    	FileWriter fileWriter = new FileWriter("war/WEB-INF/Resources/tmp.txt");
 //
 //            // Always wrap FileWriter in BufferedWriter.
 //            BufferedWriter bufferedWriter =
 //                new BufferedWriter(fileWriter);
 //            
-//        for (FilmData film : result.getFilms())
+//        for (FilmData film : superDataSet.getFilms())
 //        	bufferedWriter.write(film.toString());
 //    	result.printDataSet();
     	
