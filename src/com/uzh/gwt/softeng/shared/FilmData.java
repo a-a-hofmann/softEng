@@ -335,11 +335,21 @@ public class FilmData implements Serializable {
         
         return genres;
     }
+    
+    /**
+     * Format film to TSV.
+     * @return a string representation of this film in tsv format.
+     */
+    public String formatToTSV() {
+    	String tsvFormat = "" + ID + "\t" + title + "\t" + date + 
+    			"\t" + duration + "\t" + genres + "\t" + languages + "\t" + countries;
+    	return tsvFormat;
+    }
 
     /**
      *  The possible fields to set for FilmData.
      */
-    private enum Instances{
+    private enum Instances {
     	ID,
     	title,
     	date,

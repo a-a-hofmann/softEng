@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -87,11 +86,6 @@ public class HeatMap extends Composite {
 	 * Max value label of slider.
 	 */
 	private Label maxValueLabel;
-	
-	/**
-	 * Max range for heatmap. Otherwise it's kinda useless.
-	 */
-	private int maxSize = 10000;
 	
 	/**
 	 * Heatmap constructor.
@@ -321,8 +315,6 @@ public class HeatMap extends Composite {
 		geoChartColorAxis.setColors("green", "yellow", "red");
 		
 		int size = computeDataSetSize();
-//		if(size > maxSize)
-//			size = maxSize;
 		geoChartColorAxis.setMaxValue(size);
 		
 		//Update new color axis

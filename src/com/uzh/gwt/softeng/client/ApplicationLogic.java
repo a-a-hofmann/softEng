@@ -2,10 +2,18 @@ package com.uzh.gwt.softeng.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -63,18 +71,15 @@ public class ApplicationLogic implements EntryPoint {
 	 * A popup panel that will be displayed if the search button is selected. 
 	 */
 	 PopupPanel searchRequest;
+	 
 		
 	/**
 	 * Create new Image widget.
 	 */
-	private void insertLogo(){
+	private void insertAd(){
 		// Create the logo image and prevent being able to drag it to browser location bar
 		// by overriding its onBrowserEvent method.
-		logo = new Image(GWT.getModuleBaseURL() + "../" + LOGO_IMAGE_NAME){
-			public void onBrowserEvent(Event evt){
-				evt.preventDefault();
-			}
-		};
+		logo = new Image(GWT.getModuleBaseURL() + "../" + LOGO_IMAGE_NAME);
 		
 		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
@@ -152,8 +157,59 @@ public class ApplicationLogic implements EntryPoint {
 		buildTable();
 		//Build FilterPanel
 		buildFilters();
-		// Insert a logo into a defined slot in the HTML page
-		insertLogo();
+		//Insert an ad
+		insertAd();
+		//Create export panel
+		createExport();
+	}
+	
+	/**
+	 * Creates an export panel containing an export button.
+	 * TODO: Add map export?
+	 */
+	private void createExport() {
+		HorizontalPanel hp = new HorizontalPanel();
+    	
+    	Button exportTSV = createTSVExportButton();
+    	hp.add(exportTSV);
+		RootPanel.get("export").add(hp);
+	}
+
+	/**
+	 * Creates a button and attaches a clickhandler to export data set to tsv.
+	 * @return
+	 */
+	private Button createTSVExportButton() {
+		Button exportTSV = new Button("Export TSV", new ClickHandler(){
+			// On click send a get request
+			@Override
+			public void onClick(ClickEvent event) {
+				// Servlet URL
+				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV";
+				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+				
+				try {
+					// Create a HTTP GET request
+					builder.sendRequest(null, new RequestCallback() {
+						public void onError(Request request, Throwable exception) {
+							// Couldn't connect to server (could be timeout, SOP violation, etc.)
+					    }
+
+					    public void onResponseReceived(Request request, Response response) {
+					    	if (200 == response.getStatusCode()) {
+					    		// Process the response in response.getText()
+					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+					    	} else {
+					    		// Handle the error.  Can get the status text from response.getStatusText()
+					    	}
+					    }
+					});
+				} catch (RequestException e) {
+					// Couldn't connect to server
+				}
+			}
+		});
+		return exportTSV;
 	}
 	
 	/**
@@ -195,8 +251,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
 	 */
-	public void onModuleLoad() {
-		
+	public void onModuleLoad() {	
 		// Get film data set
 		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 				+ "group_concat(DISTINCT l.language) languages, "
@@ -214,7 +269,6 @@ public class ApplicationLogic implements EntryPoint {
 		getFilmDataSetSizeAsync();
 		
 		// Create the user interface
-		setUpGui();		
-		
+		setUpGui();				
 	}
 }

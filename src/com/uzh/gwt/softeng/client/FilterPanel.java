@@ -36,7 +36,6 @@ public class FilterPanel extends Composite {
 	
 	//Sub panels containing the different search widgets
 	private HorizontalPanel titlePanel;
-	private HorizontalPanel datePanel;
 	private HorizontalPanel genresPanel;
 	private HorizontalPanel languagesPanel;
 	private HorizontalPanel countriesPanel;

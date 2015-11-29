@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application>gwtsoftengtest</application>
-  <version>2</version>
+  <version>3</version>
 
   <!--
     Allows App Engine to send multiple requests to one instance in parallel:
@@ -18,10 +18,17 @@
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
   
-  <instance-class>B4</instance-class>
-  <manual-scaling>
-    <instances>5</instances>
-  </manual-scaling>
+  
+  <!-- 
+  	Instance settings
+   -->
+  <instance-class>F4</instance-class>
+  <automatic-scaling>
+    <min-idle-instances>1</min-idle-instances>
+    <!-- ‘automatic’ is the default value. -->
+    <min-pending-latency>30ms</min-pending-latency>
+    <max-pending-latency>automatic</max-pending-latency>
+  </automatic-scaling>
 
   <!--
     HTTP Sessions are disabled by default. To enable HTTP sessions specify:

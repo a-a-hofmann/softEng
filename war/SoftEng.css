@@ -25,6 +25,14 @@ h1 {
     display: none; 
 } 
 
+#mainWrap {
+	display: none;
+}
+
+#mainFooter {
+	display: none;
+}
+
 .SliderPanel{
 	padding: 0 10em !important;
 	text-align: center;
