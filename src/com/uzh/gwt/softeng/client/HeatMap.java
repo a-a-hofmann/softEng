@@ -7,10 +7,18 @@ import org.spiffyui.client.widgets.slider.RangeSlider;
 import org.spiffyui.client.widgets.slider.SliderEvent;
 import org.spiffyui.client.widgets.slider.SliderListener;
 
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
@@ -54,6 +62,16 @@ public class HeatMap extends Composite {
 	 * Range slider.
 	 */
 	private RangeSlider slider;
+	
+	/**
+	 * Textbox to target 
+	 */
+	private FocusPanel fromToYearControlsWrapper;
+	private HorizontalPanel fromToYearControls;
+	private Label fromYearLabel;
+	private Label toYearLabel;
+	private TextBox fromYearTextBox;
+	private TextBox toYearTextBox;
 	
 	/**
 	 * Panel containing the slider and two label for min and max value.
@@ -110,7 +128,7 @@ public class HeatMap extends Composite {
 				// Create and attach the chart
 				geoChart = new GeoChart();
 				
-				dlp.addSouth(sliderPanel, 10);
+				dlp.addSouth(sliderPanel, 20);
 				dlp.add(geoChart);
 				fillDataTable();
 				draw();
@@ -122,20 +140,84 @@ public class HeatMap extends Composite {
 	 * Initializes panel containing slider and labels.
 	 */
 	private void initializeSliderPanel() {
+		//Slider Controls Part
+		fromToYearControls = new HorizontalPanel();
+		fromToYearControlsWrapper = new FocusPanel( fromToYearControls );
+		
+		//Added pressing Enter-Key support
+		//If there is a number in either fromYear or toYear the slider will get updated accordingly on pressing Enter
+		fromToYearControlsWrapper.addKeyDownHandler(new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
+					
+					//fromYear TextBox
+					if( fromYearTextBox.getText().equals("") ) {
+						
+					} else {
+						//TODO: check for valid input
+						minValueLabel.setText( fromYearTextBox.getText() );
+
+						//adjust min value, do not change max value
+						//TODO: max can not be smaller than min!
+						int max = slider.getValueMax();
+						int min = Integer.valueOf( fromYearTextBox.getText() );
+						
+						slider.setValues(min, max);
+					}
+					
+					//toYearTextBox
+					if( toYearTextBox.getText().equals("") ) {
+						
+					} else {
+						//TODO: check for valid input
+						maxValueLabel.setText( toYearTextBox.getText() );
+
+						//adjust min value, do not change max value
+						//TODO: max can not be smaller than min!
+						int max = Integer.valueOf( toYearTextBox.getText() );
+						int min = slider.getValueMin();
+
+						slider.setValues(min, max);
+					}
+					
+				}
+			}
+		});
+		
+		//fromToYearControlsWrapper.setFocus(true);
+		
+		
+		//TODO: If just one box is filled out, use it to target 1 specific year
+		fromYearLabel = new Label("Min: ");
+		fromYearTextBox = new TextBox();
+		
+		toYearLabel = new Label("Max: ");
+		toYearTextBox = new TextBox();
+		
+		fromToYearControls.add(fromYearLabel);
+		fromToYearControls.add(fromYearTextBox);
+		fromToYearControls.add(toYearLabel);
+		fromToYearControls.add(toYearTextBox);
+		fromToYearControls.setStyleName("SliderControls");
+		
+		//Slider Part
 		sliderPanel = new DockLayoutPanel(Unit.PCT);
 		sliderPanel.setWidth("600px");
 		sliderPanel.addStyleName("SliderPanel");
 		
-		minValueLabel = new Label("Min: 1850");
-		minValueLabel.setHeight("20px");
-		maxValueLabel = new Label("Max: 2020");
-		maxValueLabel.setHeight("20px");
+//		minValueLabel = new Label("Min: 1850");
+//		minValueLabel.setHeight("20px");
+//		maxValueLabel = new Label("Max: 2020");
+//		maxValueLabel.setHeight("20px");
 		
 		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
 
 			@Override
 			public void onStart(SliderEvent e) {
+				//initialize from-to-year-controls
+				fromYearTextBox.setValue( Integer.toString( slider.getValueMin() ) );
+				toYearTextBox.setValue( Integer.toString( slider.getValueMax() ) );
 			}
 
 			@Override
@@ -144,8 +226,8 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
 				
-				minValueLabel.setText("Min: " + min);
-				maxValueLabel.setText("Max: " + max);
+				//minValueLabel.setText("Min: " + min);
+				//maxValueLabel.setText("Max: " + max);
 				return true;
 			}
 
@@ -155,8 +237,8 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
 				
-				minValueLabel.setText("Min: " + min);
-				maxValueLabel.setText("Max: " + max);
+				//minValueLabel.setText("Min: " + min);
+				//maxValueLabel.setText("Max: " + max);
 				fillDataTable();
 				draw();
 			}
@@ -167,10 +249,25 @@ public class HeatMap extends Composite {
 			
 		});
 		
-		sliderPanel.addWest(minValueLabel, 7);
-		sliderPanel.addEast(maxValueLabel, 15);
+		//initialize Slider Controls TextBoxes
+		if( fromYearTextBox.getText().equals("") && toYearTextBox.getText().equals("") ) {
+
+			fromYearTextBox.setValue("1888");
+			toYearTextBox.setValue("2020");
+		}
+				
+		//explanation of arguments for widgets added to DockLayoutPanel
+		//first arg: widget name
+		//second arg: size in percent
+		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
+		//sliderPanel.addWest(minValueLabel, 15);
+		//sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
-		sliderPanel.setHeight("20px");
+		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
+		
+		sliderPanel.setHeight("60px");
+		sliderPanel.setWidth("500px");
+		
 	}
 	
 	/**

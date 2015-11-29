@@ -30,6 +30,7 @@ h1 {
 	text-align: center;
 }
 
+
 .htmlPanel{
 	background-color : lightgray;
 }
@@ -62,20 +63,75 @@ h1 {
 }
 
 #heatmap {
-	width: 80%;
+	width: 75%;
+	height: 50%;
 	float: left;
 	position: relative;
+	padding: 10px 0px 10px 0px;
 }
 
+.SliderPanel {
+	margin: auto;
+}
+
+.SliderControls {
+	margin: auto;
+}
+
+#heatmap .ui-slider-handle {
+	background: #ef2929;
+	cursor: move;
+	width: 20px;
+}
+
+#heatmap > .ui-slider-handle {
+	overflow: visible !important;
+}
+
+/* filterPanel Section */
 #filterPanel {
-	top: 20em;
+	top: 8em;
 	width: 20%;
-	float: right;
+	float: left;
 	position: relative;
+	border-radius: 5px;
+	background-color: rgba(153,153,153, 0.2);
+	padding: 5px 20px 30px 20px;
 }
 
+.filterPanel-composite td {
+	width: 50%;
+	padding: 5px 0px 0px 0px;
+}
+
+.filterPanel-composite .gwt-TextBox {
+	position: absolute;
+	right: 10%;
+}
+
+.filterPanel-composite .gwt-SuggestBox {
+	position: absolute;
+	right: 10%;
+}
+/* End of filterPanel Section */
+
+/* table Section */
 #table {
 	clear: both;
+}
+
+#table thead{
+	height: 30px;
+	letter-spacing: 2px;
+	font-size: 18px;
+	font-variant: small-caps;
+	background-color: rgba(255,153,0, 0.2);
+}
+/* End of table Section */
+
+.gwt-Label {
+	letter-spacing: 3px;
+	font-weight: bold;
 }
 
 .normal{
