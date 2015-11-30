@@ -99,7 +99,6 @@ public class ApplicationLogic implements EntryPoint {
 		    // Set up the callback object.
 		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		    	public void onFailure(Throwable caught) {
-		    		Window.alert("I failed");
 		    		caught.printStackTrace();
 		    	}
 
@@ -110,7 +109,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		table.setList(dataSet, false);
 		    		
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
-		    		map.setFilmDataSet(dataSet);
+//		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
 		    // Make the call to the film data service.
@@ -123,7 +122,7 @@ public class ApplicationLogic implements EntryPoint {
 	private void getFilmDataSetSizeAsync(){
 		if (filmDataSvc == null) {
 		      filmDataSvc = GWT.create(FilmDataService.class);
-		    }
+		}
 
 		    // Set up the callback object.
 		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {

@@ -199,10 +199,10 @@ public class HeatMap extends Composite {
 		sliderPanel.setWidth("600px");
 		sliderPanel.addStyleName("SliderPanel");
 		
-//		minValueLabel = new Label("Min: 1850");
-//		minValueLabel.setHeight("20px");
-//		maxValueLabel = new Label("Max: 2020");
-//		maxValueLabel.setHeight("20px");
+		minValueLabel = new Label("Min: 1850");
+		minValueLabel.setHeight("20px");
+		maxValueLabel = new Label("Max: 2020");
+		maxValueLabel.setHeight("20px");
 		
 		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
@@ -219,9 +219,6 @@ public class HeatMap extends Composite {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
-				
-				//minValueLabel.setText("Min: " + min);
-				//maxValueLabel.setText("Max: " + max);
 				return true;
 			}
 
@@ -230,9 +227,6 @@ public class HeatMap extends Composite {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
-				
-				//minValueLabel.setText("Min: " + min);
-				//maxValueLabel.setText("Max: " + max);
 				fillDataTable();
 				draw();
 			}
@@ -254,8 +248,8 @@ public class HeatMap extends Composite {
 		//first arg: widget name
 		//second arg: size in percent
 		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
-		//sliderPanel.addWest(minValueLabel, 15);
-		//sliderPanel.addEast(maxValueLabel, 15);
+		sliderPanel.addWest(minValueLabel, 15);
+		sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
 		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
