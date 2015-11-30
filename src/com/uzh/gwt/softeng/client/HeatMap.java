@@ -78,16 +78,6 @@ public class HeatMap extends Composite {
 	private DockLayoutPanel sliderPanel;
 	
 	/**
-	 * Min value label of slider.
-	 */
-	private Label minValueLabel;
-	
-	/**
-	 * Max value label of slider.
-	 */
-	private Label maxValueLabel;
-	
-	/**
 	 * Heatmap constructor.
 	 */
 	public HeatMap() {
@@ -149,7 +139,6 @@ public class HeatMap extends Composite {
 						
 					} else {
 						//TODO: check for valid input
-						minValueLabel.setText( fromYearTextBox.getText() );
 
 						//adjust min value, do not change max value
 						//TODO: max can not be smaller than min!
@@ -164,7 +153,6 @@ public class HeatMap extends Composite {
 						
 					} else {
 						//TODO: check for valid input
-						maxValueLabel.setText( toYearTextBox.getText() );
 
 						//adjust min value, do not change max value
 						//TODO: max can not be smaller than min!
@@ -199,12 +187,7 @@ public class HeatMap extends Composite {
 		sliderPanel.setWidth("600px");
 		sliderPanel.addStyleName("SliderPanel");
 		
-		minValueLabel = new Label("Min: 1850");
-		minValueLabel.setHeight("20px");
-		maxValueLabel = new Label("Max: 2020");
-		maxValueLabel.setHeight("20px");
-		
-		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
+		slider = new RangeSlider("slider", 1888, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
 
 			@Override
@@ -248,8 +231,6 @@ public class HeatMap extends Composite {
 		//first arg: widget name
 		//second arg: size in percent
 		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
-		sliderPanel.addWest(minValueLabel, 15);
-		sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
 		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
