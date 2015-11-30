@@ -1,17 +1,15 @@
 package com.uzh.gwt.softeng.shared;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.uzh.gwt.softeng.shared.FilmData;
-import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilmDataSetTest {
 	ArrayList<String> patterns;

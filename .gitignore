@@ -3,6 +3,7 @@
 *.class
 *.cache.html
 *.symbolMap
+*.nocache.js
 
 # eclipse specific git ignore
 *.pydevproject

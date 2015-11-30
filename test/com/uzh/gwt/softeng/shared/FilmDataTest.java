@@ -39,7 +39,9 @@ public class FilmDataTest {
 		filmTest = new FilmData(testID, testTitle, testDate, 
 				testDuration, testLanguages, testCountries, testGenres);
 		
+		testTokensCleaned.add("/m/06ppq");
 		testTokensCleaned.add("Silent film");
+		testTokensCleaned.add("/m/02h40lc");
 		testTokensCleaned.add("English Language");
 	}
 
@@ -176,30 +178,15 @@ public class FilmDataTest {
 		assertEquals(10.0, filmTest.getDuration(), 0.01);
 	}
 	
-	//TODO: Write new unit test.
-//	@Test
-//	public void testPrepareLanguagesCountriesGenresTokens(){
-//		ArrayList<String> cleanedTokens = filmTest.prepareLanguagesCountriesGenresTokens(testTokens);
-//		
-//		int i = 0;
-//		for(String token: cleanedTokens){
-//			assertEquals(token, testTokensCleaned.get(i++));
-//		}
-//	}
-	
-	//TODO: Write new unit test for setLanguages().
-//	@Test
-//	public void testSetLanguages(){		
-//		filmTest.setLanguages(testTokens);
-//		System.out.println();
-////		int i = 0;
-//		for(int i = 1; i < filmTest.getLanguages().size(); i+=2){
-//			assertEquals(testTokensCleaned.get(i - 1), filmTest.getLanguages().get(i));
-//		}
-////		for(String language: filmTest.getLanguages()){
-////			assertEquals(testTokensCleaned.get(i++), language);
-////		}
-//	}
+	@Test
+	public void testPrepareLanguagesCountriesGenresTokens(){
+		ArrayList<String> cleanedTokens = filmTest.prepareLanguagesCountriesGenresTokens(testTokens);
+		
+		int i = 0;
+		for(String token: cleanedTokens){
+			assertEquals(token, testTokensCleaned.get(i++));
+		}
+	}
 	
 	@Test
 	public void testToString(){
