@@ -10,6 +10,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -72,9 +78,13 @@ public class FilterPanel extends Composite {
 	//Buttons
 	private Button submitButton;
 	private Button resetButton;
+	private Button exportButton;
 	
 	//Stringbuilder to build search query
 	private StringBuilder filterString;
+	
+	//Says whether the normal data set is visible or a search result
+	private boolean isSearch;
 
 	/**
 	 * Constructor.
@@ -101,8 +111,9 @@ public class FilterPanel extends Composite {
 
 		//Button
 		createSubmitButton();
-		
 		createResetButton();
+		createTSVExportButton();
+		
 
 		//Genres
 		genresLabel = new Label("Genres: ");
@@ -148,6 +159,7 @@ public class FilterPanel extends Composite {
 		buttonsPanel = new HorizontalPanel();
 		buttonsPanel.add(submitButton);
 		buttonsPanel.add(resetButton);
+		buttonsPanel.add(exportButton);
 		vlp.add(buttonsPanel);
 		
 		//Always call for composite widgets
@@ -155,7 +167,7 @@ public class FilterPanel extends Composite {
 		
 		setStyleName("filterPanel-composite");
 	}
-
+	
 	/**
 	 * Creates duration labels, slider and adds listeners.
 	 */
@@ -242,26 +254,6 @@ public class FilterPanel extends Composite {
 		this();
 		this.table = table;
 	}
-
-	/**
-	 * Removes search result from table and refreshes table with unfiltered results.
-	 */
-	private void createResetButton() {
-		if (resetButton != null){
-			return;
-		}
-		resetButton = new Button("Reset", new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				//removes filtered results
-				table.reset();
-				
-				//empties search panel
-				emptySearchQuery();
-			}
-		});
-	}
 	
 	/**
 	 * Empty all textboxes and reset slider labels and values.
@@ -278,8 +270,10 @@ public class FilterPanel extends Composite {
 			return;
 		}
 		submitButton  = new Button("Filter...", new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
-
+				isSearch = true;
+				
 				//send query
 				//create filter query
 				filterString = new StringBuilder(
@@ -329,7 +323,66 @@ public class FilterPanel extends Composite {
 			            table.setList(result, true);	            
 			    	}
 			    };
-		    	filmDataSvc.getFilmData(filterString.toString(), callback);
+		    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+			}
+		});
+	}
+	
+	/**
+	 * Removes search result from table and refreshes table with unfiltered results.
+	 */
+	private void createResetButton() {
+		if (resetButton != null){
+			return;
+		}
+		resetButton = new Button("Reset", new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				//removes filtered results
+				table.reset();
+				
+				//empties search panel
+				emptySearchQuery();
+				
+				isSearch = false;
+			}
+		});
+	}
+	
+
+	/**
+	 * Creates a button and attaches a clickhandler to export data set to tsv.
+	 * @return
+	 */
+	private void createTSVExportButton() {
+		exportButton = new Button("Export", new ClickHandler(){
+			// On click send a get request
+			@Override
+			public void onClick(ClickEvent event) {
+				// Servlet URL
+				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV&search=" + isSearch;
+				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+				
+				try {
+					// Create a HTTP GET request
+					builder.sendRequest(null, new RequestCallback() {
+						public void onError(Request request, Throwable exception) {
+							// Couldn't connect to server (could be timeout, SOP violation, etc.)
+					    }
+
+					    public void onResponseReceived(Request request, Response response) {
+					    	if (200 == response.getStatusCode()) {
+					    		// Process the response in response.getText()
+					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+					    	} else {
+					    		// Handle the error.  Can get the status text from response.getStatusText()
+					    	}
+					    }
+					});
+				} catch (RequestException e) {
+					// Couldn't connect to server
+				}
 			}
 		});
 	}

@@ -144,7 +144,7 @@ public class HeatMap extends Composite {
 						int max = slider.getValueMax();
 						int min = Integer.valueOf( fromYearTextBox.getText() );
 						
-						//if minvalue is greater than max value or smallerer than minimum of slider do nothing and reset TextBox
+						//if minvalue is greater than max value or smaller than minimum of slider do nothing and reset TextBox
 						if( !(min > max) && !(min < slider.getMinimum()) ){
 							slider.setValues(min, max);
 						} else {

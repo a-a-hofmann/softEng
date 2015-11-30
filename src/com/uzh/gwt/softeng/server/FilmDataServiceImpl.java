@@ -36,6 +36,12 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	private FilmDataSet dataSet;
 	
 	/**
+	 * FilmDataSet as cache. Search results.
+	 * Will be served to client on click on export button.
+	 */
+	private FilmDataSet searchSet;
+	
+	/**
 	 * MIME type for TSV.
 	 */
 	private static final String TSV_CONTENT_TYPE = "text/tab-separated-values";
@@ -46,17 +52,23 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 * @return Query result.
 	 */
 	@Override
-	public FilmDataSet getFilmData(String query){
+	public FilmDataSet getFilmData(String query, boolean isSearch){
 		ArrayList<FilmData> result = null;
 		try {
 			result = MySQLConnector.readFromDB(query);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
 			log.log(Level.SEVERE, e.toString());
 		}
-		FilmDataSet newDataSet = new FilmDataSet(result);
 		
 		//Save last loaded dataset as export candidate
-		this.dataSet = newDataSet;
+		FilmDataSet newDataSet = new FilmDataSet(result);
+		if (isSearch){
+			log.log(Level.INFO, "Sending search results to client");
+			searchSet = newDataSet;
+		} else {
+			log.log(Level.INFO, "Sending data set to client");
+			dataSet = newDataSet;
+		}
 		
 		return newDataSet;
 	}
@@ -86,6 +98,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		log.log(Level.INFO, "Exporting");
 		
 		try {
+			@SuppressWarnings("unused")
 			String var0show = request.getParameter("showthis");
 		} catch(Exception e) {
 			log.log(Level.SEVERE, e.toString());
@@ -93,7 +106,12 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		
 		String formatDataSet = "";
 		if (request.getParameter("type").equals("TSV")){
-			formatDataSet = dataSet.formatToTSV();
+			if (request.getParameter("search").equals("true")){
+				formatDataSet = searchSet.formatToTSV();
+			} else {
+				formatDataSet = dataSet.formatToTSV();
+			}
+			
 			response.setContentType(TSV_CONTENT_TYPE);
 		}
 	    PrintWriter out = response.getWriter();

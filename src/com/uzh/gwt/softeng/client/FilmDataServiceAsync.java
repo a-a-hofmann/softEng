@@ -5,6 +5,6 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public interface FilmDataServiceAsync {
 
-	void getFilmData(String query, AsyncCallback<FilmDataSet> callback);
+	void getFilmData(String query, boolean isSearch, AsyncCallback<FilmDataSet> callback);
 	void getFilmDataSetSize(AsyncCallback<Integer> callback);
 }

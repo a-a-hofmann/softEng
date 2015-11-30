@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -108,7 +107,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			// Set up the callback object.
 		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		    	public void onFailure(Throwable caught) {
-//		    		Window.alert("onRangeChanged failed");
 		    		caught.printStackTrace();
 		    	}
 	
@@ -119,7 +117,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		    };
 		  
 			String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
-	    	filmDataSvc.getFilmData(getAllQuery, callback);
+	    	filmDataSvc.getFilmData(getAllQuery, false, callback);
 		}
 		else{
 			List<FilmData> tmp = new ArrayList<FilmData>();

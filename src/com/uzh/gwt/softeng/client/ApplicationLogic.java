@@ -113,7 +113,7 @@ public class ApplicationLogic implements EntryPoint {
 		    	}
 		    };
 		    // Make the call to the film data service.
-		    filmDataSvc.getFilmData(query, callback);
+		    filmDataSvc.getFilmData(query, false, callback);
 	}
 	
 	/**
