@@ -1,26 +1,30 @@
 package com.uzh.gwt.softeng.client;
 
 import java.util.ArrayList;
+
 import org.spiffyui.client.widgets.slider.RangeSlider;
 import org.spiffyui.client.widgets.slider.SliderEvent;
 import org.spiffyui.client.widgets.slider.SliderListener;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -37,6 +41,8 @@ public class FilterPanel extends Composite {
 	private Table table;
 
 	FilmDataSet filmSet;
+	
+	private FocusPanel fp;
 	//This widgets main panel
 	private VerticalPanel vlp;
 	
@@ -90,8 +96,25 @@ public class FilterPanel extends Composite {
 	 * Constructor.
 	 */
 	public FilterPanel() {
+		fp = new FocusPanel();
+		fp.addKeyDownHandler(new KeyDownHandler() {
+
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
+					isSearch = true;
+					
+					createSearchQuery();
+					
+					sendSearchQuery();
+				}
+			}
+			
+		});
+		
 		//initialization
 		vlp = new VerticalPanel();
+		fp.add(vlp);
 
 		//Title
 		titleLabel = new Label("Title: ");
@@ -163,7 +186,7 @@ public class FilterPanel extends Composite {
 		vlp.add(buttonsPanel);
 		
 		//Always call for composite widgets
-		initWidget(vlp);
+		initWidget(fp);
 		
 		setStyleName("filterPanel-composite");
 	}
@@ -274,58 +297,71 @@ public class FilterPanel extends Composite {
 			public void onClick(ClickEvent event) {
 				isSearch = true;
 				
-				//send query
-				//create filter query
-				filterString = new StringBuilder(
-						"select m.*, group_concat(DISTINCT g.genre) genres, "
-								+ "group_concat(DISTINCT l.language) languages, "
-								+ "group_concat(DISTINCT c.country) countries "
-								+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
-								+ "left join genres g on g.genreid=mg.genreid "
-								+ "left join movielanguages ml on m.movieid=ml.movieid "
-								+ "left join languages l on l.languageid=ml.languageid "
-								+ "left join moviecountries mc on m.movieid=mc.movieid "
-								+ "left join countries c on c.countryid=mc.countryid "
-								+ "where "
-						);
+				createSearchQuery();
 				
-				//add different filters to query
-				//if title is empty do not include it in query
-				if( !getSearchBoxCaption().equals("") )
-					//the " and " at the end 
-					filterString.append( "LOWER(m.title) like \"%" + getSearchBoxCaption().toLowerCase() + "%\" and " );
-				
-				//countries
-				if( !countriesBox.getText().equals("") )
-					filterString.append( "LOWER(c.country) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
-				
-				//genres
-				if( !genresBox.getText().equals("") )
-					filterString.append( "LOWER(g.genre) like \"%" + genresBox.getText().toLowerCase() + "%\" and " );
-				
-				//languages
-				if( !languagesBox.getText().equals("") )
-					filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
-				
-				filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
-				filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
-				//has to be last String in this chain
-				filterString.append( "group by m.movieid;" );
-				
-				
-				AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-			    	public void onFailure(Throwable caught) {
-			    		Window.alert("Search Query failed");
-			    		caught.printStackTrace();
-			    	}
-		
-			    	public void onSuccess(FilmDataSet result) {
-			            table.setList(result, true);	            
-			    	}
-			    };
-		    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+				sendSearchQuery();
 			}
 		});
+	}
+	
+	/**
+	 * Creates a search query.
+	 */
+	private void createSearchQuery() {
+		//send query
+		//create filter query
+		filterString = new StringBuilder(
+				"select m.*, group_concat(DISTINCT g.genre) genres, "
+						+ "group_concat(DISTINCT l.language) languages, "
+						+ "group_concat(DISTINCT c.country) countries "
+						+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+						+ "left join genres g on g.genreid=mg.genreid "
+						+ "left join movielanguages ml on m.movieid=ml.movieid "
+						+ "left join languages l on l.languageid=ml.languageid "
+						+ "left join moviecountries mc on m.movieid=mc.movieid "
+						+ "left join countries c on c.countryid=mc.countryid "
+						+ "where "
+				);
+		
+		//add different filters to query
+		//if title is empty do not include it in query
+		if( !getSearchBoxCaption().equals("") )
+			//the " and " at the end 
+			filterString.append( "LOWER(m.title) like \"%" + getSearchBoxCaption().toLowerCase() + "%\" and " );
+		
+		//countries
+		if( !countriesBox.getText().equals("") )
+			filterString.append( "LOWER(c.country) like \"%" + countriesBox.getText().toLowerCase() + "%\" and " );
+		
+		//genres
+		if( !genresBox.getText().equals("") )
+			filterString.append( "LOWER(g.genre) like \"%" + genresBox.getText().toLowerCase() + "%\" and " );
+		
+		//languages
+		if( !languagesBox.getText().equals("") )
+			filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
+		
+		filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
+		filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
+		//has to be last String in this chain
+		filterString.append( "group by m.movieid;" );
+	}
+	
+	/**
+	 * Sends the search query.
+	 */
+	private void sendSearchQuery() {
+		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+	    	public void onFailure(Throwable caught) {
+	    		Window.alert("Search Query failed");
+	    		caught.printStackTrace();
+	    	}
+
+	    	public void onSuccess(FilmDataSet result) {
+	            table.setList(result, true);	            
+	    	}
+	    };
+    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
 	}
 	
 	/**
