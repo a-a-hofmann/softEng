@@ -108,7 +108,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			// Set up the callback object.
 		    AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		    	public void onFailure(Throwable caught) {
-		    		Window.alert("onRangeChanged failed");
+//		    		Window.alert("onRangeChanged failed");
 		    		caught.printStackTrace();
 		    	}
 	

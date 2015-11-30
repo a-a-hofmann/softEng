@@ -1,9 +1,15 @@
 package com.uzh.gwt.softeng.server;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.uzh.gwt.softeng.client.FilmDataService;
@@ -12,6 +18,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 
 public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDataService{
+	
 	/**
 	 * Serial UID.
 	 */
@@ -23,25 +30,41 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	private static final Logger log = Logger.getLogger( FilmDataServiceImpl.class.getName() );
 	
 	/**
+	 * FilmDataSet as cache.
+	 * Will be served to client on click on export button.
+	 */
+	private FilmDataSet dataSet;
+	
+	/**
+	 * MIME type for TSV.
+	 */
+	private static final String TSV_CONTENT_TYPE = "text/tab-separated-values";
+	
+	/**
 	 * Server side implementation of FilmDataService.
 	 * Send query and returns the resulting FilmDataSet.
 	 * @return Query result.
 	 */
 	@Override
 	public FilmDataSet getFilmData(String query){
-		log.log(Level.INFO, "about to read from db");
 		ArrayList<FilmData> result = null;
 		try {
 			result = MySQLConnector.readFromDB(query);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			log.log(Level.SEVERE, e.toString());
 		}
-		log.log(Level.INFO, "Finished reading from db");
 		FilmDataSet newDataSet = new FilmDataSet(result);
+		
+		//Save last loaded dataset as export candidate
+		this.dataSet = newDataSet;
+		
 		return newDataSet;
 	}
 
+	/**
+	 * Fetches data set size.
+	 * @return size of data set.
+	 */
 	@Override
 	public Integer getFilmDataSetSize() {
 		log.log(Level.INFO, "Fetching data set size");
@@ -53,5 +76,28 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Process the HTTP doGet request and serves a file as response.
+	 */
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		log.log(Level.INFO, "Exporting");
+		
+		try {
+			String var0show = request.getParameter("showthis");
+		} catch(Exception e) {
+			log.log(Level.SEVERE, e.toString());
+		}
+		
+		String formatDataSet = "";
+		if (request.getParameter("type").equals("TSV")){
+			formatDataSet = dataSet.formatToTSV();
+			response.setContentType(TSV_CONTENT_TYPE);
+		}
+	    PrintWriter out = response.getWriter();
+	    out.println(formatDataSet);
+	    out.close();
 	}
 }

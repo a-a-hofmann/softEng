@@ -389,8 +389,22 @@ public class FilmDataSet implements Serializable{
     			filteredSet.add(film);
     		}
     	}
-    return filteredSet;
+    	return filteredSet;
     }
+    
+    /**
+     * Format the data set to TSV.
+     * @return a string representation of the entire data set in tsv format.
+     */
+    public String formatToTSV() {
+    	StringBuilder sb = new StringBuilder();
+    	for(int i = 0; i < films.size(); i++) {
+    		sb.append(films.get(i).formatToTSV() + "\n");
+    	}
+    	
+    	return sb.toString();
+    }
+
     
 //    public static void main(String[] args){
 //    	FilmDataSet dataSet;
@@ -456,7 +470,6 @@ public class FilmDataSet implements Serializable{
 //	    		System.out.println(film);
 //	    	
 //		} catch (IOException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //    }

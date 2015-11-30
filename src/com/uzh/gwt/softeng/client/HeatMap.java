@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -79,21 +78,6 @@ public class HeatMap extends Composite {
 	private DockLayoutPanel sliderPanel;
 	
 	/**
-	 * Min value label of slider.
-	 */
-	private Label minValueLabel;
-	
-	/**
-	 * Max value label of slider.
-	 */
-	private Label maxValueLabel;
-	
-	/**
-	 * Max range for heatmap. Otherwise it's kinda useless.
-	 */
-	private int maxSize = 10000;
-	
-	/**
 	 * Heatmap constructor.
 	 */
 	public HeatMap() {
@@ -155,7 +139,6 @@ public class HeatMap extends Composite {
 						
 					} else {
 						//TODO: check for valid input
-						minValueLabel.setText( fromYearTextBox.getText() );
 
 						//adjust min value, do not change max value
 						//TODO: max can not be smaller than min!
@@ -170,7 +153,6 @@ public class HeatMap extends Composite {
 						
 					} else {
 						//TODO: check for valid input
-						maxValueLabel.setText( toYearTextBox.getText() );
 
 						//adjust min value, do not change max value
 						//TODO: max can not be smaller than min!
@@ -205,12 +187,7 @@ public class HeatMap extends Composite {
 		sliderPanel.setWidth("600px");
 		sliderPanel.addStyleName("SliderPanel");
 		
-//		minValueLabel = new Label("Min: 1850");
-//		minValueLabel.setHeight("20px");
-//		maxValueLabel = new Label("Max: 2020");
-//		maxValueLabel.setHeight("20px");
-		
-		slider = new RangeSlider("slider", 1880, 2020, 1888, 2020);
+		slider = new RangeSlider("slider", 1888, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
 
 			@Override
@@ -225,9 +202,6 @@ public class HeatMap extends Composite {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
-				
-				//minValueLabel.setText("Min: " + min);
-				//maxValueLabel.setText("Max: " + max);
 				return true;
 			}
 
@@ -236,9 +210,6 @@ public class HeatMap extends Composite {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
-				
-				//minValueLabel.setText("Min: " + min);
-				//maxValueLabel.setText("Max: " + max);
 				fillDataTable();
 				draw();
 			}
@@ -260,8 +231,6 @@ public class HeatMap extends Composite {
 		//first arg: widget name
 		//second arg: size in percent
 		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
-		//sliderPanel.addWest(minValueLabel, 15);
-		//sliderPanel.addEast(maxValueLabel, 15);
 		sliderPanel.add(slider);
 		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
@@ -321,8 +290,6 @@ public class HeatMap extends Composite {
 		geoChartColorAxis.setColors("green", "yellow", "red");
 		
 		int size = computeDataSetSize();
-//		if(size > maxSize)
-//			size = maxSize;
 		geoChartColorAxis.setMaxValue(size);
 		
 		//Update new color axis

@@ -1,10 +1,8 @@
 package com.uzh.gwt.softeng.server;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -209,7 +207,6 @@ public class TSVImporter {
 //    	try {
 //			MySQLConnector.sendToDBExtendedFileSet(newData);
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //    	
