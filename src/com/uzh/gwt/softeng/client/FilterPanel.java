@@ -282,7 +282,12 @@ public class FilterPanel extends Composite {
 	 * Empty all textboxes and reset slider labels and values.
 	 */
 	private void emptySearchQuery() {
-		//TODO write method implementation
+		titleSearchBox.setText("");
+		dateSlider.setValues(1888, 2020);
+		durationSlider.setValues(0, 400);
+		genresBox.setText("");
+		languagesBox.setText("");
+		countriesBox.setText("");
 	}
 
 	/**
