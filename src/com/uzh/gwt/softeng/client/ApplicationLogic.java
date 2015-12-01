@@ -262,7 +262,7 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join languages l on l.languageid=ml.languageid "
 				+ "left join moviecountries mc on m.movieid=mc.movieid "
 				+ "left join countries c on c.countryid=mc.countryid "
-				+ "group by m.movieid limit 100;";
+				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
 		
 		// Create the user interface

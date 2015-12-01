@@ -103,11 +103,11 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
-					isSearch = true;
-					
-					createSearchQuery();
-					
-					sendSearchQuery();
+					if(!isEmpty()){
+						isSearch = true;
+						createSearchQuery();
+						sendSearchQuery();
+					}
 				}
 			}
 			
@@ -197,6 +197,8 @@ public class FilterPanel extends Composite {
 	 */
 	private void createDurationFilter() {
 		//Duration
+		//TODO: Longest film avalaible is 14400 minutes long.
+		//What should we put as max?
         durationLabel = new Label("Duration: ");
         durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
         durationminValueLabel = new Label("Min: 400");
@@ -282,13 +284,20 @@ public class FilterPanel extends Composite {
 	/**
 	 * Empty all textboxes and reset slider labels and values.
 	 */
-	private void emptySearchQuery() {
+	private void emptySearchParameters() {
 		titleSearchBox.setText("");
 		dateSlider.setValues(1888, 2020);
 		durationSlider.setValues(0, 400);
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
+	}
+	
+	private boolean isEmpty() {
+		return titleSearchBox.getText().isEmpty() && (dateSlider.getValueMin() == dateSlider.getMinimum()) &&
+				(dateSlider.getValueMax() == dateSlider.getMaximum()) && durationSlider.getValueMin() == durationSlider.getMinimum() &&
+				(durationSlider.getValueMax() == durationSlider.getMaximum()) && genresBox.getText().isEmpty() &&
+				languagesBox.getText().isEmpty() && countriesBox.getText().isEmpty();
 	}
 
 	/**
@@ -301,11 +310,11 @@ public class FilterPanel extends Composite {
 		submitButton  = new Button("Filter...", new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				isSearch = true;
-				
-				createSearchQuery();
-				
-				sendSearchQuery();
+				if (!isEmpty()){
+					isSearch = true;
+					createSearchQuery();
+					sendSearchQuery();
+				}
 			}
 		});
 	}
@@ -402,7 +411,7 @@ public class FilterPanel extends Composite {
 				table.reset();
 				
 				//empties search panel
-				emptySearchQuery();
+				emptySearchParameters();
 				
 				isSearch = false;
 			}
@@ -449,6 +458,7 @@ public class FilterPanel extends Composite {
 					builder.sendRequest(null, new RequestCallback() {
 						public void onError(Request request, Throwable exception) {
 							// Couldn't connect to server (could be timeout, SOP violation, etc.)
+							Window.alert(exception.toString());
 					    }
 
 					    public void onResponseReceived(Request request, Response response) {
