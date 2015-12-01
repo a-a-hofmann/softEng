@@ -11,6 +11,8 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gwt.view.client.Range;
+
 public class FilmDataSetTest {
 	ArrayList<String> patterns;
 	FilmDataSet movies;
@@ -162,16 +164,16 @@ public class FilmDataSetTest {
 		FilmDataSet movies = new FilmDataSet(films);
 		boolean thrown = false;
 		try{
-			movies.filterByDateRange(-1, 1);
+			movies.filterByDateRange(new Range(-1, 1));
 		} catch (IllegalArgumentException e){
 			thrown = true;
 		}
 		assertTrue(thrown);
 		
-		ArrayList<FilmData> tmp = movies.filterByDateRange(2, 6);
+		ArrayList<FilmData> tmp = movies.filterByDateRange(new Range(2, 6));
 		assertEquals(tmp.get(0).getDate(), 5);
 		
-		tmp = movies.filterByDateRange(2, 1000);
+		tmp = movies.filterByDateRange(new Range(2, 1000));
 		for (FilmData film : tmp){
 			assertTrue(film.getDate() <= 1000 && film.getDate() >= 2);
 		}

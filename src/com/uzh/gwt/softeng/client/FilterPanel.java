@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.Range;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
@@ -38,12 +39,19 @@ public class FilterPanel extends Composite {
 	 */
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	
+	/**
+	 * Table reference. Filtered results will be displayed here.
+	 */
 	private Table table;
-
-	FilmDataSet filmSet;
 	
+	/**
+	 * This widgets main panel.
+	 */
 	private FocusPanel fp;
-	//This widgets main panel
+	
+	/**
+	 * Vertical panel containing all other panels.
+	 */
 	private VerticalPanel vlp;
 	
 	//Sub panels containing the different search widgets
@@ -91,6 +99,11 @@ public class FilterPanel extends Composite {
 	
 	//Says whether the normal data set is visible or a search result
 	private boolean isSearch;
+	
+	/**
+	 * Url string for HTTP GET requests.
+	 */
+	private String url;
 
 	/**
 	 * Constructor.
@@ -102,11 +115,11 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
-					isSearch = true;
-					
-					createSearchQuery();
-					
-					sendSearchQuery();
+					if(!isEmpty()){
+						isSearch = true;
+						createSearchQuery();
+						sendSearchQuery();
+					}
 				}
 			}
 			
@@ -158,7 +171,7 @@ public class FilterPanel extends Composite {
 		
 		//Countries
 		countriesLabel = new Label("Countries: ");
-		countriesBox = new SuggestBox(getCountrySuggestion());
+		countriesBox = new SuggestBox(new MultiWordSuggestOracle());
 		countriesPanel = new HorizontalPanel();
 		countriesPanel.add(countriesLabel);
 		countriesPanel.add(countriesBox);
@@ -192,10 +205,21 @@ public class FilterPanel extends Composite {
 	}
 	
 	/**
+	 * Constructor and saves table reference.
+	 * @param table Table reference.
+	 */
+	public FilterPanel(Table table){
+		this();
+		this.table = table;
+	}
+	
+	/**
 	 * Creates duration labels, slider and adds listeners.
 	 */
 	private void createDurationFilter() {
 		//Duration
+		//TODO: Longest film available is 14400 minutes long.
+		//What should we put as max?
         durationLabel = new Label("Duration: ");
         durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
         durationminValueLabel = new Label("Min: 400");
@@ -273,21 +297,28 @@ public class FilterPanel extends Composite {
         });
 	}
 	
-	FilterPanel(Table table){
-		this();
-		this.table = table;
-	}
-	
 	/**
 	 * Empty all textboxes and reset slider labels and values.
 	 */
-	private void emptySearchQuery() {
+	private void emptySearchParameters() {
 		titleSearchBox.setText("");
 		dateSlider.setValues(1888, 2020);
 		durationSlider.setValues(0, 400);
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
+	}
+	
+	/**
+	 * Checks if all input boxes are empty and sliders are set to default value.
+	 * @return {@code true} if text boxes are empty and sliders are set to default values, {@code false} otherwise.
+	 * 
+	 */
+	private boolean isEmpty() {
+		return titleSearchBox.getText().isEmpty() && (dateSlider.getValueMin() == dateSlider.getMinimum()) &&
+				(dateSlider.getValueMax() == dateSlider.getMaximum()) && durationSlider.getValueMin() == durationSlider.getMinimum() &&
+				(durationSlider.getValueMax() == durationSlider.getMaximum()) && genresBox.getText().isEmpty() &&
+				languagesBox.getText().isEmpty() && countriesBox.getText().isEmpty();
 	}
 
 	/**
@@ -300,11 +331,11 @@ public class FilterPanel extends Composite {
 		submitButton  = new Button("Filter...", new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				isSearch = true;
-				
-				createSearchQuery();
-				
-				sendSearchQuery();
+				if (!isEmpty()){
+					isSearch = true;
+					createSearchQuery();
+					sendSearchQuery();
+				}
 			}
 		});
 	}
@@ -356,17 +387,34 @@ public class FilterPanel extends Composite {
 	 * Sends the search query.
 	 */
 	private void sendSearchQuery() {
-		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-	    	public void onFailure(Throwable caught) {
-	    		Window.alert("Search Query failed");
-	    		caught.printStackTrace();
-	    	}
-
-	    	public void onSuccess(FilmDataSet result) {
-	            table.setList(result, true);	            
-	    	}
-	    };
-    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+		if(!table.isFinishedLoading()){
+			AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert("Search Query failed");
+		    		caught.printStackTrace();
+		    	}
+	
+		    	public void onSuccess(FilmDataSet result) {
+		            table.setList(result, true);	            
+		    	}
+		    };
+	    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+	    	
+		} else {
+			//Filter locally.
+			
+			FilmDataSet result = new FilmDataSet(table.getList());
+			
+			String title = titleSearchBox.getText();
+			String country = countriesBox.getText();
+			String genre = genresBox.getText();
+			String language = languagesBox.getText();
+			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax());
+			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax());
+		
+			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
+			table.setList(result, true);
+		}
 	}
 	
 	/**
@@ -384,17 +432,15 @@ public class FilterPanel extends Composite {
 				table.reset();
 				
 				//empties search panel
-				emptySearchQuery();
+				emptySearchParameters();
 				
 				isSearch = false;
 			}
 		});
 	}
-	
 
 	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
-	 * @return
 	 */
 	private void createTSVExportButton() {
 		exportButton = new Button("Export", new ClickHandler(){
@@ -402,14 +448,35 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				// Servlet URL
-				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV&search=" + isSearch;
+				url = GWT.getModuleBaseURL() + "filmData?search=" + isSearch + "&extended=" + ((table.isFinishedLoading() && isSearch)? "true" : "false");
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+				
+				if(table.isFinishedLoading()) {
+					if(isSearch) {
+						String title = titleSearchBox.getText();
+						String country = countriesBox.getText();
+						String genre = genresBox.getText();
+						String language = languagesBox.getText();
+						String durationMin = Integer.toString(durationSlider.getValueMin());
+						String durationMax = Integer.toString(durationSlider.getValueMax());
+						String dateMin = Integer.toString(dateSlider.getValueMin());
+						String dateMax = Integer.toString(dateSlider.getValueMax());
+						
+						url = url + "&title=" + title + 
+								"&country=" + country + "&genre=" + genre + "&language=" + language +
+								"&durationMin=" + durationMin + "&durationMax=" + durationMax + 
+								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
+						
+						builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+					}
+				}
 				
 				try {
 					// Create a HTTP GET request
 					builder.sendRequest(null, new RequestCallback() {
 						public void onError(Request request, Throwable exception) {
 							// Couldn't connect to server (could be timeout, SOP violation, etc.)
+							Window.alert(exception.toString());
 					    }
 
 					    public void onResponseReceived(Request request, Response response) {
@@ -428,20 +495,21 @@ public class FilterPanel extends Composite {
 		});
 	}
 	
-	public MultiWordSuggestOracle getCountrySuggestion(){
-		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-		
-		return oracle;
-	}
-	
+	/**
+	 * Set country suggestion list
+	 * @param countries Countries list to be set as suggestions.
+	 */
 	public void setCountrySuggestion(ArrayList<String> countries){
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) countriesBox.getSuggestOracle();
 		
-		for (String country : countries){
-			oracle.add(country);
+		for(int i = 0; i < countries.size(); i++){
+			oracle.add(countries.get(i));
 		}
+//		for (String country : countries){
+//			oracle.add(country);
+//		}
 	}
-
+		
 	public String getSearchBoxCaption() {
 		return titleSearchBox.getText();
 	}

@@ -108,36 +108,13 @@ public class ApplicationLogic implements EntryPoint {
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    		table.setList(dataSet, false);
 		    		
+		    		
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
 //		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
 		    // Make the call to the film data service.
 		    filmDataSvc.getFilmData(query, false, callback);
-	}
-	
-	/**
-	 * Sends RPC to server to retrieve film data set size.
-	 */
-	private void getFilmDataSetSizeAsync(){
-		if (filmDataSvc == null) {
-		      filmDataSvc = GWT.create(FilmDataService.class);
-		}
-
-		    // Set up the callback object.
-		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-		    	public void onFailure(Throwable caught) {
-		    		Window.alert("I failed");
-		    		caught.printStackTrace();
-		    	}
-
-		    	public void onSuccess(Integer result) {
-		    		table.updateRowCount(result);
-		    	}
-		    };
-		    
-		    // Make the call to the film data service.
-		    filmDataSvc.getFilmDataSetSize(callback);
 	}
 	
 	/**
@@ -263,9 +240,6 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
-		
-		// Get film data set size
-		getFilmDataSetSizeAsync();
 		
 		// Create the user interface
 		setUpGui();				

@@ -95,7 +95,6 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 */
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.log(Level.INFO, "Exporting");
 		
 		try {
 			@SuppressWarnings("unused")
@@ -105,17 +104,54 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		}
 		
 		String formatDataSet = "";
-		if (request.getParameter("type").equals("TSV")){
-			if (request.getParameter("search").equals("true")){
-				formatDataSet = searchSet.formatToTSV();
+		log.log(Level.SEVERE, request.getQueryString());
+		
+		response.setContentType(TSV_CONTENT_TYPE);
+		PrintWriter out = response.getWriter();
+		
+		if (request.getParameter("search").equals("true")){
+			if (request.getParameter("extended").equals("true")){
+				String title = request.getParameter("title");
+				String country = request.getParameter("country");
+				String genre = request.getParameter("genre");
+				String language = request.getParameter("language");
+								
+				int durationMin = Integer.parseInt(request.getParameter("durationMin"));
+				int durationMax = Integer.parseInt(request.getParameter("durationMax"));
+	
+				int dateMin = Integer.parseInt(request.getParameter("dateMin"));
+				int dateMax = Integer.parseInt(request.getParameter("dateMax"));
+	
+				formatDataSet = new FilmDataSet(dataSet.filter(title, country, genre, language, durationMin, durationMax, dateMin, dateMax)).formatToTSV();
 			} else {
-				formatDataSet = dataSet.formatToTSV();
+				formatDataSet = searchSet.formatToTSV();
 			}
 			
-			response.setContentType(TSV_CONTENT_TYPE);
+		    out.println(formatDataSet);
+		    out.close();
+		    
+		} else {
+			log.log(Level.INFO, "Export entire dataset");
+			formatDataSet = dataSet.formatToTSV();
+			out.print(formatDataSet);
+			out.close();
+			
+//			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_80000.tsv"));
+//			
+//			log.log(Level.INFO, formatDataSet);
+//			
+//			while((formatDataSet = bufferedReader.readLine()) != null){
+//				out.println(formatDataSet);
+//			}
+//			
+//			bufferedReader.close();
+//			bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_1471.tsv"));
+//			while((formatDataSet = bufferedReader.readLine()) != null){
+//				out.println(formatDataSet);
+//			}
+//			
+//			out.close();
+//			bufferedReader.close();
 		}
-	    PrintWriter out = response.getWriter();
-	    out.println(formatDataSet);
-	    out.close();
 	}
 }
