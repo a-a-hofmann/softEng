@@ -75,6 +75,8 @@ public class Table extends Composite {
 		lp.add(table);
 		initTable();
 		initWidget(lp);
+		
+		
 	}
 	
 	/**

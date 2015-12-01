@@ -431,7 +431,6 @@ public class FilmDataSet implements Serializable{
     	return filteredSet;
     }
     
-    private static final Logger log = Logger.getLogger( FilmDataSet.class.getName() );
     /**
      * Filter data set according to given parameters.
      * @param title Title to search for.
@@ -440,7 +439,7 @@ public class FilmDataSet implements Serializable{
      * @param language Language to search for.
      * @param durationRange Duration range to search for.
      * @param dateRange Date range to search for.
-     * @return A filtered data set.
+     * @return ArrayList filtered data set.
      */
     public ArrayList<FilmData> filter(String title, String country, String genre, String language,
     		Range durationRange, Range dateRange){
@@ -457,7 +456,7 @@ public class FilmDataSet implements Serializable{
     		tmp = result.filterByCountry(country);
     		result = new FilmDataSet(tmp);
     	}
-    	log.log(Level.INFO, "Result" + result.size());
+    	
     	if(genre != null && !genre.isEmpty()){
     		tmp = result.filterByGenre(genre);
     		result = new FilmDataSet(tmp);
@@ -468,19 +467,35 @@ public class FilmDataSet implements Serializable{
     		result = new FilmDataSet(tmp);
     	}
     	
-    	log.log(Level.INFO, "Before duration Range Result" + result.size());
+    	
     	if(durationRange != null){
-    		log.log(Level.INFO, "duration range" + durationRange.toString());
+    	
     		tmp = result.filterByDurationRange(durationRange);
     		result = new FilmDataSet(tmp);
     	}
-    	log.log(Level.INFO, "After duration Range Result" + result.size());
     	if(dateRange != null){
     		tmp = result.filterByDateRange(dateRange);
     		result = new FilmDataSet(tmp);
     	}
-    	log.log(Level.INFO, "After date Result" + result.size());
+
     	return result.getFilms();
+    }
+    
+    /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return ArrayList filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		int durationMin, int durationMax, int dateMin, int dateMax){
+    	
+    	return filter(title, country, genre, language, new Range(durationMin, durationMax - durationMin)
+    			, new Range(dateMin, dateMax - dateMin));
     }
     
     /**

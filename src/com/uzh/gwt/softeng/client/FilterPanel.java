@@ -357,7 +357,6 @@ public class FilterPanel extends Composite {
 	 * Sends the search query.
 	 */
 	private void sendSearchQuery() {
-		Window.alert("Is Finished loading" + table.isFinishedLoading());
 		if(!table.isFinishedLoading()){
 			AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 		    	public void onFailure(Throwable caught) {
@@ -411,6 +410,7 @@ public class FilterPanel extends Composite {
 	}
 	
 
+	String url;
 	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
 	 * @return
@@ -421,8 +421,28 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				// Servlet URL
-				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV&search=" + isSearch;
+				url = GWT.getModuleBaseURL() + "filmData?search=" + isSearch + "&extended=" + ((table.isFinishedLoading() && isSearch)? "true" : "false");
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+				
+				if(table.isFinishedLoading()) {
+					if(isSearch) {
+						String title = titleSearchBox.getText();
+						String country = countriesBox.getText();
+						String genre = genresBox.getText();
+						String language = languagesBox.getText();
+						String durationMin = Integer.toString(durationSlider.getValueMin());
+						String durationMax = Integer.toString(durationSlider.getValueMax());
+						String dateMin = Integer.toString(dateSlider.getValueMin());
+						String dateMax = Integer.toString(dateSlider.getValueMax());
+						
+						url = url + "&title=" + title + 
+								"&country=" + country + "&genre=" + genre + "&language=" + language +
+								"&durationMin=" + durationMin + "&durationMax=" + durationMax + 
+								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
+						
+						builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+					}
+				}
 				
 				try {
 					// Create a HTTP GET request
