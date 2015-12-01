@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.Range;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
 import com.googlecode.gwt.charts.client.ColumnType;
@@ -209,7 +210,8 @@ public class HeatMap extends Composite {
 			public boolean onSlide(SliderEvent e) {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
+			
+				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
 				return true;
 			}
 
@@ -217,7 +219,7 @@ public class HeatMap extends Composite {
 			public void onChange(SliderEvent e) {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(min, max));
+				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
 				fillDataTable();
 				draw();
 			}

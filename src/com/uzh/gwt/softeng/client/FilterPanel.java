@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.Range;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
@@ -356,17 +357,35 @@ public class FilterPanel extends Composite {
 	 * Sends the search query.
 	 */
 	private void sendSearchQuery() {
-		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-	    	public void onFailure(Throwable caught) {
-	    		Window.alert("Search Query failed");
-	    		caught.printStackTrace();
-	    	}
-
-	    	public void onSuccess(FilmDataSet result) {
-	            table.setList(result, true);	            
-	    	}
-	    };
-    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+		Window.alert("Is Finished loading" + table.isFinishedLoading());
+		if(!table.isFinishedLoading()){
+			AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert("Search Query failed");
+		    		caught.printStackTrace();
+		    	}
+	
+		    	public void onSuccess(FilmDataSet result) {
+		            table.setList(result, true);	            
+		    	}
+		    };
+	    	filmDataSvc.getFilmData(filterString.toString(), true, callback);
+	    	
+		} else {
+			//Filter locally.
+			
+			FilmDataSet result = new FilmDataSet(table.getList());
+			
+			String title = titleSearchBox.getText();
+			String country = countriesBox.getText();
+			String genre = genresBox.getText();
+			String language = languagesBox.getText();
+			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax());
+			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax());
+		
+			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
+			table.setList(result, true);
+		}
 	}
 	
 	/**

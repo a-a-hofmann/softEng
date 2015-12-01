@@ -108,6 +108,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    		table.setList(dataSet, false);
 		    		
+		    		
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
 //		    		map.setFilmDataSet(dataSet);
 		    	}
@@ -261,7 +262,7 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join languages l on l.languageid=ml.languageid "
 				+ "left join moviecountries mc on m.movieid=mc.movieid "
 				+ "left join countries c on c.countryid=mc.countryid "
-				+ "group by m.movieid;";
+				+ "group by m.movieid limit 50;";
 		getFilmDataSetAsync(query);
 		
 		// Get film data set size
