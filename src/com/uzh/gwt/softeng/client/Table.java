@@ -1,6 +1,8 @@
 package com.uzh.gwt.softeng.client;
 
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
@@ -182,10 +184,22 @@ public class Table extends Composite {
 		asyncDataProvider.setList(filmDataSet, isSearch);
 	}
 	
+	public void search(String query) {
+		asyncDataProvider.search(query);
+	}
+	
+	public ArrayList<FilmData> getList() {
+		return asyncDataProvider.getList();
+	}
+	
+	public boolean isFinishedLoading() {
+		return asyncDataProvider.isFinishedLoading();
+	}
+	
 	/**
 	 * Resets table view.
 	 */
-	public void reset(){
+	public void reset() {
 		asyncDataProvider.reset();
 	}
 	

@@ -66,13 +66,14 @@ public class ApplicationLogic implements EntryPoint {
 	 * The filename of our logo image
 	 */
 	private static final String LOGO_IMAGE_NAME = "banana_2.gif";
-	
-	/**
-	 * A popup panel that will be displayed if the search button is selected. 
-	 */
-	 PopupPanel searchRequest;
+
 	 
-		
+	private boolean isFinishedLoading;
+	 
+	
+	public boolean isFinishedLoading(){
+		return isFinishedLoading;
+	}
 	/**
 	 * Create new Image widget.
 	 */
@@ -107,7 +108,7 @@ public class ApplicationLogic implements EntryPoint {
 		    		buildMap();
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    		table.setList(dataSet, false);
-		    		
+		    		isFinishedLoading = true;
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
 //		    		map.setFilmDataSet(dataSet);
 		    	}

@@ -1,5 +1,6 @@
 package com.uzh.gwt.softeng.client;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import org.spiffyui.client.widgets.slider.RangeSlider;
@@ -29,6 +30,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.Range;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 public class FilterPanel extends Composite {
@@ -39,8 +41,8 @@ public class FilterPanel extends Composite {
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	
 	private Table table;
-
-	FilmDataSet filmSet;
+	
+//	private FilmDataSet filmSet;
 	
 	private FocusPanel fp;
 	//This widgets main panel
@@ -91,6 +93,14 @@ public class FilterPanel extends Composite {
 	
 	//Says whether the normal data set is visible or a search result
 	private boolean isSearch;
+	
+	//Current search
+	String title;
+	String country;
+	String genre;
+	String language;
+	Range durationRange;
+	Range dateRange;
 
 	/**
 	 * Constructor.
@@ -297,9 +307,25 @@ public class FilterPanel extends Composite {
 			public void onClick(ClickEvent event) {
 				isSearch = true;
 				
-				createSearchQuery();
-				
-				sendSearchQuery();
+				if (table.isFinishedLoading()){
+					Window.alert("Searching locally...");
+					FilmDataSet result = new FilmDataSet(table.getList());
+					
+					title = titleSearchBox.getText();
+					country = countriesBox.getText();
+					genre = genresBox.getText();
+					language = languagesBox.getText();
+					durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax());
+					dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax());
+					
+					result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
+					Window.alert("Resulting data set size: " + result.size());
+					table.setList(result, true);
+					
+				} else {
+					createSearchQuery();
+					sendSearchQuery();
+				}
 			}
 		});
 	}
@@ -397,25 +423,73 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				// Servlet URL
-				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV&search=" + isSearch;
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+//				String url = GWT.getModuleBaseURL() + "filmData?type=TSV&search=" + isSearch;
+//				RequestBuilder builderGET = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
 				
 				try {
-					// Create a HTTP GET request
-					builder.sendRequest(null, new RequestCallback() {
-						public void onError(Request request, Throwable exception) {
-							// Couldn't connect to server (could be timeout, SOP violation, etc.)
-					    }
+					if(table.isFinishedLoading()){
+						// If searching is local then send search parameters to the server
+						// to correctly export data
+//						URL servlet = new URL(url);
+						
+					
+						String requestData = "";
+						if(!title.isEmpty())
+							requestData += "title=" + title + "&";
+						if(!country.isEmpty())
+							requestData += "country=" + country + "&";
+						if(!genre.isEmpty())
+							requestData += "genre=" + genre + "&";
+						if(!language.isEmpty())
+							requestData += "language=" + language + "&";
+						requestData += "dateMin=" + dateRange.getStart() + "&dateMax=" + (dateRange.getStart() + dateRange.getLength()) + "&";
+						requestData += "durationMin=" + durationRange.getStart() + "&durationMax=" + (durationRange.getStart() + durationRange.getLength());
+						
+						final String url = GWT.getModuleBaseURL() + "filmData?ext=true&search=" + isSearch + "&" + requestData;
+						
+						RequestBuilder builderGET = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+						builderGET.sendRequest(null, new RequestCallback() {
 
-					    public void onResponseReceived(Request request, Response response) {
-					    	if (200 == response.getStatusCode()) {
-					    		// Process the response in response.getText()
-					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
-					    	} else {
-					    		// Handle the error.  Can get the status text from response.getStatusText()
-					    	}
-					    }
-					});
+							@Override
+							public void onResponseReceived(Request request, Response response) {
+								if (200 == response.getStatusCode()) {
+						    		// Process the response in response.getText()
+						    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+						    	} else {
+						    		// Handle the error.  Can get the status text from response.getStatusText()
+						    	}
+							}
+
+							@Override
+							public void onError(Request request, Throwable exception) {
+								// TODO Auto-generated method stub
+								
+							}
+							
+						});
+						
+						
+					} else {
+						final String url = GWT.getModuleBaseURL() + "filmData?ext=false&search=" + isSearch;
+						RequestBuilder builderGET = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+						// Create a HTTP POST request
+						builderGET.sendRequest(null, new RequestCallback() {
+							@Override
+							public void onError(Request request, Throwable exception) {
+								// Couldn't connect to server (could be timeout, SOP violation, etc.)
+						    }
+	
+							@Override
+						    public void onResponseReceived(Request request, Response response) {
+						    	if (200 == response.getStatusCode()) {
+						    		// Process the response in response.getText()
+						    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+						    	} else {
+						    		// Handle the error.  Can get the status text from response.getStatusText()
+						    	}
+						    }
+						});
+					}
 				} catch (RequestException e) {
 					// Couldn't connect to server
 				}

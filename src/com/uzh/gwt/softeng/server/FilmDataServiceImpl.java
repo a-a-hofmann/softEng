@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.gwt.view.client.Range;
 import com.uzh.gwt.softeng.client.FilmDataService;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
@@ -104,15 +105,26 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		response.setContentType(TSV_CONTENT_TYPE);
 		String formatDataSet = "";
-		if (request.getParameter("type").equals("TSV")){
+		if (request.getParameter("ext").equals("true")){
+			String title = request.getParameter("title");
+			String country = request.getParameter("country");
+			String genre = request.getParameter("genre");
+			String language = request.getParameter("language");
+			int dateMin = Integer.parseInt(request.getParameter("dateMin"));
+			int dateMax = Integer.parseInt(request.getParameter("dateMax"));
+			int durationMin = Integer.parseInt(request.getParameter("durationMin"));
+			int durationMax = Integer.parseInt(request.getParameter("durationMax"));
+			FilmDataSet filtered = new FilmDataSet(dataSet.filter(title, country, genre, language, new Range(durationMin, durationMax), new Range(dateMin, dateMax)));
+			
+			formatDataSet = filtered.formatToTSV();
+		} else {
 			if (request.getParameter("search").equals("true")){
 				formatDataSet = searchSet.formatToTSV();
 			} else {
 				formatDataSet = dataSet.formatToTSV();
 			}
-			
-			response.setContentType(TSV_CONTENT_TYPE);
 		}
 	    PrintWriter out = response.getWriter();
 	    out.println(formatDataSet);

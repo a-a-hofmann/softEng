@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.gwt.view.client.Range;
+
 
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films.
@@ -246,6 +248,11 @@ public class FilmDataSet implements Serializable{
     public void setDataSet(ArrayList<FilmData> movies){
     	this.films = movies;
     }
+    
+    
+    public int size(){
+    	return films.size();
+    }
 
     /**
 	 * Prints information relative to each film.
@@ -339,7 +346,7 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * /**
+     * 
      * Returns an ArrayList containing the filmData filtered over a given date range.
      * @param low Lower limit.
      * @param high Upper limit.
@@ -356,6 +363,30 @@ public class FilmDataSet implements Serializable{
     	
     	for(FilmData film: films){
     		if(film.getDate() >= low && film.getDate() <= high){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
+    /**
+     * 
+     * Returns an ArrayList containing the filmData filtered over a given date range.
+     * @param low Lower limit.
+     * @param high Upper limit.
+     * @return ArrayList containing filtered film data set.
+	**/
+    public ArrayList<FilmData> filterByDurationRange(int low, int high){
+    	if(low < 0){
+    		throw new IllegalArgumentException("Low < 0");
+    	}
+    	else if(low > high){
+    		throw new IllegalArgumentException("Low > High");
+    	}
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	
+    	for(FilmData film: films){
+    		if(film.getDuration() >= low && film.getDuration() <= high){
     			filteredSet.add(film);
     		}
     	}
@@ -390,6 +421,51 @@ public class FilmDataSet implements Serializable{
     		}
     	}
     	return filteredSet;
+    }
+    
+    /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return A filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		Range durationRange, Range dateRange){
+    	
+    	FilmDataSet result = new FilmDataSet(films);
+    	if(title != null && !title.isEmpty()){
+    		result.setDataSet(result.filterByTitle(title));
+    	}
+    	
+    	if(country != null && !country.isEmpty()){
+    		result.setDataSet(result.filterByCountry(country));
+    	}
+    	
+    	if(genre != null && !genre.isEmpty()){
+    		result.setDataSet(result.filterByGenre(genre));
+    	}
+    	
+    	if(language != null && !language.isEmpty()){
+    		result.setDataSet(result.filterByLanguage(language));
+    	}
+    	
+    	if(durationRange != null){
+    		int start = durationRange.getStart();
+    		int end = start + durationRange.getLength();
+    		result.setDataSet(result.filterByDurationRange(start, end));
+    	}
+    	
+    	if(dateRange != null){
+    		int start = dateRange.getStart();
+    		int end = start + dateRange.getLength();
+    		result.setDataSet(result.filterByDateRange(start, end));
+    	}
+    	
+    	return result.getFilms();
     }
     
     /**
