@@ -133,31 +133,34 @@ public class HeatMap extends Composite {
 		fromToYearControlsWrapper.addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
-					String input = fromYearTextBox.getText();
+					String fromYearInput = fromYearTextBox.getText();
+					String toYearInput = toYearTextBox.getText();
 					
 					//fromYear TextBox
-					//if( input.equals("") ) {
-					if( input.matches("\\d{4}") ) {
-						//TODO: check for valid input
+					if( fromYearInput.matches("\\d{4}") ) {
+						fromYearTextBox.getElement().getStyle().setBackgroundColor("white");
 
 						//adjust min value, do not change max value
 						int max = slider.getValueMax();
-						int min = Integer.valueOf( input );
+						int min = Integer.valueOf( fromYearInput );
 						
 						//if minvalue is greater than max value or smallerer than minimum of slider do nothing and reset TextBox
 						if( !(min > max) && !(min < slider.getMinimum()) ){
 							slider.setValues(min, max);
 						} else {
 							fromYearTextBox.setValue("");
+							fromYearTextBox.getElement().getStyle().setBackgroundColor("red");
 						}
+						
+					} else {
+						fromYearTextBox.setValue("");
+						fromYearTextBox.getElement().getStyle().setBackgroundColor("red");
 					}
 
 					//toYearTextBox
-					if( toYearTextBox.getText().equals("") ) {
+					if( toYearInput.matches("\\d{4}") ) {
+						toYearTextBox.getElement().getStyle().setBackgroundColor("white");
 						
-					} else {
-						//TODO: check for valid input
-
 						//adjust max value, do not change min value
 						int max = Integer.valueOf( toYearTextBox.getText() );
 						int min = slider.getValueMin();
@@ -167,7 +170,12 @@ public class HeatMap extends Composite {
 							slider.setValues(min, max);
 						} else {
 							toYearTextBox.setValue("");
+							toYearTextBox.getElement().getStyle().setBackgroundColor("red");
 						}
+						
+					} else {
+						toYearTextBox.setValue("");
+						toYearTextBox.getElement().getStyle().setBackgroundColor("red");
 					}
 					
 				}
@@ -178,10 +186,10 @@ public class HeatMap extends Composite {
 		
 		
 		//TODO: If just one box is filled out, use it to target 1 specific year
-		fromYearLabel = new Label("Min: ");
+		fromYearLabel = new Label("Min. Year: ");
 		fromYearTextBox = new TextBox();
 		
-		toYearLabel = new Label("Max: ");
+		toYearLabel = new Label("Max. Year: ");
 		toYearTextBox = new TextBox();
 		
 		fromToYearControls.add(fromYearLabel);
