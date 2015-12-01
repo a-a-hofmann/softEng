@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,6 +106,9 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		String formatDataSet = "";
 		log.log(Level.SEVERE, request.getQueryString());
 		
+		response.setContentType(TSV_CONTENT_TYPE);
+		PrintWriter out = response.getWriter();
+		
 		if (request.getParameter("search").equals("true")){
 			if (request.getParameter("extended").equals("true")){
 				String title = request.getParameter("title");
@@ -124,15 +126,32 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			} else {
 				formatDataSet = searchSet.formatToTSV();
 			}
+			
+		    out.println(formatDataSet);
+		    out.close();
+		    
 		} else {
 			log.log(Level.INFO, "Export entire dataset");
 			formatDataSet = dataSet.formatToTSV();
+			out.print(formatDataSet);
+			out.close();
+			
+//			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_80000.tsv"));
+//			
+//			log.log(Level.INFO, formatDataSet);
+//			
+//			while((formatDataSet = bufferedReader.readLine()) != null){
+//				out.println(formatDataSet);
+//			}
+//			
+//			bufferedReader.close();
+//			bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_1471.tsv"));
+//			while((formatDataSet = bufferedReader.readLine()) != null){
+//				out.println(formatDataSet);
+//			}
+//			
+//			out.close();
+//			bufferedReader.close();
 		}
-		
-		response.setContentType(TSV_CONTENT_TYPE);
-		
-	    PrintWriter out = response.getWriter();
-	    out.println(formatDataSet);
-	    out.close();
 	}
 }

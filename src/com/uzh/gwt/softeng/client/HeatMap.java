@@ -18,7 +18,6 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
 import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
@@ -64,7 +63,7 @@ public class HeatMap extends Composite {
 	private RangeSlider slider;
 	
 	/**
-	 * Textbox to target 
+	 * Slider wrapper and controls. 
 	 */
 	private FocusPanel fromToYearControlsWrapper;
 	private HorizontalPanel fromToYearControls;
@@ -308,13 +307,5 @@ public class HeatMap extends Composite {
 
 		// Draw the chart
 		geoChart.draw(dataTable, options);
-	}
-	
-	/**
-	 * Gets the Panel containing the heatmap.
-	 * @return DockLayoutPanel containing heatmap.
-	 */
-	public Widget getMap(){
-		return dlp;
 	}
 }

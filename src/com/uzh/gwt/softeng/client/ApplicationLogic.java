@@ -118,30 +118,6 @@ public class ApplicationLogic implements EntryPoint {
 	}
 	
 	/**
-	 * Sends RPC to server to retrieve film data set size.
-	 */
-	private void getFilmDataSetSizeAsync(){
-		if (filmDataSvc == null) {
-		      filmDataSvc = GWT.create(FilmDataService.class);
-		}
-
-		    // Set up the callback object.
-		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-		    	public void onFailure(Throwable caught) {
-		    		Window.alert("I failed");
-		    		caught.printStackTrace();
-		    	}
-
-		    	public void onSuccess(Integer result) {
-		    		table.updateRowCount(result);
-		    	}
-		    };
-		    
-		    // Make the call to the film data service.
-		    filmDataSvc.getFilmDataSetSize(callback);
-	}
-	
-	/**
 	 * Sets up the GUI components used in the application
 	 * 
 	 * 1. A heatmap.

@@ -47,11 +47,6 @@ public class Table extends Composite {
 	SimplePager pager;
 	
 	/**
-	 * 
-	 */
-	private boolean isFinishedLoading;
-	
-	/**
 	 * Table constructor.
 	 * Creates container panel and adds table and pager to it.
 	 * Initializes data provider.
@@ -191,7 +186,10 @@ public class Table extends Composite {
 		asyncDataProvider.setList(filmDataSet, isSearch);
 	}
 	
-	
+	/**
+	 * Returns list from data provider.
+	 * @return list containing film data.
+	 */
 	public ArrayList<FilmData> getList(){
 		return asyncDataProvider.getList();
 	}
@@ -210,6 +208,10 @@ public class Table extends Composite {
 		asyncDataProvider.updateRowCount(size, true);
 	}
 	
+	/**
+	 * Checks if the application is finished loading all data.
+	 * @return {@code true} if application finished loading. {@code false} otherwise.
+	 */
 	public boolean isFinishedLoading(){
 		return asyncDataProvider.isFinishedLoading();
 	}

@@ -39,12 +39,19 @@ public class FilterPanel extends Composite {
 	 */
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	
+	/**
+	 * Table reference. Filtered results will be displayed here.
+	 */
 	private Table table;
-
-	FilmDataSet filmSet;
 	
+	/**
+	 * This widgets main panel.
+	 */
 	private FocusPanel fp;
-	//This widgets main panel
+	
+	/**
+	 * Vertical panel containing all other panels.
+	 */
 	private VerticalPanel vlp;
 	
 	//Sub panels containing the different search widgets
@@ -92,6 +99,11 @@ public class FilterPanel extends Composite {
 	
 	//Says whether the normal data set is visible or a search result
 	private boolean isSearch;
+	
+	/**
+	 * Url string for HTTP GET requests.
+	 */
+	private String url;
 
 	/**
 	 * Constructor.
@@ -159,7 +171,7 @@ public class FilterPanel extends Composite {
 		
 		//Countries
 		countriesLabel = new Label("Countries: ");
-		countriesBox = new SuggestBox(getCountrySuggestion());
+		countriesBox = new SuggestBox(new MultiWordSuggestOracle());
 		countriesPanel = new HorizontalPanel();
 		countriesPanel.add(countriesLabel);
 		countriesPanel.add(countriesBox);
@@ -193,11 +205,20 @@ public class FilterPanel extends Composite {
 	}
 	
 	/**
+	 * Constructor and saves table reference.
+	 * @param table Table reference.
+	 */
+	public FilterPanel(Table table){
+		this();
+		this.table = table;
+	}
+	
+	/**
 	 * Creates duration labels, slider and adds listeners.
 	 */
 	private void createDurationFilter() {
 		//Duration
-		//TODO: Longest film avalaible is 14400 minutes long.
+		//TODO: Longest film available is 14400 minutes long.
 		//What should we put as max?
         durationLabel = new Label("Duration: ");
         durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
@@ -276,11 +297,6 @@ public class FilterPanel extends Composite {
         });
 	}
 	
-	FilterPanel(Table table){
-		this();
-		this.table = table;
-	}
-	
 	/**
 	 * Empty all textboxes and reset slider labels and values.
 	 */
@@ -293,6 +309,11 @@ public class FilterPanel extends Composite {
 		countriesBox.setText("");
 	}
 	
+	/**
+	 * Checks if all input boxes are empty and sliders are set to default value.
+	 * @return {@code true} if text boxes are empty and sliders are set to default values, {@code false} otherwise.
+	 * 
+	 */
 	private boolean isEmpty() {
 		return titleSearchBox.getText().isEmpty() && (dateSlider.getValueMin() == dateSlider.getMinimum()) &&
 				(dateSlider.getValueMax() == dateSlider.getMaximum()) && durationSlider.getValueMin() == durationSlider.getMinimum() &&
@@ -417,12 +438,9 @@ public class FilterPanel extends Composite {
 			}
 		});
 	}
-	
 
-	String url;
 	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
-	 * @return
 	 */
 	private void createTSVExportButton() {
 		exportButton = new Button("Export", new ClickHandler(){
@@ -477,20 +495,21 @@ public class FilterPanel extends Composite {
 		});
 	}
 	
-	public MultiWordSuggestOracle getCountrySuggestion(){
-		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-		
-		return oracle;
-	}
-	
+	/**
+	 * Set country suggestion list
+	 * @param countries Countries list to be set as suggestions.
+	 */
 	public void setCountrySuggestion(ArrayList<String> countries){
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) countriesBox.getSuggestOracle();
 		
-		for (String country : countries){
-			oracle.add(country);
+		for(int i = 0; i < countries.size(); i++){
+			oracle.add(countries.get(i));
 		}
+//		for (String country : countries){
+//			oracle.add(country);
+//		}
 	}
-
+		
 	public String getSearchBoxCaption() {
 		return titleSearchBox.getText();
 	}
