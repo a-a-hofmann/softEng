@@ -110,6 +110,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		String formatDataSet = "";
 		
 		response.setContentType(TSV_CONTENT_TYPE);
+		
 		PrintWriter out = response.getWriter();
 		
 		if (request.getParameter("search").equals("true")){
@@ -126,6 +127,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 				int dateMax = Integer.parseInt(request.getParameter("dateMax"));
 	
 				formatDataSet = new FilmDataSet(dataSet.filter(title, country, genre, language, durationMin, durationMax, dateMin, dateMax)).formatToTSV();
+				log.log(Level.SEVERE, "" + dataSet.size());
 			} else {
 				formatDataSet = searchSet.formatToTSV();
 			}
