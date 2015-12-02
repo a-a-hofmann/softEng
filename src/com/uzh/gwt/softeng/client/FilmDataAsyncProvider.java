@@ -35,12 +35,12 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	/**
 	 * List with all movies to use when it is finished loading.
 	 */
-	private List<FilmData> filmData;
+	private ArrayList<FilmData> filmData;
 	
 	/**
 	 * List for search requests.
 	 */
-	private List<FilmData> filmSearchResults;
+	private ArrayList<FilmData> filmSearchResults;
 	
 	/**
 	 * Says if the application is finished loading all film data.
@@ -145,7 +145,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 */
 	public void setList(FilmDataSet filmDataSet, boolean isSearch) {
 		if (filmDataSet != null){
-			List<FilmData> newData = filmDataSet.getFilms();
+			ArrayList<FilmData> newData = filmDataSet.getFilms();
 			if(isSearch){
 				filmSearchResults = newData;
 				isSearchResult = isSearch;
@@ -185,5 +185,13 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	public void updateRowCount(int size, boolean exact) {
 		super.updateRowCount(size, exact);
 		this.size = size;
+	}
+	
+	public ArrayList<FilmData> getList() {
+		return filmData;
+	}
+
+	public boolean isFinishedLoading() {
+		return isFinishedLoading;
 	}
 }

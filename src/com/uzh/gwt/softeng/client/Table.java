@@ -1,6 +1,8 @@
 package com.uzh.gwt.softeng.client;
 
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
@@ -68,6 +70,8 @@ public class Table extends Composite {
 		lp.add(table);
 		initTable();
 		initWidget(lp);
+		
+		
 	}
 	
 	/**
@@ -183,6 +187,14 @@ public class Table extends Composite {
 	}
 	
 	/**
+	 * Returns list from data provider.
+	 * @return list containing film data.
+	 */
+	public ArrayList<FilmData> getList(){
+		return asyncDataProvider.getList();
+	}
+	
+	/**
 	 * Resets table view.
 	 */
 	public void reset(){
@@ -194,5 +206,13 @@ public class Table extends Composite {
 	 */
 	public void updateRowCount(int size){
 		asyncDataProvider.updateRowCount(size, true);
+	}
+	
+	/**
+	 * Checks if the application is finished loading all data.
+	 * @return {@code true} if application finished loading. {@code false} otherwise.
+	 */
+	public boolean isFinishedLoading(){
+		return asyncDataProvider.isFinishedLoading();
 	}
 }

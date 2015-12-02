@@ -342,7 +342,9 @@ public class FilmData implements Serializable {
      */
     public String formatToTSV() {
     	String tsvFormat = "" + ID + "\t" + title + "\t" + date + 
-    			"\t" + duration + "\t" + genres + "\t" + languages + "\t" + countries;
+    			"\t" + duration + "\t" + genres.toString() + "\t" + languages.toString() + "\t" + countries.toString();
+    	
+    	tsvFormat = tsvFormat.replaceAll("\\[", "{").replaceAll("\\]", "}");
     	return tsvFormat;
     }
 

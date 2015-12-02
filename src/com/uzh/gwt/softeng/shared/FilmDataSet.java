@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.gwt.view.client.Range;
+
 
 /**
  * The {@code FilmDataSet} class is responsible for managing a set of films.
@@ -239,6 +241,9 @@ public class FilmDataSet implements Serializable{
     	return filmsPerCountry;
     }
     
+    public int size(){
+    	return films.size();
+    }
     /**
      * Set new FilmDataSet.
      * @param movies New film data set to be saved in filmDataSet object.
@@ -266,13 +271,16 @@ public class FilmDataSet implements Serializable{
     	//distinction of occurrence of titlePart in beginning, middle or end of Title
     	//so only eg. titlePart = "the" containing data is in ArrayList and not "They"
     	for(FilmData film: films){
-    		if(film.getTitle().toUpperCase().startsWith(titlePart.toUpperCase())){  
+    		if (film.getTitle().contains(titlePart)){
     			filteredSet.add(film);
-    		} else if(film.getTitle().toUpperCase().contains(titlePart.toUpperCase())){
-    			filteredSet.add(film);
-    		} else if(film.getTitle().toUpperCase().endsWith(titlePart.toUpperCase())){
-    			filteredSet.add(film);
-		   }
+    		}
+//    		if(film.getTitle().toUpperCase().startsWith(titlePart.toUpperCase())){  
+//    			filteredSet.add(film);
+//    		} else if(film.getTitle().toUpperCase().contains(titlePart.toUpperCase())){
+//    			filteredSet.add(film);
+//    		} else if(film.getTitle().toUpperCase().endsWith(titlePart.toUpperCase())){
+//    			filteredSet.add(film);
+//		   }
     	}
     	return filteredSet;  
     }
@@ -345,7 +353,10 @@ public class FilmDataSet implements Serializable{
      * @param high Upper limit.
      * @return ArrayList containing filtered film data set.
 	**/
-    public ArrayList<FilmData> filterByDateRange(int low, int high){
+    public ArrayList<FilmData> filterByDateRange(Range range){
+    	int low = range.getStart();
+    	int high = low + range.getLength();
+    	
     	if(low < 0){
     		throw new IllegalArgumentException("Low < 0");
     	}
@@ -356,6 +367,33 @@ public class FilmDataSet implements Serializable{
     	
     	for(FilmData film: films){
     		if(film.getDate() >= low && film.getDate() <= high){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
+    /**
+     * /**
+     * Returns an ArrayList containing the filmData filtered over a given date range.
+     * @param low Lower limit.
+     * @param high Upper limit.
+     * @return ArrayList containing filtered film data set.
+	**/
+    public ArrayList<FilmData> filterByDurationRange(Range range){
+    	int low = range.getStart();
+    	int high = low + range.getLength();
+    	
+    	if(low < 0){
+    		throw new IllegalArgumentException("Low < 0");
+    	}
+    	else if(low > high){
+    		throw new IllegalArgumentException("Low > High");
+    	}
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	
+    	for(FilmData film: films){
+    		if(film.getDuration() >= low && film.getDuration() <= high){
     			filteredSet.add(film);
     		}
     	}
@@ -393,6 +431,73 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return ArrayList filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		Range durationRange, Range dateRange){
+    	
+    	
+    	FilmDataSet result = new FilmDataSet(films);
+    	ArrayList<FilmData> tmp;
+    	if(title != null && !title.isEmpty()){
+    		tmp = result.filterByTitle(title);
+    		result = new FilmDataSet(tmp);
+    	}
+    	
+    	if(country != null && !country.isEmpty()){
+    		tmp = result.filterByCountry(country);
+    		result = new FilmDataSet(tmp);
+    	}
+    	
+    	if(genre != null && !genre.isEmpty()){
+    		tmp = result.filterByGenre(genre);
+    		result = new FilmDataSet(tmp);
+    	}
+    	
+    	if(language != null && !language.isEmpty()){
+    		tmp = result.filterByLanguage(language);
+    		result = new FilmDataSet(tmp);
+    	}
+    	
+    	
+    	if(durationRange != null){
+    	
+    		tmp = result.filterByDurationRange(durationRange);
+    		result = new FilmDataSet(tmp);
+    	}
+    	if(dateRange != null){
+    		tmp = result.filterByDateRange(dateRange);
+    		result = new FilmDataSet(tmp);
+    	}
+
+    	return result.getFilms();
+    }
+    
+    /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return ArrayList filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		int durationMin, int durationMax, int dateMin, int dateMax){
+    	
+    	return filter(title, country, genre, language, new Range(durationMin, durationMax - durationMin)
+    			, new Range(dateMin, dateMax - dateMin));
+    }
+    
+    /**
      * Format the data set to TSV.
      * @return a string representation of the entire data set in tsv format.
      */
@@ -412,7 +517,14 @@ public class FilmDataSet implements Serializable{
 //		try {
 //			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 //			
-//			for (String country : dataSet.getCountriesList()){
+//			ArrayList<FilmData> result = dataSet.filter("Batman", null, null, null, new Range(0, 400), new Range(1888, 2020));
+//			
+//			for(FilmData film : result)
+//				System.out.println(film.getTitle());
+//		} catch(Exception e){
+//		
+//			
+////			for (String country : dataSet.getCountriesList()){
 //				System.out.println(country);
 //			}
 //			dataSet.printDataSet();

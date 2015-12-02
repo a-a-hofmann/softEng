@@ -2,18 +2,8 @@ package com.uzh.gwt.softeng.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -108,36 +98,13 @@ public class ApplicationLogic implements EntryPoint {
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
 		    		table.setList(dataSet, false);
 		    		
+		    		
 		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
 //		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
 		    // Make the call to the film data service.
 		    filmDataSvc.getFilmData(query, false, callback);
-	}
-	
-	/**
-	 * Sends RPC to server to retrieve film data set size.
-	 */
-	private void getFilmDataSetSizeAsync(){
-		if (filmDataSvc == null) {
-		      filmDataSvc = GWT.create(FilmDataService.class);
-		}
-
-		    // Set up the callback object.
-		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
-		    	public void onFailure(Throwable caught) {
-		    		Window.alert("I failed");
-		    		caught.printStackTrace();
-		    	}
-
-		    	public void onSuccess(Integer result) {
-		    		table.updateRowCount(result);
-		    	}
-		    };
-		    
-		    // Make the call to the film data service.
-		    filmDataSvc.getFilmDataSetSize(callback);
 	}
 	
 	/**
@@ -158,57 +125,6 @@ public class ApplicationLogic implements EntryPoint {
 		buildFilters();
 		//Insert an ad
 		insertAd();
-		//Create export panel
-		createExport();
-	}
-	
-	/**
-	 * Creates an export panel containing an export button.
-	 * TODO: Add map export?
-	 */
-	private void createExport() {
-		HorizontalPanel hp = new HorizontalPanel();
-    	
-    	Button exportTSV = createTSVExportButton();
-    	hp.add(exportTSV);
-		RootPanel.get("export").add(hp);
-	}
-
-	/**
-	 * Creates a button and attaches a clickhandler to export data set to tsv.
-	 * @return
-	 */
-	private Button createTSVExportButton() {
-		Button exportTSV = new Button("Export TSV", new ClickHandler(){
-			// On click send a get request
-			@Override
-			public void onClick(ClickEvent event) {
-				// Servlet URL
-				final String url = GWT.getModuleBaseURL() + "filmData?type=TSV";
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-				
-				try {
-					// Create a HTTP GET request
-					builder.sendRequest(null, new RequestCallback() {
-						public void onError(Request request, Throwable exception) {
-							// Couldn't connect to server (could be timeout, SOP violation, etc.)
-					    }
-
-					    public void onResponseReceived(Request request, Response response) {
-					    	if (200 == response.getStatusCode()) {
-					    		// Process the response in response.getText()
-					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
-					    	} else {
-					    		// Handle the error.  Can get the status text from response.getStatusText()
-					    	}
-					    }
-					});
-				} catch (RequestException e) {
-					// Couldn't connect to server
-				}
-			}
-		});
-		return exportTSV;
 	}
 	
 	/**
@@ -263,9 +179,6 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
-		
-		// Get film data set size
-		getFilmDataSetSizeAsync();
 		
 		// Create the user interface
 		setUpGui();				
