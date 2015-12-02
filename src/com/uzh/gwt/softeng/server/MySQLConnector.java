@@ -551,7 +551,7 @@ public class MySQLConnector {
 //			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
 			
 			//Extra data set.
-			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
+			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_1471.tsv");
 			System.out.println("Sending to db");
 			sendToDB(films);
 		} catch (IOException | SQLException e1) {

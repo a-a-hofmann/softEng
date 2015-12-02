@@ -1,5 +1,7 @@
 package com.uzh.gwt.softeng.server;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -103,8 +105,9 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		log.log(Level.INFO, request.getQueryString());
+		
 		String formatDataSet = "";
-		log.log(Level.SEVERE, request.getQueryString());
 		
 		response.setContentType(TSV_CONTENT_TYPE);
 		PrintWriter out = response.getWriter();
@@ -132,26 +135,15 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		    
 		} else {
 			log.log(Level.INFO, "Export entire dataset");
-			formatDataSet = dataSet.formatToTSV();
-			out.print(formatDataSet);
-			out.close();
 			
-//			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_80000.tsv"));
-//			
-//			log.log(Level.INFO, formatDataSet);
-//			
-//			while((formatDataSet = bufferedReader.readLine()) != null){
-//				out.println(formatDataSet);
-//			}
-//			
-//			bufferedReader.close();
-//			bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_1471.tsv"));
-//			while((formatDataSet = bufferedReader.readLine()) != null){
-//				out.println(formatDataSet);
-//			}
-//			
-//			out.close();
-//			bufferedReader.close();
+			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_all.tsv"));
+			
+			while((formatDataSet = bufferedReader.readLine()) != null){
+				out.println(formatDataSet);
+			}
+			
+			out.close();
+			bufferedReader.close();
 		}
 	}
 }

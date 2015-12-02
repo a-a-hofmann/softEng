@@ -221,10 +221,10 @@ public class FilterPanel extends Composite {
 		//TODO: Longest film available is 14400 minutes long.
 		//What should we put as max?
         durationLabel = new Label("Duration: ");
-        durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
+        durationSlider = new RangeSlider("durationSlider", 0, 15000, 0, 15000);
         durationminValueLabel = new Label("Min: 0");
         durationminValueLabel.setHeight("20px");
-        durationmaxValueLabel = new Label("Max: 400");
+        durationmaxValueLabel = new Label("Max: 15000");
         durationmaxValueLabel.setHeight("20px");
 
         durationSlider.addListener(new SliderListener(){
@@ -303,7 +303,7 @@ public class FilterPanel extends Composite {
 	private void emptySearchParameters() {
 		titleSearchBox.setText("");
 		dateSlider.setValues(1888, 2020);
-		durationSlider.setValues(0, 400);
+		durationSlider.setValues(0, 15000);
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
@@ -334,6 +334,7 @@ public class FilterPanel extends Composite {
 				if (!isEmpty()){
 					isSearch = true;
 					createSearchQuery();
+					Window.alert(filterString.toString());
 					sendSearchQuery();
 				}
 			}
@@ -381,6 +382,8 @@ public class FilterPanel extends Composite {
 		filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
 		//has to be last String in this chain
 		filterString.append( "group by m.movieid;" );
+		
+		
 	}
 	
 	/**
