@@ -43,8 +43,6 @@ h1 {
 	background-color : lightgray;
 }
 
-#filterPanel{
-}
 
 #filterPanel .ui-slider-handle {
 	background: #ef2929;
@@ -53,9 +51,16 @@ h1 {
 }
 
 #ad{
-	margin-left: auto;
-	margin-rigth: auto;
-	clear: both;
+	aamargin-left: auto;
+	aamargin-rigth: auto;
+	aaclear: both;
+	top: 8em;
+	width: 20%;
+	float: left;
+	position: relative;
+	border-radius: 5px;
+	background-color: rgba(153,153,153, 0.2);
+	padding: 5px 20px 30px 20px;
 }
 
 #search{
@@ -131,7 +136,11 @@ h1 {
 
 /* table Section */
 #table {
-	clear: both;
+	width: 75%;
+	aaheight: 50%;
+	float: left;
+	position: relative;
+	padding: 10px 0px 10px 0px;
 }
 
 #table thead{
