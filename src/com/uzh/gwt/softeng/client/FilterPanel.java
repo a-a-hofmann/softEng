@@ -118,7 +118,9 @@ public class FilterPanel extends Composite {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
 					if(!isEmpty()){
 						isSearch = true;
-						createSearchQuery();
+						if(!table.isFinishedLoading()){
+							createSearchQuery();
+						}
 						sendSearchQuery();
 					}
 				}
@@ -224,10 +226,10 @@ public class FilterPanel extends Composite {
 		//TODO: Longest film available is 14400 minutes long.
 		//What should we put as max?
         durationLabel = new Label("Duration: ");
-        durationSlider = new RangeSlider("durationSlider", 0, 15000, 0, 15000);
+        durationSlider = new RangeSlider("durationSlider", 0, 600, 0, 600);
         durationminValueLabel = new Label("Min: 0");
         durationminValueLabel.setHeight("20px");
-        durationmaxValueLabel = new Label("Max: 15000");
+        durationmaxValueLabel = new Label("Max: 600");
         durationmaxValueLabel.setHeight("20px");
 
         durationSlider.addListener(new SliderListener(){
@@ -306,7 +308,7 @@ public class FilterPanel extends Composite {
 	private void emptySearchParameters() {
 		titleSearchBox.setText("");
 		dateSlider.setValues(1888, 2020);
-		durationSlider.setValues(0, 15000);
+		durationSlider.setValues(0, 600);
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
@@ -336,7 +338,10 @@ public class FilterPanel extends Composite {
 			public void onClick(ClickEvent event) {
 				if (!isEmpty()){
 					isSearch = true;
-					createSearchQuery();
+
+					if(!table.isFinishedLoading()) {
+						createSearchQuery();
+					}
 					sendSearchQuery();
 				}
 			}
@@ -349,6 +354,7 @@ public class FilterPanel extends Composite {
 	private void createSearchQuery() {
 		//send query
 		//create filter query
+		shouldNotLimitDurationUpwards();
 		filterString = new StringBuilder(
 				"select m.*, group_concat(DISTINCT g.genre) genres, "
 						+ "group_concat(DISTINCT l.language) languages, "
@@ -380,11 +386,22 @@ public class FilterPanel extends Composite {
 		if( !languagesBox.getText().equals("") )
 			filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
 		
-		filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
-		filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
-		//has to be last String in this chain
-		filterString.append( "group by m.movieid;" );
+		if(shouldNotLimitDurationUpwards()){
+			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
+			
+		} else {
+			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
+		}
 		
+		if(shouldNotLimitDateDownwards()) {
+			Window.alert("Not limiting downwards date");
+			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
+		} else {
+			filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " + dateSlider.getValueMax() + " " );
+		}
+		
+		//has to be last String in this chain
+		filterString.append( "group by m.movieid;" );	
 		
 	}
 	
@@ -549,12 +566,27 @@ public class FilterPanel extends Composite {
 		for(int i = 0; i < countries.size(); i++){
 			oracle.add(countries.get(i));
 		}
-//		for (String country : countries){
-//			oracle.add(country);
-//		}
 	}
 		
 	public String getSearchBoxCaption() {
 		return titleSearchBox.getText();
+	}
+	
+	/**
+	 * Returns true if we should omit upper limit for the search query
+	 * @return true if we should omit upper limit for the duration
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDurationUpwards() {
+		return durationSlider.getValueMax() == durationSlider.getMaximum();
+	}
+	
+	/**
+	 * Returns true if we should omit lower limit for the search query
+	 * @return true if we should omit lower limit for the date
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDateDownwards() {
+		return dateSlider.getValueMin() == dateSlider.getMinimum();
 	}
 }
