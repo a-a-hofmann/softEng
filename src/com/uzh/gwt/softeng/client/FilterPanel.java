@@ -394,7 +394,6 @@ public class FilterPanel extends Composite {
 		}
 		
 		if(shouldNotLimitDateDownwards()) {
-			Window.alert("Not limiting downwards date");
 			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
 		} else {
 			filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " + dateSlider.getValueMax() + " " );

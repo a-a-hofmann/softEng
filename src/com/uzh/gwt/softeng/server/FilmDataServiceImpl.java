@@ -110,6 +110,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		String formatDataSet = "";
 		
 		response.setContentType(TSV_CONTENT_TYPE);
+		
 		PrintWriter out = response.getWriter();
 		
 		if (request.getParameter("search").equals("true")){
