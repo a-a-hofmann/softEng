@@ -126,6 +126,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 				int dateMax = Integer.parseInt(request.getParameter("dateMax"));
 	
 				formatDataSet = new FilmDataSet(dataSet.filter(title, country, genre, language, durationMin, durationMax, dateMin, dateMax)).formatToTSV();
+				log.log(Level.SEVERE, "" + dataSet.size());
 			} else {
 				formatDataSet = searchSet.formatToTSV();
 			}

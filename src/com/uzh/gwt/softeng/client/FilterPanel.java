@@ -92,7 +92,8 @@ public class FilterPanel extends Composite {
 	//Buttons
 	private Button submitButton;
 	private Button resetButton;
-	private Button exportButton;
+	private Button exportSearchButton;
+	private Button exportAllButton;
 	
 	//Stringbuilder to build search query
 	private StringBuilder filterString;
@@ -148,7 +149,8 @@ public class FilterPanel extends Composite {
 		//Button
 		createSubmitButton();
 		createResetButton();
-		createTSVExportButton();
+		createExportSearchButton();
+		createExportAllButton();
 		
 
 		//Genres
@@ -195,7 +197,8 @@ public class FilterPanel extends Composite {
 		buttonsPanel = new HorizontalPanel();
 		buttonsPanel.add(submitButton);
 		buttonsPanel.add(resetButton);
-		buttonsPanel.add(exportButton);
+		buttonsPanel.add(exportSearchButton);
+		buttonsPanel.add(exportAllButton);
 		vlp.add(buttonsPanel);
 		
 		//Always call for composite widgets
@@ -334,7 +337,6 @@ public class FilterPanel extends Composite {
 				if (!isEmpty()){
 					isSearch = true;
 					createSearchQuery();
-					Window.alert(filterString.toString());
 					sendSearchQuery();
 				}
 			}
@@ -445,17 +447,18 @@ public class FilterPanel extends Composite {
 	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
 	 */
-	private void createTSVExportButton() {
-		exportButton = new Button("Export", new ClickHandler(){
+	private void createExportSearchButton() {
+		exportSearchButton = new Button("Export Search", new ClickHandler(){
 			// On click send a get request
 			@Override
 			public void onClick(ClickEvent event) {
-				// Servlet URL
-				url = GWT.getModuleBaseURL() + "filmData?search=" + isSearch + "&extended=" + ((table.isFinishedLoading() && isSearch)? "true" : "false");
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
 				
-				if(table.isFinishedLoading()) {
-					if(isSearch) {
+				if(!isEmpty() && isSearch){
+					// Servlet URL
+					url = GWT.getModuleBaseURL() + "filmData?search=true" + "&extended=" + table.isFinishedLoading();
+					RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+					
+					if(table.isFinishedLoading()) {
 						String title = titleSearchBox.getText();
 						String country = countriesBox.getText();
 						String genre = genresBox.getText();
@@ -471,8 +474,46 @@ public class FilterPanel extends Composite {
 								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
 						
 						builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+						}
+					
+					try {
+						// Create a HTTP GET request
+						builder.sendRequest(null, new RequestCallback() {
+							public void onError(Request request, Throwable exception) {
+								// Couldn't connect to server (could be timeout, SOP violation, etc.)
+								Window.alert(exception.toString());
+						    }
+	
+						    public void onResponseReceived(Request request, Response response) {
+						    	if (200 == response.getStatusCode()) {
+						    		// Process the response in response.getText()
+						    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+						    	} else {
+						    		// Handle the error.  Can get the status text from response.getStatusText()
+						    	}
+						    }
+						});
+					} catch (RequestException e) {
+						// Couldn't connect to server
 					}
+				} else {
+					Window.alert("Please choose at least one search option to use this functionality");
 				}
+			}
+		});
+	}
+	
+	/**
+	 * Creates a button and attaches a clickhandler to export data set to tsv.
+	 */
+	private void createExportAllButton() {
+		exportAllButton = new Button("Export All", new ClickHandler(){
+			// On click send a get request
+			@Override
+			public void onClick(ClickEvent event) {
+				// Servlet URL
+				url = GWT.getModuleBaseURL() + "filmData?search=false";
+				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
 				
 				try {
 					// Create a HTTP GET request
