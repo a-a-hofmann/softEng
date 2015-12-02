@@ -96,6 +96,8 @@ public class ApplicationLogic implements EntryPoint {
 		    		dataSet = result;
 		    		buildMap();
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
+		    		filterPanel.setGenresSuggestion(result.getGenresList());
+		    		filterPanel.setLanguagesSuggestion(result.getLanguagesList());
 		    		table.setList(dataSet, false);
 		    		
 		    		

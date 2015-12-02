@@ -157,7 +157,7 @@ public class FilterPanel extends Composite {
 
 		//Genres
 		genresLabel = new Label("Genres: ");
-		genresBox = new SuggestBox();
+		genresBox = new SuggestBox(new MultiWordSuggestOracle());
 		genresPanel = new HorizontalPanel();
 		genresPanel.add(genresLabel);
 		genresPanel.add(genresBox);
@@ -166,7 +166,7 @@ public class FilterPanel extends Composite {
 		
 		//Languages
 		languagesLabel = new Label("Languages: ");
-		languagesBox = new SuggestBox();
+		languagesBox = new SuggestBox(new MultiWordSuggestOracle());
 		languagesPanel = new HorizontalPanel();
 		languagesPanel.add(languagesLabel);
 		languagesPanel.add(languagesBox);
@@ -564,6 +564,22 @@ public class FilterPanel extends Composite {
 		
 		for(int i = 0; i < countries.size(); i++){
 			oracle.add(countries.get(i));
+		}
+	}
+	
+	public void setGenresSuggestion(ArrayList<String> genres) {
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) genresBox.getSuggestOracle();
+		
+		for(int i = 0; i < genres.size(); i++){
+			oracle.add(genres.get(i));
+		}
+	}
+	
+	public void setLanguagesSuggestion(ArrayList<String> languages) {
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) languagesBox.getSuggestOracle();
+		
+		for(int i = 0; i < languages.size(); i++){
+			oracle.add(languages.get(i));
 		}
 	}
 		
