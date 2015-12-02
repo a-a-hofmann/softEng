@@ -222,7 +222,7 @@ public class FilterPanel extends Composite {
 		//What should we put as max?
         durationLabel = new Label("Duration: ");
         durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
-        durationminValueLabel = new Label("Min: 400");
+        durationminValueLabel = new Label("Min: 0");
         durationminValueLabel.setHeight("20px");
         durationmaxValueLabel = new Label("Max: 400");
         durationmaxValueLabel.setHeight("20px");

@@ -65,12 +65,10 @@ public class HeatMap extends Composite {
 	/**
 	 * Slider wrapper and controls. 
 	 */
-	private FocusPanel fromToYearControlsWrapper;
-	private HorizontalPanel fromToYearControls;
-	private Label fromYearLabel;
-	private Label toYearLabel;
-	private TextBox fromYearTextBox;
-	private TextBox toYearTextBox;
+	private FocusPanel yearControlsWrapper;
+	private HorizontalPanel yearControls;
+	private Label yearLabel;
+	private TextBox yearInputTextBox;
 	
 	/**
 	 * Panel containing the slider and two label for min and max value.
@@ -125,70 +123,63 @@ public class HeatMap extends Composite {
 	 */
 	private void initializeSliderPanel() {
 		//Slider Controls Part
-		fromToYearControls = new HorizontalPanel();
-		fromToYearControlsWrapper = new FocusPanel( fromToYearControls );
+		yearControls = new HorizontalPanel();
+		yearControlsWrapper = new FocusPanel( yearControls );
 		
 		//Added pressing Enter-Key support
 		//If there is a number in either fromYear or toYear the slider will get updated accordingly on pressing Enter
-		fromToYearControlsWrapper.addKeyDownHandler(new KeyDownHandler() {
+		yearControlsWrapper.addKeyDownHandler(new KeyDownHandler() {
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
-					String input = fromYearTextBox.getText();
 					
-					//fromYear TextBox
-					//if( input.equals("") ) {
-					if( input.matches("\\d{4}") ) {
-						//TODO: check for valid input
-
-						//adjust min value, do not change max value
-						int max = slider.getValueMax();
-						int min = Integer.valueOf( input );
+					String yearInput = yearInputTextBox.getText();
+					
+					//year was entered
+					if( yearInput.matches("\\d{4}") ) {
+						//if background was changed due to error, reset it
+						yearInputTextBox.getElement().getStyle().setBackgroundColor("white");
 						
-						//if minvalue is greater than max value or smallerer than minimum of slider do nothing and reset TextBox
-						if( !(min > max) && !(min < slider.getMinimum()) ){
+						int min = Integer.valueOf( yearInput );
+						int max = min;
+						
+						slider.setValues(min, max);
+						return;
+						
+					} else if( yearInput.matches("\\d{4}-\\d{4}") ) {
+						//if background was changed due to error, reset it
+						yearInputTextBox.getElement().getStyle().setBackgroundColor("white");
+						
+						//year range was entered
+						String[] years = yearInput.split("-");
+						
+						int min = Integer.valueOf( years[0] );
+						int max = Integer.valueOf( years[1] );
+						
+						//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
+						if( (min <= max) && !(min < slider.getMinimum()) && !(max > slider.getMaximum()) ){
 							slider.setValues(min, max);
-						} else {
-							fromYearTextBox.setValue("");
+							return;
 						}
-					}
-
-					//toYearTextBox
-					if( toYearTextBox.getText().equals("") ) {
 						
-					} else {
-						//TODO: check for valid input
-
-						//adjust max value, do not change min value
-						int max = Integer.valueOf( toYearTextBox.getText() );
-						int min = slider.getValueMin();
-						
-						//if maxvalue is smaller than min value or greater than maximum of slider do nothing and reset TextBox
-						if( !(max < min) && !(max > slider.getMaximum()) ){
-							slider.setValues(min, max);
-						} else {
-							toYearTextBox.setValue("");
-						}
-					}
+					} 
+					
+					//non valid input
+					//set background of input box to red and remove wrong input
+					yearInputTextBox.setValue("");
+					yearInputTextBox.getElement().getStyle().setBackgroundColor("red");
 					
 				}
 			}
 		});
 		
-		//fromToYearControlsWrapper.setFocus(true);
+		//Initialize Year Input Field
+		yearLabel = new Label("Choose Year: ");
+		yearInputTextBox = new TextBox();
+		yearInputTextBox.setValue("1888-2020");
 		
-		
-		//TODO: If just one box is filled out, use it to target 1 specific year
-		fromYearLabel = new Label("Min: ");
-		fromYearTextBox = new TextBox();
-		
-		toYearLabel = new Label("Max: ");
-		toYearTextBox = new TextBox();
-		
-		fromToYearControls.add(fromYearLabel);
-		fromToYearControls.add(fromYearTextBox);
-		fromToYearControls.add(toYearLabel);
-		fromToYearControls.add(toYearTextBox);
-		fromToYearControls.setStyleName("SliderControls");
+		yearControls.add(yearLabel);
+		yearControls.add(yearInputTextBox);
+		yearControls.setStyleName("SliderControls");
 		
 		//Slider Part
 		sliderPanel = new DockLayoutPanel(Unit.PCT);
@@ -197,20 +188,33 @@ public class HeatMap extends Composite {
 		
 		slider = new RangeSlider("slider", 1888, 2020, 1888, 2020);
 		slider.addListener(new SliderListener(){
-
+			
+			//helper function
+			private void setYearInput(int min, int max) {
+				if( min == max ) {
+					//if values are equal just write one value
+					yearInputTextBox.setValue( Integer.toString(min) );
+				} else {
+					//if values are different write both
+					yearInputTextBox.setValue( Integer.toString(min) + "-" + Integer.toString(max) );
+				}
+			}
+			
 			@Override
 			public void onStart(SliderEvent e) {
-				//initialize from-to-year-controls
-				fromYearTextBox.setValue( Integer.toString( slider.getValueMin() ) );
-				toYearTextBox.setValue( Integer.toString( slider.getValueMax() ) );
+				//reset input field in case it was changed due to an error
+				yearInputTextBox.getElement().getStyle().setBackgroundColor("white");
 			}
 
 			@Override
 			public boolean onSlide(SliderEvent e) {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
+
+				setYearInput(min, max);
 			
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
+
 				return true;
 			}
 
@@ -218,29 +222,30 @@ public class HeatMap extends Composite {
 			public void onChange(SliderEvent e) {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
+
+				setYearInput(min, max);
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
+
 				fillDataTable();
 				draw();
 			}
 
 			@Override
 			public void onStop(SliderEvent e) {
+				int max = slider.getValueMax();
+				int min = slider.getValueMin();
+				
+				setYearInput(min, max);
 			}
 			
 		});
 		
-		//initialize Slider Controls TextBoxes
-		if( fromYearTextBox.getText().equals("") && toYearTextBox.getText().equals("") ) {
-
-			fromYearTextBox.setValue("1888");
-			toYearTextBox.setValue("2020");
-		}
-				
 		//explanation of arguments for widgets added to DockLayoutPanel
 		//first arg: widget name
 		//second arg: size in percent
-		sliderPanel.addNorth(fromToYearControlsWrapper, 70);
+		sliderPanel.addNorth(yearControlsWrapper, 70);
 		sliderPanel.add(slider);
+		//set CSS property directly so that slider handles are visible
 		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
 		
 		sliderPanel.setHeight("60px");

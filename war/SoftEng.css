@@ -46,6 +46,12 @@ h1 {
 #filterPanel{
 }
 
+#filterPanel .ui-slider-handle {
+	background: #ef2929;
+	cursor: move;
+	width: 20px;
+}
+
 #ad{
 	margin-left: auto;
 	margin-rigth: auto;
