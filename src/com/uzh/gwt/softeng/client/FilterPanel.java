@@ -484,10 +484,16 @@ public class FilterPanel extends Composite {
 						String dateMin = Integer.toString(dateSlider.getValueMin());
 						String dateMax = Integer.toString(dateSlider.getValueMax());
 						
-						url = url + "&title=" + title + 
+						String extended = "&title=" + title + 
 								"&country=" + country + "&genre=" + genre + "&language=" + language +
 								"&durationMin=" + durationMin + "&durationMax=" + durationMax + 
 								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
+						
+						url = url + extended;
+//								"&title=" + title + 
+//								"&country=" + country + "&genre=" + genre + "&language=" + language +
+//								"&durationMin=" + durationMin + "&durationMax=" + durationMax + 
+//								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
 						
 						builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
 						}

@@ -1,7 +1,11 @@
 package com.uzh.gwt.softeng.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
@@ -109,6 +113,31 @@ public class ApplicationLogic implements EntryPoint {
 		    filmDataSvc.getFilmData(query, false, callback);
 	}
 	
+	private void getSuggestionsAsync(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		    // Set up the countries callback object.
+		    AsyncCallback<String[][]> callback = new AsyncCallback<String[][]>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert(caught.toString());
+		    	}
+
+		    	public void onSuccess(String[][] result) {    		
+		    		ArrayList<String> suggG = new ArrayList<String>(Arrays.asList(result[0]));
+		    		ArrayList<String> suggL = new ArrayList<String>(Arrays.asList(result[1]));
+		    		ArrayList<String> suggC = new ArrayList<String>(Arrays.asList(result[2]));
+		    		
+		    		filterPanel.setCountrySuggestion(suggC);
+		    		filterPanel.setGenresSuggestion(suggG);
+		    		filterPanel.setLanguagesSuggestion(suggL);
+		    	}
+		    };
+		    // Make the call to the film data service.
+		    filmDataSvc.getSuggestions(callback);
+	}
+	
 	/**
 	 * Sets up the GUI components used in the application
 	 * 
@@ -163,6 +192,8 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel filterSlot = RootPanel.get("filterPanel");
 		if(filterSlot != null)
 			filterSlot.add(filterPanel);
+		
+		getSuggestionsAsync();
 	}
 	
 	/**
@@ -181,7 +212,6 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
-		
 		// Create the user interface
 		setUpGui();				
 	}

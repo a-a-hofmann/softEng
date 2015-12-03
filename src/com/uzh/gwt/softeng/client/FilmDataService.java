@@ -9,4 +9,5 @@ public interface FilmDataService extends RemoteService {
 	
       FilmDataSet getFilmData(String query, boolean isSearch);
       Integer getFilmDataSetSize();
+      String[][] getSuggestions();
 }
