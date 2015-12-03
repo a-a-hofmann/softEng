@@ -54,13 +54,19 @@ h1 {
 	aamargin-left: auto;
 	aamargin-rigth: auto;
 	aaclear: both;
-	top: 8em;
+	
+	top: 1em;
 	width: 20%;
 	float: left;
 	position: relative;
 	border-radius: 5px;
 	background-color: rgba(153,153,153, 0.2);
 	padding: 5px 20px 30px 20px;
+}
+
+#ad gwt-Image {
+	width: 80px;
+	height: 200px;
 }
 
 #search{

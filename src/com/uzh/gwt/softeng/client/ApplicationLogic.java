@@ -55,7 +55,7 @@ public class ApplicationLogic implements EntryPoint {
 	/**
 	 * The filename of our logo image
 	 */
-	private static final String LOGO_IMAGE_NAME = "banana_2.gif";
+	private static final String LOGO_IMAGE_NAME = "banana.gif";
 	
 	/**
 	 * A popup panel that will be displayed if the search button is selected. 
