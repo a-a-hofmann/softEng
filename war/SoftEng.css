@@ -5,15 +5,14 @@ wrapper{
 
 h1 {
 	font-family: Verdana, sans-serif;
-	color: #ffffff;
 	font-weight: bold;
 	font-size: 16px;
+	color: #ffffff;
 	text-align: center;
 	padding: 5px 0;
-	background-color: #323B38;
-	width: 100%;
-	clear: both;
+	width: 90%;
 }
+
 
 .pager {
 	position: static !important;
@@ -78,7 +77,16 @@ h1 {
 
 #header {
 	clear: both;
-	bottom: 0.5em;	
+	background-color: #323B38;
+	bottom: 0.5em;
+	overflow: hidden;
+}
+
+#header #cc {
+	width: 10%;
+	float: right;
+	margin-right: 0;'
+	
 }
 
 #heatmap {
