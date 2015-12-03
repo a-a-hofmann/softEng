@@ -349,8 +349,7 @@ public class FilmDataSet implements Serializable{
     /**
      * /**
      * Returns an ArrayList containing the filmData filtered over a given date range.
-     * @param low Lower limit.
-     * @param high Upper limit.
+     * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
     public ArrayList<FilmData> filterByDateRange(Range range){
@@ -376,8 +375,7 @@ public class FilmDataSet implements Serializable{
     /**
      * /**
      * Returns an ArrayList containing the filmData filtered over a given date range.
-     * @param low Lower limit.
-     * @param high Upper limit.
+     * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
     public ArrayList<FilmData> filterByDurationRange(Range range){
@@ -516,13 +514,13 @@ public class FilmDataSet implements Serializable{
 ////    	ArrayList<FilmData> films;
 //		try {
 //			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
-//			
+////			
 //			ArrayList<FilmData> result = dataSet.filter("Batman", null, null, null, new Range(0, 400), new Range(1888, 2020));
 //			
 //			for(FilmData film : result)
 //				System.out.println(film.getTitle());
 //		} catch(Exception e){
-//		
+////		
 //			
 ////			for (String country : dataSet.getCountriesList()){
 //				System.out.println(country);

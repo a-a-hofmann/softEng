@@ -354,7 +354,6 @@ public class FilterPanel extends Composite {
 	private void createSearchQuery() {
 		//send query
 		//create filter query
-		shouldNotLimitDurationUpwards();
 		filterString = new StringBuilder(
 				"select m.*, group_concat(DISTINCT g.genre) genres, "
 						+ "group_concat(DISTINCT l.language) languages, "
@@ -386,18 +385,18 @@ public class FilterPanel extends Composite {
 		if( !languagesBox.getText().equals("") )
 			filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
 		
-		if(shouldNotLimitDurationUpwards()){
-			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
-			
-		} else {
+//		if(shouldNotLimitDurationUpwards()){
+//			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
+//			
+//		} else {
 			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
-		}
+//		}
 		
-		if(shouldNotLimitDateDownwards()) {
-			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
-		} else {
+//		if(shouldNotLimitDateDownwards()) {
+//			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
+//		} else {
 			filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " + dateSlider.getValueMax() + " " );
-		}
+//		}
 		
 		//has to be last String in this chain
 		filterString.append( "group by m.movieid;" );	
@@ -430,8 +429,8 @@ public class FilterPanel extends Composite {
 			String country = countriesBox.getText();
 			String genre = genresBox.getText();
 			String language = languagesBox.getText();
-			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax());
-			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax());
+			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax() - durationSlider.getValueMin());
+			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax() - dateSlider.getValueMin());
 		
 			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
 			table.setList(result, true);
@@ -593,21 +592,21 @@ public class FilterPanel extends Composite {
 		return titleSearchBox.getText();
 	}
 	
-	/**
-	 * Returns true if we should omit upper limit for the search query
-	 * @return true if we should omit upper limit for the duration
-	 * TODO: Find better name
-	 */
-	private boolean shouldNotLimitDurationUpwards() {
-		return durationSlider.getValueMax() == durationSlider.getMaximum();
-	}
-	
-	/**
-	 * Returns true if we should omit lower limit for the search query
-	 * @return true if we should omit lower limit for the date
-	 * TODO: Find better name
-	 */
-	private boolean shouldNotLimitDateDownwards() {
-		return dateSlider.getValueMin() == dateSlider.getMinimum();
-	}
+//	/**
+//	 * Returns true if we should omit upper limit for the search query
+//	 * @return true if we should omit upper limit for the duration
+//	 * TODO: Find better name
+//	 */
+//	private boolean shouldNotLimitDurationUpwards() {
+//		return durationSlider.getValueMax() == durationSlider.getMaximum();
+//	}
+//	
+//	/**
+//	 * Returns true if we should omit lower limit for the search query
+//	 * @return true if we should omit lower limit for the date
+//	 * TODO: Find better name
+//	 */
+//	private boolean shouldNotLimitDateDownwards() {
+//		return dateSlider.getValueMin() == dateSlider.getMinimum();
+//	}
 }
