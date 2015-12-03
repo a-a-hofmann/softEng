@@ -104,7 +104,7 @@ public class Table extends Composite {
 			@Override
 			public String getValue(FilmData object) {
 				int date = object.getDate();
-				if (date == -1){
+				if (date == 0){
 					return "";
 				}
 				else{
@@ -118,7 +118,7 @@ public class Table extends Composite {
 			@Override
 			public String getValue(FilmData object) {
 				float duration = object.getDuration();
-				if (duration == 0.0){
+				if (duration < 0.4){
 					return "";
 				}
 				else{

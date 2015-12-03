@@ -385,18 +385,18 @@ public class FilterPanel extends Composite {
 		if( !languagesBox.getText().equals("") )
 			filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
 		
-//		if(shouldNotLimitDurationUpwards()){
-//			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
-//			
-//		} else {
+		if(shouldNotLimitDurationUpwards()){
+			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
+			
+		} else {
 			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
-//		}
+		}
 		
-//		if(shouldNotLimitDateDownwards()) {
-//			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
-//		} else {
+		if(shouldNotLimitDateDownwards()) {
+			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
+		} else {
 			filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " + dateSlider.getValueMax() + " " );
-//		}
+		}
 		
 		//has to be last String in this chain
 		filterString.append( "group by m.movieid;" );	
@@ -429,10 +429,12 @@ public class FilterPanel extends Composite {
 			String country = countriesBox.getText();
 			String genre = genresBox.getText();
 			String language = languagesBox.getText();
+			
 			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax() - durationSlider.getValueMin());
 			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax() - dateSlider.getValueMin());
-		
-			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
+			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange, shouldNotLimitDurationUpwards(), shouldNotLimitDateDownwards()));
+			
+			
 			table.setList(result, true);
 		}
 	}
@@ -525,6 +527,34 @@ public class FilterPanel extends Composite {
 	}
 	
 	/**
+	 * 
+	 */
+	private void doGet() {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+		
+		try {
+			// Create a HTTP GET request
+			builder.sendRequest(null, new RequestCallback() {
+				public void onError(Request request, Throwable exception) {
+					// Couldn't connect to server (could be timeout, SOP violation, etc.)
+					Window.alert(exception.toString());
+			    }
+
+			    public void onResponseReceived(Request request, Response response) {
+			    	if (200 == response.getStatusCode()) {
+			    		// Process the response in response.getText()
+			    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+			    	} else {
+			    		// Handle the error.  Can get the status text from response.getStatusText()
+			    	}
+			    }
+			});
+		} catch (RequestException e) {
+			// Couldn't connect to server
+		}
+	}
+	
+	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
 	 */
 	private void createExportAllButton() {
@@ -534,28 +564,7 @@ public class FilterPanel extends Composite {
 			public void onClick(ClickEvent event) {
 				// Servlet URL
 				url = GWT.getModuleBaseURL() + "filmData?search=false";
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-				
-				try {
-					// Create a HTTP GET request
-					builder.sendRequest(null, new RequestCallback() {
-						public void onError(Request request, Throwable exception) {
-							// Couldn't connect to server (could be timeout, SOP violation, etc.)
-							Window.alert(exception.toString());
-					    }
-
-					    public void onResponseReceived(Request request, Response response) {
-					    	if (200 == response.getStatusCode()) {
-					    		// Process the response in response.getText()
-					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
-					    	} else {
-					    		// Handle the error.  Can get the status text from response.getStatusText()
-					    	}
-					    }
-					});
-				} catch (RequestException e) {
-					// Couldn't connect to server
-				}
+				doGet();
 			}
 		});
 	}
@@ -592,21 +601,21 @@ public class FilterPanel extends Composite {
 		return titleSearchBox.getText();
 	}
 	
-//	/**
-//	 * Returns true if we should omit upper limit for the search query
-//	 * @return true if we should omit upper limit for the duration
-//	 * TODO: Find better name
-//	 */
-//	private boolean shouldNotLimitDurationUpwards() {
-//		return durationSlider.getValueMax() == durationSlider.getMaximum();
-//	}
-//	
-//	/**
-//	 * Returns true if we should omit lower limit for the search query
-//	 * @return true if we should omit lower limit for the date
-//	 * TODO: Find better name
-//	 */
-//	private boolean shouldNotLimitDateDownwards() {
-//		return dateSlider.getValueMin() == dateSlider.getMinimum();
-//	}
+	/**
+	 * Returns true if we should omit upper limit for the search query
+	 * @return true if we should omit upper limit for the duration
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDurationUpwards() {
+		return durationSlider.getValueMax() == durationSlider.getMaximum();
+	}
+	
+	/**
+	 * Returns true if we should omit lower limit for the search query
+	 * @return true if we should omit lower limit for the date
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDateDownwards() {
+		return dateSlider.getValueMin() == dateSlider.getMinimum();
+	}
 }
