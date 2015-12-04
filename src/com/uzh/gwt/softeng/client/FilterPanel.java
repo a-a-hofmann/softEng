@@ -7,6 +7,8 @@ import org.spiffyui.client.widgets.slider.SliderEvent;
 import org.spiffyui.client.widgets.slider.SliderListener;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -56,6 +58,8 @@ public class FilterPanel extends Composite {
 	
 	//Sub panels containing the different search widgets
 	private HorizontalPanel titlePanel;
+	private HorizontalPanel datePanel;
+	private HorizontalPanel durationPanel;
 	private HorizontalPanel genresPanel;
 	private HorizontalPanel languagesPanel;
 	private HorizontalPanel countriesPanel;
@@ -67,15 +71,13 @@ public class FilterPanel extends Composite {
 
 	//Date filter
 	private Label dateLabel;
+	private TextBox dateBox;
     private RangeSlider dateSlider;
-    private Label dateminValueLabel;
-    private Label datemaxValueLabel;
 
     //Duration filter
     private Label durationLabel;
+    private TextBox durationBox;
     private RangeSlider durationSlider;
-    private Label durationminValueLabel;
-    private Label durationmaxValueLabel;
 	
     //Genres filter
 	private Label genresLabel;
@@ -184,13 +186,9 @@ public class FilterPanel extends Composite {
 		
 		
 		vlp.add(titlePanel);
-        vlp.add(dateLabel);
-        vlp.add(dateminValueLabel);
-        vlp.add(datemaxValueLabel);
+        vlp.add(datePanel);
         vlp.add(dateSlider);
-        vlp.add(durationLabel);
-        vlp.add(durationminValueLabel);
-        vlp.add(durationmaxValueLabel);
+        vlp.add(durationPanel);
         vlp.add(durationSlider);
         vlp.add(genresPanel);
         vlp.add(languagesPanel);
@@ -218,61 +216,79 @@ public class FilterPanel extends Composite {
 		this.table = table;
 	}
 	
-	/**
-	 * Creates duration labels, slider and adds listeners.
-	 */
-	private void createDurationFilter() {
-		//Duration
-		//TODO: Longest film available is 14400 minutes long.
-		//What should we put as max?
-        durationLabel = new Label("Duration: ");
-        durationSlider = new RangeSlider("durationSlider", 0, 600, 0, 600);
-        durationminValueLabel = new Label("Min: 0");
-        durationminValueLabel.setHeight("20px");
-        durationmaxValueLabel = new Label("Max: 600");
-        durationmaxValueLabel.setHeight("20px");
-
-        durationSlider.addListener(new SliderListener(){
-            @Override
-            public void onStart(SliderEvent e) {
-            }
-            @Override
-            public boolean onSlide(SliderEvent e) {
-                int max = durationSlider.getValueMax();
-                int min = durationSlider.getValueMin();
-
-                durationminValueLabel.setText("Min: " + min);
-                durationmaxValueLabel.setText("Max: " + max);
-                return true;
-            }
-
-            @Override
-            public void onChange(SliderEvent e) {
-                int max = durationSlider.getValueMax();
-                int min = durationSlider.getValueMin();
-
-                durationminValueLabel.setText("Min: " + min);
-                durationmaxValueLabel.setText("Max: " + max);
-            }
-
-            @Override
-            public void onStop(SliderEvent e) {
-            }
-        });
-	}
 
 	/**
 	 * Creates date labels, slider and adds listener.
 	 */
 	private void createDateFilter() {
+		datePanel = new HorizontalPanel();
 		dateLabel = new Label("Date: ");
         dateSlider = new RangeSlider("dateSlider", 1888, 2020, 1888, 2020);
-        dateminValueLabel = new Label("Min: 1888");
-        dateminValueLabel.setHeight("20px");
-        datemaxValueLabel = new Label("Max: 2020");
-        datemaxValueLabel.setHeight("20px");
+        dateBox = new TextBox();
+        dateBox.setText("1888 - 2020");
+        datePanel.add(dateLabel);
+        datePanel.add(dateBox);
+        
+        dateBox.addKeyDownHandler(new KeyDownHandler(){
 
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
+				String yearInput = dateBox.getText();
+				
+				//year was entered
+				if( yearInput.matches("\\d{4}") ) {
+					//if background was changed due to error, reset it
+					dateBox.getElement().getStyle().setBackgroundColor("white");
+					
+					int min = Integer.valueOf( yearInput );
+					int max = min;
+					
+					dateSlider.setValues(min, max);
+					return;
+					
+				} else if( yearInput.matches("\\d{4}-\\d{4}") ) {
+					//if background was changed due to error, reset it
+					dateBox.getElement().getStyle().setBackgroundColor("white");
+					
+					//year range was entered
+					String[] years = yearInput.split("-");
+					
+					int min = Integer.valueOf( years[0] );
+					int max = Integer.valueOf( years[1] );
+					
+					//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
+					if( (min <= max) && !(min < dateSlider.getMinimum()) && !(max > dateSlider.getMaximum()) ){
+						dateSlider.setValues(min, max);
+						return;
+					}
+					
+				} 
+				
+				//non valid input
+				//set background of input box to red and remove wrong input
+				dateBox.setValue("");
+				dateBox.getElement().getStyle().setBackgroundColor("red");
+				}	
+			}
+        	
+        });
+        
+        
+        
+        
         dateSlider.addListener(new SliderListener(){
+        	
+        	//helper function
+			private void setYearInput(int min, int max) {
+				if( min == max ) {
+					//if values are equal just write one value
+					dateBox.setValue( Integer.toString(min) );
+				} else {
+					//if values are different write both
+					dateBox.setValue( Integer.toString(min) + "-" + Integer.toString(max) );
+				}
+			}
+        	
             @Override
             public void onStart(SliderEvent e) {
             }
@@ -280,9 +296,8 @@ public class FilterPanel extends Composite {
             public boolean onSlide(SliderEvent e) {
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
-
-                dateminValueLabel.setText("Min: " + min);
-                datemaxValueLabel.setText("Max: " + max);
+                setYearInput(min, max);
+              
                 return true;
             }
 
@@ -290,9 +305,7 @@ public class FilterPanel extends Composite {
             public void onChange(SliderEvent e) {
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
-
-                dateminValueLabel.setText("Min: " + min);
-                datemaxValueLabel.setText("Max: " + max);
+                setYearInput(min, max);
             }
 
             @Override
@@ -300,6 +313,109 @@ public class FilterPanel extends Composite {
             }
 
         });
+	}
+
+	/**
+	 * Creates duration labels, slider and adds listeners.
+	 */
+	private void createDurationFilter() {
+		durationPanel = new HorizontalPanel();
+		durationLabel = new Label("Duration: ");
+		durationSlider = new RangeSlider("durationSlider", 0, 600, 0, 600);
+        durationBox = new TextBox();
+        durationBox.setText("0 - 600");
+        durationPanel.add(durationLabel);
+        durationPanel.add(durationBox);
+        
+        durationBox.addKeyDownHandler(new KeyDownHandler(){
+
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
+				String yearInput = durationBox.getText();
+				
+				//year was entered
+				if( yearInput.matches("\\d{1,3}") ) {
+					//if background was changed due to error, reset it
+					durationBox.getElement().getStyle().setBackgroundColor("white");
+					
+					int min = Integer.valueOf( yearInput );
+					int max = min;
+					
+					durationSlider.setValues(min, max);
+					return;
+					
+				} else if( yearInput.matches("\\d{1,3}-\\d{1,3}") ) {
+					//if background was changed due to error, reset it
+					durationBox.getElement().getStyle().setBackgroundColor("white");
+					
+					//year range was entered
+					String[] years = yearInput.split("-");
+					
+					int min = Integer.valueOf( years[0] );
+					int max = Integer.valueOf( years[1] );
+					
+					//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
+					if( (min <= max) && !(min < dateSlider.getMinimum()) && !(max > durationSlider.getMaximum()) ){
+						durationSlider.setValues(min, max);
+						return;
+					}
+					
+				} 
+				
+				//non valid input
+				//set background of input box to red and remove wrong input
+				durationBox.setValue("");
+				durationBox.getElement().getStyle().setBackgroundColor("red");
+				}	
+			}
+        	
+        });
+        
+        
+        durationSlider.addListener(new SliderListener(){
+        	
+        	//helper function
+			private void setYearInput(int min, int max) {
+				if( min == max ) {
+					//if values are equal just write one value
+					durationBox.setValue( Integer.toString(min) );
+				} else {
+					//if values are different write both
+					durationBox.setValue( Integer.toString(min) + "-" + Integer.toString(max) );
+				}
+			}
+        	
+            @Override
+            public void onStart(SliderEvent e) {
+            }
+            @Override
+            public boolean onSlide(SliderEvent e) {
+                int max = durationSlider.getValueMax();
+                int min = durationSlider.getValueMin();
+                setYearInput(min, max);
+              
+                return true;
+            }
+
+            @Override
+            public void onChange(SliderEvent e) {
+                int max = durationSlider.getValueMax();
+                int min = durationSlider.getValueMin();
+                setYearInput(min, max);
+            }
+
+            @Override
+            public void onStop(SliderEvent e) {
+            }
+
+        });
+     
+        
+        durationPanel = new HorizontalPanel();
+        durationPanel.add(durationLabel);
+        durationPanel.add(durationBox);
+        durationPanel.add(durationSlider);
+        
 	}
 	
 	/**
