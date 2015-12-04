@@ -225,7 +225,7 @@ public class FilterPanel extends Composite {
 		dateLabel = new Label("Date: ");
         dateSlider = new RangeSlider("dateSlider", 1888, 2020, 1888, 2020);
         dateBox = new TextBox();
-        dateBox.setText("1888 - 2020");
+        dateBox.setText("1888-2020");
         datePanel.add(dateLabel);
         datePanel.add(dateBox);
         
@@ -233,28 +233,28 @@ public class FilterPanel extends Composite {
 
 			public void onKeyDown(KeyDownEvent event) {
 				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
-				String yearInput = dateBox.getText();
+				String dateInput = dateBox.getText();
 				
 				//year was entered
-				if( yearInput.matches("\\d{4}") ) {
+				if( dateInput.matches("\\d{4}") ) {
 					//if background was changed due to error, reset it
 					dateBox.getElement().getStyle().setBackgroundColor("white");
 					
-					int min = Integer.valueOf( yearInput );
+					int min = Integer.valueOf( dateInput );
 					int max = min;
 					
 					dateSlider.setValues(min, max);
 					return;
 					
-				} else if( yearInput.matches("\\d{4}-\\d{4}") ) {
+				} else if( dateInput.matches("\\d{4}-\\d{4}") ) {
 					//if background was changed due to error, reset it
 					dateBox.getElement().getStyle().setBackgroundColor("white");
 					
 					//year range was entered
-					String[] years = yearInput.split("-");
+					String[] dates = dateInput.split("-");
 					
-					int min = Integer.valueOf( years[0] );
-					int max = Integer.valueOf( years[1] );
+					int min = Integer.valueOf( dates[0] );
+					int max = Integer.valueOf( dates[1] );
 					
 					//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
 					if( (min <= max) && !(min < dateSlider.getMinimum()) && !(max > dateSlider.getMaximum()) ){
@@ -279,7 +279,7 @@ public class FilterPanel extends Composite {
         dateSlider.addListener(new SliderListener(){
         	
         	//helper function
-			private void setYearInput(int min, int max) {
+			private void setDateInput(int min, int max) {
 				if( min == max ) {
 					//if values are equal just write one value
 					dateBox.setValue( Integer.toString(min) );
@@ -291,13 +291,16 @@ public class FilterPanel extends Composite {
         	
             @Override
             public void onStart(SliderEvent e) {
+            	//reset input field in case it was changed due to an error
+            	dateBox.getElement().getStyle().setBackgroundColor("white");
             }
+            
             @Override
             public boolean onSlide(SliderEvent e) {
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
-                setYearInput(min, max);
-              
+
+                setDateInput(min, max);
                 return true;
             }
 
@@ -305,7 +308,8 @@ public class FilterPanel extends Composite {
             public void onChange(SliderEvent e) {
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
-                setYearInput(min, max);
+                
+                setDateInput(min, max);
             }
 
             @Override
@@ -323,7 +327,7 @@ public class FilterPanel extends Composite {
 		durationLabel = new Label("Duration: ");
 		durationSlider = new RangeSlider("durationSlider", 0, 600, 0, 600);
         durationBox = new TextBox();
-        durationBox.setText("0 - 600");
+        durationBox.setText("0-600");
         durationPanel.add(durationLabel);
         durationPanel.add(durationBox);
         
@@ -331,31 +335,31 @@ public class FilterPanel extends Composite {
 
 			public void onKeyDown(KeyDownEvent event) {
 				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
-				String yearInput = durationBox.getText();
-				
+				String durationInput = durationBox.getText();
+								
 				//year was entered
-				if( yearInput.matches("\\d{1,3}") ) {
+				if( durationInput.matches("\\d{1,3}") ) {
 					//if background was changed due to error, reset it
 					durationBox.getElement().getStyle().setBackgroundColor("white");
 					
-					int min = Integer.valueOf( yearInput );
+					int min = Integer.valueOf( durationInput );
 					int max = min;
 					
 					durationSlider.setValues(min, max);
 					return;
 					
-				} else if( yearInput.matches("\\d{1,3}-\\d{1,3}") ) {
+				} else if( durationInput.matches("\\d{1,3}-\\d{1,3}") ) {
 					//if background was changed due to error, reset it
 					durationBox.getElement().getStyle().setBackgroundColor("white");
 					
 					//year range was entered
-					String[] years = yearInput.split("-");
+					String[] duration = durationInput.split("-");
 					
-					int min = Integer.valueOf( years[0] );
-					int max = Integer.valueOf( years[1] );
+					int min = Integer.valueOf( duration[0] );
+					int max = Integer.valueOf( duration[1] );
 					
 					//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
-					if( (min <= max) && !(min < dateSlider.getMinimum()) && !(max > durationSlider.getMaximum()) ){
+					if( (min <= max) && !(min < durationSlider.getMinimum()) && !(max > durationSlider.getMaximum()) ){
 						durationSlider.setValues(min, max);
 						return;
 					}
@@ -375,7 +379,7 @@ public class FilterPanel extends Composite {
         durationSlider.addListener(new SliderListener(){
         	
         	//helper function
-			private void setYearInput(int min, int max) {
+			private void setDurationInput(int min, int max) {
 				if( min == max ) {
 					//if values are equal just write one value
 					durationBox.setValue( Integer.toString(min) );
@@ -387,13 +391,15 @@ public class FilterPanel extends Composite {
         	
             @Override
             public void onStart(SliderEvent e) {
+            	//reset input field in case it was changed due to an error
+            	durationBox.getElement().getStyle().setBackgroundColor("white");
             }
             @Override
             public boolean onSlide(SliderEvent e) {
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
-                setYearInput(min, max);
-              
+                
+                setDurationInput(min, max);
                 return true;
             }
 
@@ -401,7 +407,8 @@ public class FilterPanel extends Composite {
             public void onChange(SliderEvent e) {
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
-                setYearInput(min, max);
+
+                setDurationInput(min, max);
             }
 
             @Override
@@ -410,7 +417,6 @@ public class FilterPanel extends Composite {
 
         });
      
-        
         durationPanel = new HorizontalPanel();
         durationPanel.add(durationLabel);
         durationPanel.add(durationBox);
