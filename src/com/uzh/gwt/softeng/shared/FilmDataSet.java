@@ -271,7 +271,7 @@ public class FilmDataSet implements Serializable{
     	//distinction of occurrence of titlePart in beginning, middle or end of Title
     	//so only eg. titlePart = "the" containing data is in ArrayList and not "They"
     	for(FilmData film: films){
-    		if (film.getTitle().contains(titlePart)){
+    		if (film.getTitle().toLowerCase().contains(titlePart.toLowerCase())){
     			filteredSet.add(film);
     		}
     	}
