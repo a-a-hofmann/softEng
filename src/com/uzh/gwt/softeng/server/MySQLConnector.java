@@ -39,6 +39,8 @@ public class MySQLConnector {
 	 */
 	private static ResultSet rs;
 	
+	private static final Logger log = Logger.getLogger( MySQLConnector.class.getName() );
+	
 	/**
 	 * Opens connection to MySQL database instance.
 	 * @throws SQLException If it cannot open connection.
@@ -75,9 +77,7 @@ public class MySQLConnector {
 			String userName = "softEng";
 			String pwd = "softEng";
 			url = "jdbc:mysql://77.56.2.160:3306/newmoviedb";
-//			url = "jdbc:mysql://raspy.local:3306/newmoviedb";
 			conn = DriverManager.getConnection(url, userName, pwd);
-//			conn = DriverManager.getConnection(url);
 		}
 	}
 	
@@ -561,7 +561,7 @@ public class MySQLConnector {
 		}
 
 	}
-	private static final Logger log = Logger.getLogger( MySQLConnector.class.getName() );
+	
 	public static String[] getSuggestions(String query, String sizeQuery) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		int size = 0;
 		

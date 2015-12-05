@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -21,6 +22,8 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * Film data set size.
 	 */
 	private int size;
+	
+	private int searchSize;
 	
 	/**
 	 * FilmDataServiceAsync object for RPC.
@@ -155,6 +158,25 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			updateRowData(start, tmp);
 		}
 	}
+	
+	public void getFilmDataSetSize(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		    // Set up the callback object.
+		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+		    	public void onFailure(Throwable caught) {
+		    		caught.printStackTrace();
+		    	}
+
+		    	public void onSuccess(Integer result) {
+		    		updateRowCount(result, true);
+		    	}
+		    };
+		    // Make the call to the film data service.
+		    filmDataSvc.getFilmDataSetSize(callback);
+	}
 
 	/**
 	 * Set a list for the data provider.
@@ -169,10 +191,12 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			if(isSearch){
 				filmSearchResults = newData;
 				isSearchResult = isSearch;
+				this.searchSize = newData.size();
 			}
 			else{
 				filmData = newData;
 				isFinishedLoading = true;
+				this.size = newData.size();
 			}
 			
 			updateRowCount(newData.size(), true);
@@ -189,10 +213,9 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			updateRowCount(filmData.size(), true);
 		}
 		else{
-			updateRowCount(size, true);
+			getFilmDataSetSize();
 		}
-		onRangeChanged(table);
-		
+		onRangeChanged(table);		
 	}
 	
 	/**
@@ -206,6 +229,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		super.updateRowCount(size, exact);
 		this.size = size;
 	}
+	
 	
 	public ArrayList<FilmData> getList() {
 		return filmData;

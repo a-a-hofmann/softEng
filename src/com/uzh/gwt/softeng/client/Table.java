@@ -14,8 +14,8 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -67,12 +67,14 @@ public class Table extends Composite {
 	 * Initializes data provider.
 	 */
 	public Table() {
+		
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
 		table.setWidth("100%");
 		table.setRowCount(81741, true);
 		
 		asyncDataProvider = new FilmDataAsyncProvider(table);
+		asyncDataProvider.getFilmDataSetSize();
 		
 		lp = new DockLayoutPanel(Unit.PCT);
 		lp.setHeight("800px");
@@ -244,11 +246,6 @@ public class Table extends Composite {
 					} catch (RequestException e) {
 						// Couldn't connect to server
 					}
-					
-					
-					
-//					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
-//									+ " " + selected.getDuration());
 				}
 			}
 		});	
@@ -272,7 +269,7 @@ public class Table extends Composite {
 	public void setList(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.setList(filmDataSet, isSearch);
 	}
-	
+
 	/**
 	 * Returns list from data provider.
 	 * @return list containing film data.
