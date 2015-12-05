@@ -5,6 +5,15 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
@@ -14,8 +23,13 @@ import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
@@ -165,14 +179,76 @@ public class Table extends Composite {
 		table.addColumn(movieCountry, "Country");
 		
 		//Handler for single selection of one row
-		final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
+		final NoSelectionModel<FilmData> selectionModel = new NoSelectionModel<FilmData>();
 		table.setSelectionModel(selectionModel);
+		
+		
 		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+			
 			public void onSelectionChange(SelectionChangeEvent event) {
-				FilmData selected = selectionModel.getSelectedObject();
+
+				final FilmData selected = selectionModel.getLastSelectedObject();
 				if (selected != null) {
-					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
-									+ " " + selected.getDuration());
+					
+					String url = GWT.getModuleBaseURL() + "filmInfo?t=" + selected.getTitle() + "&y=" + selected.getDate();
+					RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+					
+					try {
+						// Create a HTTP GET request
+						builder.sendRequest(null, new RequestCallback() {
+							
+							public void onError(Request request, Throwable exception) {
+								// Couldn't connect to server (could be timeout, SOP violation, etc.)
+								Window.alert(exception.toString());
+						    }
+
+						    public void onResponseReceived(Request request, Response response) {
+						    	if (200 == response.getStatusCode()) {
+						    		// Process the response in response.getText()
+						    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
+						    		JSONArray results = jsonObject.get("results").isArray();
+						    		jsonObject = results.get(0).isObject();
+						    		
+						    		String url = "http://image.tmdb.org/t/p/original/";
+						    		
+						    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
+						    		String plot = jsonObject.get("overview").toString();
+					    		
+						    		// Show popup with poster and movie plot.
+						    		PopupPanel popup = new PopupPanel();
+						    		HorizontalPanel hp = new HorizontalPanel();
+						    		VerticalPanel vp = new VerticalPanel();
+						    		Label titleLabel = new Label(selected.getTitle());
+						    		Label plotLabel = new Label(plot);
+						    		
+						    		final Image image = new Image(url + poster);
+						    		image.setSize("300px", "500px");
+						    		
+						    		vp.add(titleLabel);
+						    		vp.add(plotLabel);
+						    		
+						    		hp.add(image);
+						    		hp.add(vp);
+						    		
+						    		popup.setAutoHideEnabled(true);
+						    		popup.add(hp);
+						    		popup.setSize("500px", "500px");
+						    		popup.show();
+						    		popup.center();
+						    		
+						    	} else {
+						    		// Handle the error.  Can get the status text from response.getStatusText()
+						    	}
+						    }
+						});
+					} catch (RequestException e) {
+						// Couldn't connect to server
+					}
+					
+					
+					
+//					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
+//									+ " " + selected.getDuration());
 				}
 			}
 		});	

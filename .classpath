@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spiffyui-1.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spiffyuitasks-1.6.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.json-20120521.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

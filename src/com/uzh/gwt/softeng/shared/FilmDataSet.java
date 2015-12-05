@@ -268,10 +268,11 @@ public class FilmDataSet implements Serializable{
     */
     public ArrayList<FilmData> filterByTitle(String titlePart){
     	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
-    	//distinction of occurrence of titlePart in beginning, middle or end of Title
-    	//so only eg. titlePart = "the" containing data is in ArrayList and not "They"
+    	
+    	titlePart = titlePart.toLowerCase();
+    	
     	for(FilmData film: films){
-    		if (film.getTitle().toLowerCase().contains(titlePart.toLowerCase())){
+    		if (film.getTitle().toLowerCase().contains(titlePart)){
     			filteredSet.add(film);
     		}
     	}
@@ -563,9 +564,15 @@ public class FilmDataSet implements Serializable{
     }
 
     
-//    public static void main(String[] args){
-//    	FilmDataSet dataSet;
-////    	ArrayList<FilmData> films;
+    public static void main(String[] args){
+    	FilmDataSet dataSet;
+    	FilmData avengers = new FilmData();
+    	avengers.setTitle("The Avengers");
+    	ArrayList<FilmData> films = new ArrayList<FilmData>();
+    	films.add(avengers);
+    	dataSet = new FilmDataSet(films);
+    	
+    	 System.out.println(dataSet.filterByTitle("The Avengers"));
 //		try {
 //			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 ////			
@@ -636,5 +643,5 @@ public class FilmDataSet implements Serializable{
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-//    }
+    }
 }
