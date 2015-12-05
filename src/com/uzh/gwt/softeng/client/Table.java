@@ -3,13 +3,8 @@ package com.uzh.gwt.softeng.client;
 
 import java.util.ArrayList;
 
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -19,7 +14,6 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
@@ -34,8 +28,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
@@ -185,13 +179,15 @@ public class Table extends Composite {
 		table.addColumn(movieCountry, "Country");
 		
 		//Handler for single selection of one row
-		final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
+		final NoSelectionModel<FilmData> selectionModel = new NoSelectionModel<FilmData>();
 		table.setSelectionModel(selectionModel);
+		
+		
 		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 			
 			public void onSelectionChange(SelectionChangeEvent event) {
 
-				final FilmData selected = selectionModel.getSelectedObject();
+				final FilmData selected = selectionModel.getLastSelectedObject();
 				if (selected != null) {
 					
 					String url = GWT.getModuleBaseURL() + "filmInfo?t=" + selected.getTitle() + "&y=" + selected.getDate();
@@ -226,7 +222,6 @@ public class Table extends Composite {
 						    		Label plotLabel = new Label(plot);
 						    		
 						    		final Image image = new Image(url + poster);
-//						    		image.setUrl(url + poster);
 						    		image.setSize("300px", "500px");
 						    		
 						    		vp.add(titleLabel);
