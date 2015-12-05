@@ -188,7 +188,9 @@ public class Table extends Composite {
 		final SingleSelectionModel<FilmData> selectionModel = new SingleSelectionModel<FilmData>();
 		table.setSelectionModel(selectionModel);
 		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+			
 			public void onSelectionChange(SelectionChangeEvent event) {
+
 				final FilmData selected = selectionModel.getSelectedObject();
 				if (selected != null) {
 					
@@ -198,6 +200,7 @@ public class Table extends Composite {
 					try {
 						// Create a HTTP GET request
 						builder.sendRequest(null, new RequestCallback() {
+							
 							public void onError(Request request, Throwable exception) {
 								// Couldn't connect to server (could be timeout, SOP violation, etc.)
 								Window.alert(exception.toString());
@@ -206,34 +209,31 @@ public class Table extends Composite {
 						    public void onResponseReceived(Request request, Response response) {
 						    	if (200 == response.getStatusCode()) {
 						    		// Process the response in response.getText()
-						    		JSONValue json = JSONParser.parseStrict(response.getText());
-						    		JSONObject jsonObject = json.isObject();
-						    		
-						    		
+						    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
 						    		JSONArray results = jsonObject.get("results").isArray();
 						    		jsonObject = results.get(0).isObject();
 						    		
-						    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
-						    		String plot = jsonObject.get("overview").toString();
 						    		String url = "http://image.tmdb.org/t/p/original/";
 						    		
+						    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
+						    		String plot = jsonObject.get("overview").toString();
+					    		
+						    		// Show popup with poster and movie plot.
 						    		PopupPanel popup = new PopupPanel();
 						    		HorizontalPanel hp = new HorizontalPanel();
 						    		VerticalPanel vp = new VerticalPanel();
 						    		Label titleLabel = new Label(selected.getTitle());
 						    		Label plotLabel = new Label(plot);
 						    		
-						    		final Image image = new Image();
-						    		image.setUrl(url + poster);
+						    		final Image image = new Image(url + poster);
+//						    		image.setUrl(url + poster);
 						    		image.setSize("300px", "500px");
-						    		
 						    		
 						    		vp.add(titleLabel);
 						    		vp.add(plotLabel);
 						    		
 						    		hp.add(image);
 						    		hp.add(vp);
-						    		
 						    		
 						    		popup.setAutoHideEnabled(true);
 						    		popup.add(hp);

@@ -4,14 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.uzh.gwt.softeng.client.FilmInfoService;
@@ -25,12 +27,16 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 	private static final Logger log = Logger.getLogger( FilmInfoServiceImpl.class.getName() );
 	
 	/**
-	 * 
+	 * Serial UID.
 	 */
 	private static final long serialVersionUID = -2506386207697746952L;
 	
+	/**
+	 * Responds to HTTP GET requests.
+	 * Queries the ThemovieDB API for movie info and sends it back to the client.
+	 */
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 		
 		try {
 			@SuppressWarnings("unused")
@@ -39,42 +45,80 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 			log.log(Level.SEVERE, e.toString());
 		}
 		
-		try{
+		
+		String urlString = "https://api.themoviedb.org/3/search/movie?api_key=f69f8579a414114fd51b382937aef6b3&query=";
+		
+		
+		String title = request.getParameter("t");
+		title = title.replaceAll(" ", "%20");
+		
+		String year = request.getParameter("y");
+		
+		urlString = urlString + title;// + "&year=" + year;
+		
+		URL url;
+		try {
+			url = new URL(urlString + "&year=" + year);
+		} catch (MalformedURLException e1) {
+			log.log(Level.SEVERE, e1.toString());
+			return;
+		}
 			
-//			String urlString = "http://www.omdbapi.com/?t=";
-			String urlString = "https://api.themoviedb.org/3/search/movie?api_key=f69f8579a414114fd51b382937aef6b3&query=";
+			
+		try {	
+			String result = readFromUrl(url);
 			
 			
-			String title = request.getParameter("t");
-			title = title.replaceAll(" ", "%20");
+			//Check if it found a result
+			JSONObject jsonObject;
+		
+			jsonObject = new JSONObject(result);
+			int numberOfResults = Integer.parseInt(jsonObject.get("total_results").toString());
 			
-			String year = request.getParameter("y");
-			
-			urlString = urlString + title + "&year=" + year;
-			
-			URL url = new URL(urlString);
-			
-			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-			String line;
-			
-			String result = "";
-			
-			while((line = reader.readLine())!= null){
-				result = result + line;
+			if (numberOfResults == 0) {
+				url = new URL(urlString);
+				result = readFromUrl(url);
 			}
 			
-			response.setContentType("application/json");
-			PrintWriter out = response.getWriter();
+			writeToClient(result, response);
 			
-			out.println(result);
-			out.close();
-			reader.close();
-			
-			log.log(Level.INFO, result);
-			} catch(Exception e){
-			
-			}	
+		} catch (JSONException | IOException e) {
+			log.log(Level.SEVERE, e.toString());
+		}
 		
+	}
+	
+	/**
+	 * Sends a query to the themoviedb. 
+	 * @param url Query url.
+	 * @return resulting json object.
+	 * @throws IOException
+	 */
+	private String readFromUrl(URL url) throws IOException{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+		String line;
+		
+		String result = "";
+		
+		while((line = reader.readLine())!= null){
+			result = result + line;
+		}
+		
+		reader.close();
+		return result;
+	}
+	
+	/**
+	 * Writes json to client.
+	 * @param json json file to be sent.
+	 * @param response Response object.
+	 * @throws IOException Failed to open stream to client.
+	 */
+	private void writeToClient(String json, HttpServletResponse response) throws IOException {
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();	
+		out.println(json);
+		out.close();
 	}
 
 }

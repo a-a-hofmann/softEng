@@ -177,8 +177,31 @@ h1 {
    cursor: hand;
 }
 
+/* Popup */
+
+.popupContent {
+	position: relative;
+}
+
+.popupContent .gwt-Image {
+	padding: 2px 2px 2px 2px;
+	margin: auto;
+}
+.popupContent .gwt-Label {
+	padding: 10%, 10%, 0, 10%;
+	padding-top: 10%;
+	padding-left: 10%;
+	padding-right: 10%;
+}
+
+/* CC */
 /* CC section */
 
 #cc{
 	clear:both;
+}
+
+#tmdb {
+	width: 20%;
+	height: 20%;
 }
