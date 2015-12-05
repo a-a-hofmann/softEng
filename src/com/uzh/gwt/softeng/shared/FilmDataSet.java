@@ -310,21 +310,6 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * Returns an ArrayList containing the filmData of all films with a given language.
-     * @param language Language to be searched.
-     * @return ArrayList containing FilmDataSet.
-     */
-    ArrayList<FilmData> filterByLanguage(String language){
-    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
-    	for(FilmData film: films){
-    		if(film.getLanguages().contains(language + " Language") || film.getLanguages().contains(language)){
-    			filteredSet.add(film);
-    		}
-    	}
-    	return filteredSet;
-    }
-    
-    /**
      * Returns an ArrayList containing the filmData of all films released in a given year.
      * @param date Year to be searched.
      * @return ArrayList containing FilmDataSet.
@@ -388,7 +373,7 @@ public class FilmDataSet implements Serializable{
      * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
-    public ArrayList<FilmData> filterByDurationRange(Range range){
+    ArrayList<FilmData> filterByDurationRange(Range range){
     	int low = range.getStart();
     	int high = low + range.getLength();
     	
@@ -407,7 +392,22 @@ public class FilmDataSet implements Serializable{
     	}
     	return filteredSet;
     }
-
+    
+    /**
+     * Returns an ArrayList containing the filmData of all films with a given language.
+     * @param language Language to be searched.
+     * @return ArrayList containing FilmDataSet.
+     */
+    ArrayList<FilmData> filterByLanguage(String language){
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	for(FilmData film: films){
+    		if(film.getLanguages().contains(language)){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
     /**
      * Returns an ArrayList containing the filmData of all films filmed (partially) in a given country.
      * @param country Country to be searched.
@@ -463,11 +463,11 @@ public class FilmDataSet implements Serializable{
     	}
     	
     	if(genre != null && !genre.isEmpty()){
-    		result.setDataSet(result.filterByGenre(title));
+    		result.setDataSet(result.filterByGenre(genre));
     	}
     	
     	if(language != null && !language.isEmpty()){
-    		result.setDataSet(result.filterByLanguage(title));
+    		result.setDataSet(result.filterByLanguage(language));
     	}
     	
     	
