@@ -15,6 +15,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -94,17 +95,16 @@ public class Table extends Composite {
 	 */
 	public void initTable() {
 		
-		AsyncHandler columnSortHandler = new AsyncHandler(table);
-		table.addColumnSortHandler(columnSortHandler);
+//		AsyncHandler columnSortHandler = new AsyncHandler(table);
 		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
 				return Long.toString( object.getID() );
 			}};
+			
 		table.addColumn(movieID, "Movie ID");
-		movieID.setSortable(true);
-		table.getColumnSortList().push(movieID);
+		
 		
 		TextColumn<FilmData> title = new TextColumn<FilmData>() {
 			@Override
@@ -252,6 +252,17 @@ public class Table extends Composite {
 				}
 			}
 		});	
+		
+		table.addColumnSortHandler(new AsyncHandler(table){
+			
+			@Override
+			public void onColumnSort(ColumnSortEvent event) {
+				asyncDataProvider.onColumnSort(table, event.isSortAscending());
+			}
+		});
+		
+		movieID.setSortable(true);
+		table.getColumnSortList().push(movieID);
 	}
 	
 	/**
