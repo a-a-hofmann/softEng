@@ -61,6 +61,13 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 */
 	private String query;
 	
+	
+	private boolean isSort;
+	
+	private String column;
+	
+	private boolean isAscending;
+	
 	/**
 	 * Data provider constructor.
 	 * @param table Table reference to add to the list of displays to monitor.
@@ -80,24 +87,21 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		addDataDisplay(table);
 	}
 	
-	public void onColumnSort(HasData<FilmData> display, boolean isAscending) {
+	public void onColumnSort(HasData<FilmData> display, boolean isAscending, String column) {
 		Range range = display.getVisibleRange();
 		final int start = range.getStart();
 		final int length = range.getLength();
 		
 		String order = isAscending ? "ASC" : "DESC";
-		
-		String sortQuery = " select m.*, group_concat(DISTINCT g.genre), group_concat(DISTINCT l.language), group_concat(DISTINCT c.country) "
-							+ "from ("
-								+ "SELECT * FROM movies ORDER BY movieid " + order + " LIMIT 15"
-								+ ") m "
-							+ "left join moviegenres mg on m.movieid=mg.movieid "
-							+ "left join genres g on g.genreid=mg.genreid "
-							+ "left join movielanguages ml on m.movieid=ml.movieid "
-							+ "left join languages l on l.languageid=ml.languageid "
-							+ "left join moviecountries mc on m.movieid=mc.movieid "
-							+ "left join countries c on c.countryid=mc.countryid "
-							+ "group by m.movieid;";
+		this.column = column;
+		isSort = true;
+		query = "select m.*, group_concat(DISTINCT g.genre) genres, group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries from (SELECT * FROM movies ORDER BY " + column + " " + order + " LIMIT " + start + ", " + length + ") as m"
+				+ " left join moviegenres mg on m.movieid=mg.movieid left join genres g on g.genreid=mg.genreid"
+				+ " left join movielanguages ml on m.movieid=ml.movieid"
+				+ " left join languages l on l.languageid=ml.languageid"
+				+ " left join moviecountries mc on m.movieid=mc.movieid"
+				+ " left join countries c on c.countryid=mc.countryid group by m.movieid order by " + column + " " + order + ";";
 		
 		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
 	    	public void onFailure(Throwable caught) {
@@ -109,8 +113,9 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	            updateRowData(start, newData);
 	    	}
 	    };
-	  
-    	filmDataSvc.getFilmData(sortQuery, false, callback);
+	    
+	    onRangeChanged(display);
+//    	filmDataSvc.getFilmData(sortQuery, false, callback);
 		
 	}
 	
@@ -138,11 +143,22 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		            updateRowData(start, newData);
 		    	}
 		    };
-		  
-			String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
-	    	filmDataSvc.getFilmData(getAllQuery, false, callback);
-		}
-		else{
+		    
+		    if(isSort) {
+		    	query = "select m.*, group_concat(DISTINCT g.genre) genres, group_concat(DISTINCT l.language) languages, "
+						+ "group_concat(DISTINCT c.country) countries from (SELECT * FROM movies ORDER BY " + column + " " + (isAscending ? "ASC" : "DESC") + " LIMIT " + start + ", " + length + ") as m"
+						+ " left join moviegenres mg on m.movieid=mg.movieid left join genres g on g.genreid=mg.genreid"
+						+ " left join movielanguages ml on m.movieid=ml.movieid"
+						+ " left join languages l on l.languageid=ml.languageid"
+						+ " left join moviecountries mc on m.movieid=mc.movieid"
+						+ " left join countries c on c.countryid=mc.countryid group by m.movieid"
+						+ " order by m." + column + " " + (isAscending ? "ASC" : "DESC") + ";";
+		    	filmDataSvc.getFilmData(query, false, callback);
+		    } else {
+		    	String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+		    	filmDataSvc.getFilmData(getAllQuery, false, callback);
+		    }
+		} else {
 			List<FilmData> tmp = new ArrayList<FilmData>();
 			
 			if(isSearchResult){

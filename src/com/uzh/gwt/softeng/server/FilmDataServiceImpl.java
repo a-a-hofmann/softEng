@@ -63,6 +63,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		log.log(Level.INFO, query);
 		//Save last loaded dataset as export candidate
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		if (isSearch){

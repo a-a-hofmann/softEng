@@ -14,8 +14,10 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -106,7 +108,7 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieID, "Movie ID");
-		
+		movieID.setDataStoreName("movieid");
 		
 		TextColumn<FilmData> title = new TextColumn<FilmData>() {
 			@Override
@@ -115,6 +117,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(title, "Title");
+		title.setDataStoreName("title");
 		
 		TextColumn<FilmData> movieDate = new TextColumn<FilmData>() {
 			@Override
@@ -129,7 +132,8 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDate, "Date");
-
+		movieDate.setDataStoreName("date");
+		
 		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
@@ -143,6 +147,7 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDuration, "Duration");
+		movieDuration.setDataStoreName("duration");
 		
 		TextColumn<FilmData> movieGenres = new TextColumn<FilmData>() {
 			@Override
@@ -155,6 +160,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieGenres, "Genres");
+		movieGenres.setDataStoreName("genres");
 		
 		TextColumn<FilmData> movieLanguages = new TextColumn<FilmData>() {
 			@Override
@@ -167,6 +173,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieLanguages, "Languages");
+		movieLanguages.setDataStoreName("languages");
 
 		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
 			@Override
@@ -179,6 +186,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieCountry, "Country");
+		movieCountry.setDataStoreName("countries");
 		
 		//Handler for single selection of one row
 		final NoSelectionModel<FilmData> selectionModel = new NoSelectionModel<FilmData>();
@@ -254,12 +262,20 @@ public class Table extends Composite {
 			
 			@Override
 			public void onColumnSort(ColumnSortEvent event) {
-				asyncDataProvider.onColumnSort(table, event.isSortAscending());
+				
+				ColumnSortInfo info = table.getColumnSortList().get(0);
+				String sortByColumn = info.getColumn().getDataStoreName();
+				asyncDataProvider.onColumnSort(table, event.isSortAscending(), sortByColumn);
 			}
 		});
 		
 		movieID.setSortable(true);
+		title.setSortable(true);
+		movieDate.setSortable(true);
+		movieDuration.setSortable(true);
+		
 		table.getColumnSortList().push(movieID);
+		
 	}
 	
 	/**
