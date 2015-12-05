@@ -78,7 +78,6 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
 			logoSlot.add(logo);
-		logo.setWidth("30em");
 	}
 	
 	/**

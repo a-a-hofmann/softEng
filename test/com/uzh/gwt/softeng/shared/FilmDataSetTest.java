@@ -42,25 +42,6 @@ public class FilmDataSetTest {
 		assertNotEquals(movies, null);
 		assertNotEquals(movies.getFilms(), null);
 	}
-	
-	@Test
-	public void testGetFilms(){
-		assertNotEquals(movies.getFilms(), null);
-		assertEquals(movies.getFilms().size(), 0);
-	}
-	
-//	@Test
-//	public void testGetCountriesList(){
-//		FilmData f1 = new FilmData(1, "a", 180, new ArrayList<String>(Arrays.asList("Switzerland", "USA")));
-//		FilmData f2 = new FilmData(2, "b", 180, new ArrayList<String>(Arrays.asList("Italy", "Japan")));
-//		FilmData f3 = new FilmData(3, "c", 180, new ArrayList<String>(Arrays.asList("Japan")));
-//		FilmDataSet movies = new FilmDataSet(new ArrayList<FilmData>(Arrays.asList(f1, f2, f3)));
-//		
-//		ArrayList<String> result = movies.getCountriesList();
-//		for(String tmp : result){
-//			System.out.println(tmp);
-//		}
-//	}
 
 	@Test
 	public void testPrintDataSet(){
@@ -74,86 +55,179 @@ public class FilmDataSetTest {
 	
 	@Test
 	public void testFilterByTitle() {
+		FilmData film1 = new FilmData();
+		film1.setTitle("Buffy adasds");
+		FilmData film2 = new FilmData();
+		film2.setTitle("Plan 9");
+		FilmData film3 = new FilmData();
+		film3.setTitle("Dirty");
+		
 		String[] testTitles = { "Buffy", "Plan 9", "Dirty" };
-		ArrayList<FilmData> filteredTitles = new ArrayList<FilmData>();
 		
+		ArrayList<FilmData> filteredTitles = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredTitles);
+		
+		ArrayList<FilmData> results;
 		for(String title : testTitles) {
-			filteredTitles.addAll( movies.filterByTitle(title) );
+			results = movies.filterByTitle(title);
+			
+			for(FilmData result : results){
+				assertTrue(result.getTitle().toLowerCase().contains(title.toLowerCase()));
+			}
 		}
-		
-		assertTrue( movies.getFilms().containsAll(filteredTitles) );
 	}
 	
 	@Test
 	public void testSearchById() {
+		FilmData film1 = new FilmData();
+		film1.setID(144435);
+		FilmData film2 = new FilmData();
+		film2.setID(83669);
+		FilmData film3 = new FilmData();
+		film3.setID(17405);
+		
+		
 		long[] testIds = { 144435, 83669, 17405 };
-		ArrayList<FilmData> filteredIds = new ArrayList<FilmData>();
+		
+		ArrayList<FilmData> filteredIds = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredIds);
+		
 		
 		for(long id : testIds) {
-			filteredIds.addAll( movies.searchByID(id) );
+			FilmData result = movies.searchByID(id).get(0);
+			assertEquals(id, result.getID());
 		}
 		
-		assertTrue( movies.getFilms().containsAll(filteredIds) );
+		long wrongID = 1;
+		assertEquals(movies.searchByID(wrongID).size(), 0);
+		
 	}
 	
 	@Test
 	public void testFilterByDuration() {
-		float[] testDurations = { 90.0f, 180.3f, 120.5f };
-		ArrayList<FilmData> filteredDurations = new ArrayList<FilmData>();
+		FilmData film1 = new FilmData();
+		film1.setDuration(90.0f);
+		FilmData film2 = new FilmData();
+		film2.setDuration(180.0f);
+		FilmData film3 = new FilmData();
+		film3.setDuration(120.0f);
+		
+		float[] testDurations = { 90.0f, 180.0f, 120.5f };
+		
+		ArrayList<FilmData> filteredDurations = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredDurations);
+		
 		
 		for(float duration : testDurations) {
-			filteredDurations.addAll( movies.filterByDuration(duration) );
+			ArrayList<FilmData> result = movies.filterByDuration(duration);
+			
+			for(FilmData film : result) {
+				assertTrue(film.getDuration() >= duration);
+			}
 		}
 		
-		assertTrue( movies.getFilms().containsAll(filteredDurations) );
-	}
-	
-	@Test
-	public void testFilterByLanguage() {
-		String[] testLanguages = { "Russian", "Spanish", "Italian" };
-		ArrayList<FilmData> filteredLanguages = new ArrayList<FilmData>();
+		int minD = 90;
+		int maxD = 120;
+		ArrayList<FilmData> result = movies.filterByDurationRange(new Range(minD, maxD - minD));
 		
-		for(String language : testLanguages) {
-			filteredLanguages.addAll( movies.filterByLanguage(language) );
-		}
 		
-		assertTrue( movies.getFilms().containsAll(filteredLanguages) );
+		for(FilmData film : result){
+			assertTrue(film.getDuration() >= minD && film.getDuration() <= maxD);
+		}	
 	}
 	
 	@Test
 	public void testFilterByDate() {
 		String[] testDates = { "2014", "2013-06-06", "2001-01" };
-		ArrayList<FilmData> filteredDates = new ArrayList<FilmData>();
+		int [] years = {2014, 2013, 2001};
+		FilmData film1 = new FilmData();
+		film1.setDate(testDates[0]);
+		FilmData film2 = new FilmData();
+		film2.setDate(testDates[1]);
+		FilmData film3 = new FilmData();
+		film3.setDate(testDates[2]);
 		
-		for(String date : testDates) {
-			filteredDates.addAll( movies.filterByDate(date) );
+		
+		ArrayList<FilmData> filteredDate = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredDate);
+		
+		
+		for(int date : years) {
+			ArrayList<FilmData> result = movies.filterByDate(date);
+			
+			for(FilmData film : result) {
+				assertTrue(film.getDate() <= date);
+			}
 		}
+	}
+	
+	@Test
+	public void testFilterByLanguage() {
+		FilmData film1 = new FilmData();
+		film1.setLanguages("Russian");
+		FilmData film2 = new FilmData();
+		film2.setLanguages("Spanish");
+		FilmData film3 = new FilmData();
+		film3.setLanguages("English");
 		
-		assertTrue( movies.getFilms().containsAll(filteredDates) );
+		
+		ArrayList<FilmData> filteredLanguages = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredLanguages);
+		
+		String[] testLanguages = { "Russian", "Spanish", "Italian" };
+		
+		for(String language : testLanguages) {
+			ArrayList<FilmData> result = movies.filterByLanguage(language);
+			for(FilmData film : result){
+				assertTrue(film.getLanguages().contains(language));
+			}
+			assertTrue(result.size() == 1 || result.size() == 0);
+		}	
 	}
 	
 	@Test
 	public void testFilterByCountry() {
+		FilmData film1 = new FilmData();
+		film1.setCountries("Spain");
+		FilmData film2 = new FilmData();
+		film2.setCountries("Italy");
+		FilmData film3 = new FilmData();
+		film3.setCountries("Argentina");
+		
 		String[] testCountries = { "Spain", "Italy", "Argentina" };
-		ArrayList<FilmData> filteredCountries = new ArrayList<FilmData>();
+		
+		ArrayList<FilmData> filteredCountries = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredCountries);
+		
 		
 		for(String country : testCountries) {
-			filteredCountries.addAll( movies.filterByCountry(country) );
+			ArrayList<FilmData> result = movies.filterByCountry(country);
+			for(FilmData film : result){
+				assertTrue(film.getCountries().contains(country));
+			}
 		}
-		
-		assertTrue( movies.getFilms().containsAll(filteredCountries) );
 	}
 	
 	@Test
 	public void testFilterByGenre() {
-		String[] testGenre = { "Comedy", "Horror", "Action" };
-		ArrayList<FilmData> filteredGenres = new ArrayList<FilmData>();
+		String[] testGenres = { "Comedy", "Horror", "Action" };
+		FilmData film1 = new FilmData();
+		film1.setGenres(testGenres[0]);
+		FilmData film2 = new FilmData();
+		film2.setGenres(testGenres[1]);
+		FilmData film3 = new FilmData();
+		film3.setGenres(testGenres[2]);
 		
-		for(String genre : testGenre) {
-			filteredGenres.addAll( movies.filterByGenre(genre) );
+		ArrayList<FilmData> filteredCountries = new ArrayList<FilmData>(Arrays.asList(film1, film2, film3));
+		movies.setDataSet(filteredCountries);
+		
+		
+		for(String genre : testGenres) {
+			ArrayList<FilmData> result = movies.filterByGenre(genre);
+			for(FilmData film : result){
+				assertTrue(film.getGenres().contains(genre));
+			}
 		}
-		
-		assertTrue( movies.getFilms().containsAll(filteredGenres) );
 	}
 	
 	@Test
@@ -176,7 +250,6 @@ public class FilmDataSetTest {
 		tmp = movies.filterByDateRange(new Range(2, 1000));
 		for (FilmData film : tmp){
 			assertTrue(film.getDate() <= 1000 && film.getDate() >= 2);
-		}
-		
+		}	
 	}
 }
