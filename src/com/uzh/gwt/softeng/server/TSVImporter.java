@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.uzh.gwt.softeng.shared.FilmData;
@@ -36,7 +35,6 @@ public class TSVImporter {
     /**
      * Imports film data from file. Easier implementation
      * @param filePath The path to the file to parse.
-     * @param numberOfLinesToParse The number of lines to parse from the file.
      * @throws FileNotFoundException File not found.
      * @return Imported FilmDataSet.
      */
@@ -92,55 +90,17 @@ public class TSVImporter {
     	return new FilmDataSet(films);
     }
     
+    /**
+     * Writes data set to a file.
+     * @param films Data set to be written.
+     * @param newFileName New file to be created
+     * @throws FileNotFoundException Signals that an attempt to open the file denoted by a specified pathname has failed.
+     */
     public static void writeFilmDataToFile(FilmDataSet films, String newFileName) throws FileNotFoundException{
     	PrintWriter out = new PrintWriter(newFileName);
     		
     	out.println(films.formatToTSV());
     	
     	out.close();
-    }
-    
-    
-    public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
-    	
-//    	FilmDataSet result = importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
-//    	FilmDataSet newData = importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
-//    	result.getFilms().addAll(newData.getFilms());
-//    	FilmDataSet superDataSet = new FilmDataSet(result.getFilms());
-//    	
-//		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
-//				+ "group_concat(DISTINCT l.language) languages, "
-//				+ "group_concat(DISTINCT c.country) countries "
-//				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
-//				+ "left join genres g on g.genreid=mg.genreid "
-//				+ "left join movielanguages ml on m.movieid=ml.movieid "
-//				+ "left join languages l on l.languageid=ml.languageid "
-//				+ "left join moviecountries mc on m.movieid=mc.movieid "
-//				+ "left join countries c on c.countryid=mc.countryid "
-//				+ "group by m.movieid ";
-//    	
-//		FilmDataSet movies = new FilmDataSet(MySQLConnector.readFromDB(query));
-//    	
-//    	writeFilmDataToFile(movies, "war/WEB-INF/Resources/movies_all.tsv");
-//    	MySQLConnector.sendToDBExtendedFileSet(superDataSet);
-    	
-
-////    	newData.printDataSet();
-//    	try {
-//			MySQLConnector.sendToDBExtendedFileSet(newData);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//    	
-//    	FileWriter fileWriter = new FileWriter("war/WEB-INF/Resources/tmp.txt");
-//
-//            // Always wrap FileWriter in BufferedWriter.
-//            BufferedWriter bufferedWriter =
-//                new BufferedWriter(fileWriter);
-//            
-//        for (FilmData film : superDataSet.getFilms())
-//        	bufferedWriter.write(film.toString());
-//    	result.printDataSet();
-
     }
 }

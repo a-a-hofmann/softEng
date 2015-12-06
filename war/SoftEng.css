@@ -145,6 +145,11 @@ h1 {
 	position: absolute;
 	right: 10%;
 }
+
+.defaultInputBox {
+	color: #b3b3b3;	
+}
+
 /* End of filterPanel Section */
 
 /* table Section */
@@ -199,6 +204,9 @@ h1 {
 	padding-right: 10%;
 }
 
+.gwt-SuggestBoxPopup { 
+	z-index: 9999;
+}
 
 /* CC section */
 #cc{

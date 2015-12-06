@@ -18,7 +18,9 @@ import org.json.JSONObject;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.uzh.gwt.softeng.client.FilmInfoService;
 
-
+/**
+ * The {@code FilmInfoServiceImpl} is used to connect to the themoviedb.org api.
+ */
 public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInfoService{
 	
 	/**
@@ -48,13 +50,18 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 		
 		String urlString = "https://api.themoviedb.org/3/search/movie?api_key=f69f8579a414114fd51b382937aef6b3&query=";
 		
-		
+		//Read title request coming from the client side.
 		String title = request.getParameter("t");
+		
+		//Reformat title if needed.
 		title = title.replaceAll(" ", "%20");
 		
+		//Read year request coming from the client side.
 		String year = request.getParameter("y");
 		
-		urlString = urlString + title;// + "&year=" + year;
+		
+		urlString = urlString + title;
+		
 		
 		URL url;
 		try {
@@ -66,20 +73,24 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 			
 			
 		try {	
+			// Read response.
 			String result = readFromUrl(url);
 			
 			
-			//Check if it found a result
+			// Check if it found a result
 			JSONObject jsonObject;
 		
 			jsonObject = new JSONObject(result);
 			int numberOfResults = Integer.parseInt(jsonObject.get("total_results").toString());
 			
+			// If it found no results than retry without specifying the date.
+			// Some movie dates differ between our db and themoviedb.
 			if (numberOfResults == 0) {
 				url = new URL(urlString);
 				result = readFromUrl(url);
 			}
 			
+			// Write response to client.
 			writeToClient(result, response);
 			
 		} catch (JSONException | IOException e) {
@@ -92,7 +103,7 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 	 * Sends a query to the themoviedb. 
 	 * @param url Query url.
 	 * @return resulting json object.
-	 * @throws IOException
+	 * @throws IOException if it can't open the stream.
 	 */
 	private String readFromUrl(URL url) throws IOException{
 		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));

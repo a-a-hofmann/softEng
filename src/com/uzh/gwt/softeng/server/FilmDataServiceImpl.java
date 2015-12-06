@@ -77,10 +77,6 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		return newDataSet;
 	}
 
-	/**
-	 * Fetches data set size.
-	 * @return size of data set.
-	 */
 	@Override
 	public Integer getFilmDataSetSize() {
 		log.log(Level.INFO, "Fetching data set size");

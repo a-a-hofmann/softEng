@@ -54,11 +54,19 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 */
 	private String query;
 	
-	
+	/**
+	 * Says whether the table is sorted.
+	 */
 	private boolean isSort;
 	
+	/**
+	 * Sort by this column. Last column clicked on by the user.
+	 */
 	private String column;
 	
+	/**
+	 * Sort in ascending or descending order. {@code true} is ascending, {@code false} otherwise.
+	 */
 	private boolean isAscending;
 	
 	/**
@@ -80,6 +88,13 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		addDataDisplay(table);
 	}
 	
+	/**
+	 * Called when the user clicks on a sortable header. Handles the sorting by either sorting locally 
+	 * or through the database.
+	 * @param display The display whose order has changed.
+	 * @param isAscending Whether to sort in ascending or descending order.
+	 * @param column Column to sort by.
+	 */
 	public void onColumnSort(HasData<FilmData> display, boolean isAscending, String column) {
 		Range range = display.getVisibleRange();
 		final int start = range.getStart();
@@ -123,6 +138,7 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	
 	/**
 	 * onRangeChanged is called any time the pager controls are activated.
+	 * @param display The display whose range has changed.	
 	 */
 	@Override
 	protected void onRangeChanged(HasData<FilmData> display) {
@@ -176,6 +192,9 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		}
 	}
 	
+	/**
+	 * Gets film data set size from the database.
+	 */
 	public void getFilmDataSetSize(){
 		if (filmDataSvc == null) {
 		      filmDataSvc = GWT.create(FilmDataService.class);
@@ -201,17 +220,30 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 * remote procedure calls.
 	 * 
 	 * @param filmDataSet FilmDataSet to save in the data provider.
+	 * @param isSearch Says whether the list is the result of a search.
 	 */
 	public void setList(FilmDataSet filmDataSet, boolean isSearch) {
-		if (filmDataSet != null){
+		if (filmDataSet != null) {
 			ArrayList<FilmData> newData = filmDataSet.getFilms();
-			if(isSearch){
+			if(isSearch) {
 				filmSearchResults = newData;
 				isSearchResult = isSearch;
-			}
-			else{
+			} else {
 				filmData = newData;
 				isFinishedLoading = true;
+			}
+			
+			if(isSort) {
+				FilmDataSet tmp = new FilmDataSet(filmSearchResults);
+				if(column.equals("movieid")) {
+					tmp.sortByID(isAscending);
+				} else if (column.equals("title")) {
+					tmp.sortByTitle(isAscending);
+				} else if (column.equals("date")) {
+					tmp.sortByDate(isAscending);
+				} else {
+					tmp.sortByDuration(isAscending);
+				}
 			}
 			
 			updateRowCount(newData.size(), true);
@@ -236,19 +268,26 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	/**
 	 * Inform the displays of the total number of items that are available.
 	 * 
-	 * @param count the new total row count
-	 * @param exact true if the count is exact, false if it is an estimate
+	 * @param count The new total row count
+	 * @param exact True if the count is exact, false if it is an estimate
 	 */
 	@Override
-	public void updateRowCount(int size, boolean exact) {
-		super.updateRowCount(size, exact);
+	public void updateRowCount(int count, boolean exact) {
+		super.updateRowCount(count, exact);
 	}
 	
-	
+	/**
+	 * Gets the list this data provider is backed by. 
+	 * @return film data set
+	 */
 	public ArrayList<FilmData> getList() {
 		return filmData;
 	}
 
+	/**
+	 * Says whether the application is finished loading data.
+	 * @return {@code true} if the application is done loading, {@code false} otherwise.
+	 */
 	public boolean isFinishedLoading() {
 		return isFinishedLoading;
 	}

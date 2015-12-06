@@ -7,8 +7,12 @@ import org.spiffyui.client.widgets.slider.SliderEvent;
 import org.spiffyui.client.widgets.slider.SliderListener;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -113,7 +117,22 @@ public class FilterPanel extends Composite {
 	 * Base url for HTTP GET requests.
 	 */
 	private String baseUrl = GWT.getModuleBaseURL();
+	
+	/**
+	 * Default input text box css rule.
+	 */
+	private String defaultInputCSSRule = "defaultInputBox";
+	
+	/**
+	 * Default duration input text.
+	 */
+	private String durationDefaultText = "e.g. " + defaultMinDuration + " or " + defaultMinDuration + "-" + defaultMaxDuration;
 
+	/**
+	 * Default date input text.
+	 */
+	private String dateDefaultText = "e.g. " + defaultMinDate + " or " + defaultMinDate + "-" + defaultMaxDate;
+	
 	/**
 	 * Constructor.
 	 */
@@ -350,6 +369,8 @@ public class FilterPanel extends Composite {
             
             @Override
             public boolean onSlide(SliderEvent e) {
+            	dateBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
 
@@ -397,6 +418,8 @@ public class FilterPanel extends Composite {
             }
             @Override
             public boolean onSlide(SliderEvent e) {
+            	durationBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
                 
@@ -428,7 +451,31 @@ public class FilterPanel extends Composite {
 		dateLabel = new Label("Date: ");
         dateSlider = new RangeSlider("dateSlider", defaultMinDate, defaultMaxDate, defaultMinDate, defaultMaxDate);
         dateBox = new TextBox();
-        dateBox.setText(defaultMinDate + "-" + defaultMaxDate);//"1888-2020");
+        
+        dateBox.setText(dateDefaultText);
+        
+        dateBox.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				dateBox.setText("");
+				dateBox.removeStyleName(defaultInputCSSRule);
+			}
+        	
+        });
+        
+        dateBox.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				if(dateBox.getText().isEmpty()) {
+					dateBox.setText(dateDefaultText);
+					dateBox.addStyleName(defaultInputCSSRule);
+				} 
+			}
+        	
+        });
+        dateBox.addStyleName(defaultInputCSSRule);
         
         datePanel.add(dateLabel);
         datePanel.add(dateBox);
@@ -445,9 +492,34 @@ public class FilterPanel extends Composite {
 		durationLabel = new Label("Duration: ");
 		durationSlider = new RangeSlider("durationSlider", defaultMinDuration, defaultMaxDuration, defaultMinDuration, defaultMaxDuration);
         durationBox = new TextBox();
-        durationBox.setText(defaultMinDuration + "-" + defaultMaxDuration);//"0-600");
+        
+        durationBox.setText(durationDefaultText);
         durationPanel.add(durationLabel);
         durationPanel.add(durationBox);
+        
+        
+        durationBox.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				durationBox.setText("");
+				durationBox.removeStyleName(defaultInputCSSRule);
+			}
+        	
+        });
+        
+        durationBox.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				if(durationBox.getText().isEmpty()) {
+					durationBox.setText(durationDefaultText);
+					durationBox.addStyleName(defaultInputCSSRule);
+				} 
+			}
+        	
+        });
+        durationBox.addStyleName(defaultInputCSSRule);
         
         durationBox.addKeyDownHandler(getDurationKeyDownHandler());
         durationSlider.addListener(getDurationSliderListener());
@@ -468,6 +540,12 @@ public class FilterPanel extends Composite {
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
+		
+		dateBox.setText(dateDefaultText);
+		dateBox.addStyleName(defaultInputCSSRule);
+		
+		durationBox.setText(durationDefaultText);
+		durationBox.addStyleName(defaultInputCSSRule);
 	}
 	
 	/**
@@ -656,7 +734,7 @@ public class FilterPanel extends Composite {
 					
 					if(table.isFinishedLoading()) {
 						url = url + getSearchParametersUrl();
-						}
+					}
 					doGet(url);
 				} else {
 					Window.alert("Please choose at least one search option to use this functionality");
@@ -681,7 +759,8 @@ public class FilterPanel extends Composite {
 	}
 	
 	/**
-	 * 
+	 * Sends HTTP GET request.
+	 * @param url URL of the servlet for GET request.
 	 */
 	private void doGet(final String url) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
