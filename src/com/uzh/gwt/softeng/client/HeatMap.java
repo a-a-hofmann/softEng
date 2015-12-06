@@ -32,6 +32,11 @@ import com.googlecode.gwt.charts.client.geochart.GeoChartColorAxis;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
+/**
+ * The {@code HeatMap} class handles the GeoChart object and the Slider and TextBox for the manipulation.
+ * It is an extension to the GWT Composite class.
+ * It is composed of GeoChart, Slider and TextBox.
+ */
 public class HeatMap extends Composite {
 
 	/**
@@ -67,11 +72,23 @@ public class HeatMap extends Composite {
 	private RangeSlider slider;
 	
 	/**
-	 * Slider wrapper and controls. 
+	 * Slider wrapper. 
 	 */
 	private FocusPanel yearControlsWrapper;
+	
+	/**
+	 * Horizontal panel containing slider controls.
+	 */
 	private HorizontalPanel yearControls;
+	
+	/**
+	 * "Choose Year" label.
+	 */
 	private Label yearLabel;
+	
+	/**
+	 * Input text box to specify year or year range.
+	 */
 	private TextBox yearInputTextBox;
 	
 	/**
@@ -150,9 +167,48 @@ public class HeatMap extends Composite {
 		yearControls = new HorizontalPanel();
 		yearControlsWrapper = new FocusPanel( yearControls );
 		
+		yearControlsWrapper.addKeyDownHandler(getKeyDownHandler());
+		
+		//Initialize Year Input Field
+		yearLabel = new Label("Choose Year: ");
+		createYearInputTextBox();
+        
+		
+		yearControls.add(yearLabel);
+		yearControls.add(yearInputTextBox);
+		yearControls.setStyleName("SliderControls");
+		
+		//Slider Part
+		sliderPanel = new DockLayoutPanel(Unit.PCT);
+		sliderPanel.setWidth("600px");
+		sliderPanel.addStyleName("SliderPanel");
+		
+		slider = new RangeSlider("slider", 1888, 2020, 1888, 2020);
+		slider.addListener(getSliderListener());
+		
+		//explanation of arguments for widgets added to DockLayoutPanel
+		//first arg: widget name
+		//second arg: size in percent
+		sliderPanel.addNorth(yearControlsWrapper, 70);
+		sliderPanel.add(slider);
+		//set CSS property directly so that slider handles are visible
+		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
+		
+		sliderPanel.setHeight("60px");
+		sliderPanel.setWidth("500px");
+		
+	}
+
+	/**
+	 * Creates a new keyboard handler.
+	 * @return a new keyboard handler.
+	 */
+	private KeyDownHandler getKeyDownHandler() {
+		
 		//Added pressing Enter-Key support
 		//If there is a number in either fromYear or toYear the slider will get updated accordingly on pressing Enter
-		yearControlsWrapper.addKeyDownHandler(new KeyDownHandler() {
+		KeyDownHandler handler = new KeyDownHandler() {
+		
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
 					
@@ -194,10 +250,15 @@ public class HeatMap extends Composite {
 					
 				}
 			}
-		});
+		};
 		
-		//Initialize Year Input Field
-		yearLabel = new Label("Choose Year: ");
+		return handler;
+	}
+
+	/**
+	 * Creates a new Text Box with onFocus and onBlur events.
+	 */
+	private void createYearInputTextBox() {
 		yearInputTextBox = new TextBox();
 		yearInputTextBox.setValue(defaultText);
 		yearInputTextBox.addStyleName(defaultInputCSSRule);
@@ -223,20 +284,14 @@ public class HeatMap extends Composite {
 			}
         	
         });
-        
-		
-		yearControls.add(yearLabel);
-		yearControls.add(yearInputTextBox);
-		yearControls.setStyleName("SliderControls");
-		
-		//Slider Part
-		sliderPanel = new DockLayoutPanel(Unit.PCT);
-		sliderPanel.setWidth("600px");
-		sliderPanel.addStyleName("SliderPanel");
-		
-		slider = new RangeSlider("slider", 1888, 2020, 1888, 2020);
-		slider.addListener(new SliderListener(){
-			
+	}
+	
+	/**
+	 * Creates a new slider listener.
+	 * @return a new slider listener.
+	 */
+	private SliderListener getSliderListener() {
+		SliderListener listener = new SliderListener() {
 			//helper function
 			private void setYearInput(int min, int max) {
 				if( min == max ) {
@@ -256,13 +311,11 @@ public class HeatMap extends Composite {
 
 			@Override
 			public boolean onSlide(SliderEvent e) {
+				yearInputTextBox.removeStyleName(defaultInputCSSRule);
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 
 				setYearInput(min, max);
-			
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
-
 				return true;
 			}
 
@@ -272,33 +325,39 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 
 				setYearInput(min, max);
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
-				fillDataTable();
-				draw();
+				
+				if (isDefault()) {
+					yearInputTextBox.setText(defaultText);
+					yearInputTextBox.addStyleName(defaultInputCSSRule);
+				}
+				
+				if (filmSet.size() != 0) {
+					filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
+					fillDataTable();
+					draw();
+				}
 			}
 
 			@Override
 			public void onStop(SliderEvent e) {
+				
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
 				setYearInput(min, max);
 			}
-			
-		});
+		};
 		
-		//explanation of arguments for widgets added to DockLayoutPanel
-		//first arg: widget name
-		//second arg: size in percent
-		sliderPanel.addNorth(yearControlsWrapper, 70);
-		sliderPanel.add(slider);
-		//set CSS property directly so that slider handles are visible
-		slider.getElement().getParentElement().getStyle().setOverflow(Overflow.VISIBLE);
-		
-		sliderPanel.setHeight("60px");
-		sliderPanel.setWidth("500px");
-		
+		return listener;
+	}
+	
+	/**
+	 * Says wheter the slider is in its default position.
+	 * @return true if upper limit == max value and lower limit == min value.
+	 */
+	private boolean isDefault() {
+		return (slider.getValueMin() == sliderDefaultMin) && (slider.getValueMax() == sliderDefaultMax);
 	}
 	
 	/**

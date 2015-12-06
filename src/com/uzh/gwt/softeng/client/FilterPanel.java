@@ -369,6 +369,8 @@ public class FilterPanel extends Composite {
             
             @Override
             public boolean onSlide(SliderEvent e) {
+            	dateBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
 
@@ -416,6 +418,8 @@ public class FilterPanel extends Composite {
             }
             @Override
             public boolean onSlide(SliderEvent e) {
+            	durationBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
                 
@@ -730,7 +734,7 @@ public class FilterPanel extends Composite {
 					
 					if(table.isFinishedLoading()) {
 						url = url + getSearchParametersUrl();
-						}
+					}
 					doGet(url);
 				} else {
 					Window.alert("Please choose at least one search option to use this functionality");
@@ -756,6 +760,7 @@ public class FilterPanel extends Composite {
 	
 	/**
 	 * Sends HTTP GET request.
+	 * @param url URL of the servlet for GET request.
 	 */
 	private void doGet(final String url) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
