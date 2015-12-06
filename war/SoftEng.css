@@ -199,11 +199,11 @@ h1 {
 	padding-right: 10%;
 }
 
-/* CC */
-/* CC section */
 
+/* CC section */
 #cc{
-	clear:both;
+	background-color: rgba(153,153,153, 0.2);
+	clear: both;
 }
 
 #tmdb {
