@@ -145,6 +145,11 @@ h1 {
 	position: absolute;
 	right: 10%;
 }
+
+.defaultInputBox {
+	color: #b3b3b3;	
+}
+
 /* End of filterPanel Section */
 
 /* table Section */
