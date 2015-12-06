@@ -71,8 +71,6 @@ public class ApplicationLogic implements EntryPoint {
 	 * Create new Image widget.
 	 */
 	private void insertAd(){
-		// Create the logo image and prevent being able to drag it to browser location bar
-		// by overriding its onBrowserEvent method.
 		logo = new Image(GWT.getModuleBaseURL() + "../" + LOGO_IMAGE_NAME);
 		
 		RootPanel logoSlot = RootPanel.get("ad");
@@ -108,6 +106,9 @@ public class ApplicationLogic implements EntryPoint {
 		    filmDataSvc.getFilmData(query, false, callback);
 	}
 	
+	/**
+	 * Load suggestions lists from the server.
+	 */
 	private void getSuggestionsAsync(){
 		if (filmDataSvc == null) {
 		      filmDataSvc = GWT.create(FilmDataService.class);
@@ -176,7 +177,7 @@ public class ApplicationLogic implements EntryPoint {
 		table = new Table();
 		RootPanel contentSlot = RootPanel.get("table");
 		if (contentSlot!=null) 
-			contentSlot.add(table);	
+			contentSlot.add(table);
 	}
 	
 	/**
@@ -184,15 +185,17 @@ public class ApplicationLogic implements EntryPoint {
 	 */
 	private void buildFilters() {
 		filterPanel = new FilterPanel(table);
+		
 		RootPanel filterSlot = RootPanel.get("filterPanel");
 		if(filterSlot != null)
 			filterSlot.add(filterPanel);
 		
+		// Load suggestions after building the filter panel.
 		getSuggestionsAsync();
 	}
 	
 	/**
-	 * This is the entry point method which will load the data, create the GUI and set up the event handling.
+	 * This is the entry point method which will load the data and create the GUI.
 	 */
 	public void onModuleLoad() {	
 		// Get film data set
@@ -207,6 +210,7 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
+		
 		// Create the user interface
 		setUpGui();				
 	}

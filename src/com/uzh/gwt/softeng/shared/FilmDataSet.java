@@ -109,7 +109,8 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * Get all languages from the FilmDataSet for the client
+     * Get all languages from the FilmDataSet for the client.
+     * @return List of all languages in current data set.
      */
     public ArrayList<String> getLanguagesList(){
     	if (languagesList != null){
@@ -154,7 +155,8 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * Get all genres from the FilmDataSet for the client
+     * Get all genres from the FilmDataSet for the client.
+     * @return List of all genres in current data set.
      */
     public ArrayList<String> getGenresList(){
     	if (genresList != null){
@@ -199,7 +201,8 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * Get all countries from the FilmDataSet for the client
+     * Get all countries from the FilmDataSet for the client.
+     * @return List of all countries in current data set.
      */
     public ArrayList<String> getCountriesList(){
     	if (countriesList != null){
@@ -298,7 +301,7 @@ public class FilmDataSet implements Serializable{
     
     /**
      * Returns an ArrayList containing the filmData of all films with given duration.
-     * @param duration Lower limit acceptable to be searched.
+     * @param durationMin Lower limit acceptable to be searched.
      * @return ArrayList containing FilmDataSet.
      */
     ArrayList<FilmData> filterByDuration(float durationMin){
@@ -448,6 +451,8 @@ public class FilmDataSet implements Serializable{
      * @param language Language to search for.
      * @param durationRange Duration range to search for.
      * @param dateRange Date range to search for.
+     * @param shouldNotLimitDurationUpwards Whether to filter only using the lower limit.
+     * @param shouldNotLimitDateDownwards Whether to filter only using the upper limit.
      * @return ArrayList filtered data set.
      */
     public ArrayList<FilmData> filter(String title, String country, String genre, String language,
@@ -496,8 +501,10 @@ public class FilmDataSet implements Serializable{
      * @param country Country to search for.
      * @param genre Genre to search for.
      * @param language Language to search for.
-     * @param durationRange Duration range to search for.
-     * @param dateRange Date range to search for.
+     * @param durationMin Duration lower limit.
+     * @param durationMax Duration upper limit.
+     * @param dateMin Date lower limit.
+     * @param dateMax Date upper limit.
      * @return ArrayList filtered data set.
      */
     public ArrayList<FilmData> filter(String title, String country, String genre, String language,
@@ -513,8 +520,8 @@ public class FilmDataSet implements Serializable{
      * @param country Country to search for.
      * @param genre Genre to search for.
      * @param language Language to search for.
-     * @param durationRange Duration range to search for.
-     * @param dateRange Date range to search for.
+     * @param dateMax Date upper limit.
+     * @param durationMin Duration lower limit.
      * @return ArrayList filtered data set.
      */
     public ArrayList<FilmData> filter(String title, String country, String genre, String language,

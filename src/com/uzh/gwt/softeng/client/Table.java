@@ -36,7 +36,7 @@ import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
- * The {@code Table} class handles the Table object and the data retrieval for it.
+ * The {@code Table} class handles the Table object. Delegates data retrieval to {@code FilmDataAsyncProvider}.
  * It is an extension to the GWT Composite class.
  * It is composed from a CellTable, a SimplePager and an AsynchronousDataProvider.
  */
@@ -308,6 +308,7 @@ public class Table extends Composite {
 	/**
 	 * Sets a list in the data provider to be used as cache.
 	 * @param filmDataSet FilmDataSet containing list to be set.
+	 * @param isSearch Says whether the new data set is the result of a search.
 	 */
 	public void setList(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.setList(filmDataSet, isSearch);
@@ -330,9 +331,10 @@ public class Table extends Composite {
 	
 	/**
 	 * Updates table row count.
+	 * @param count Row count
 	 */
-	public void updateRowCount(int size){
-		asyncDataProvider.updateRowCount(size, true);
+	public void updateRowCount(int count){
+		asyncDataProvider.updateRowCount(count, true);
 	}
 	
 	/**

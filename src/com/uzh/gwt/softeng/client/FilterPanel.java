@@ -734,7 +734,7 @@ public class FilterPanel extends Composite {
 					
 					if(table.isFinishedLoading()) {
 						url = url + getSearchParametersUrl();
-						}
+					}
 					doGet(url);
 				} else {
 					Window.alert("Please choose at least one search option to use this functionality");
@@ -760,6 +760,7 @@ public class FilterPanel extends Composite {
 	
 	/**
 	 * Sends HTTP GET request.
+	 * @param url URL of the servlet for GET request.
 	 */
 	private void doGet(final String url) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
