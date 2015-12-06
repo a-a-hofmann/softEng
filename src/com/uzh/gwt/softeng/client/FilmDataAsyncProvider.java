@@ -228,6 +228,8 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			if(isSearch) {
 				filmSearchResults = newData;
 				isSearchResult = isSearch;
+				updateRowCount(newData.size(), true);
+				onRangeChanged(table);
 			} else {
 				filmData = newData;
 				isFinishedLoading = true;
@@ -244,10 +246,11 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 				} else {
 					tmp.sortByDuration(isAscending);
 				}
+				if(!isSearchResult) {
+					updateRowCount(newData.size(), true);
+					onRangeChanged(table);
+				}
 			}
-			
-			updateRowCount(newData.size(), true);
-			onRangeChanged(table);
 		}
 	}
 	

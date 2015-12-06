@@ -7,9 +7,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
@@ -46,36 +44,24 @@ public class ApplicationLogic implements EntryPoint {
 	private FilterPanel filterPanel;
 	
 	/**
-	 * This button  will wrap the existing HTML button defined in the HTML page and 
-	 * is used for the dummy search capability.
+	 * The image ad.
 	 */
-	Button search;
+	private Image ad;
 	
 	/**
-	 * The image logo.
+	 * The filename of our ad image
 	 */
-	Image logo;
-	
-	/**
-	 * The filename of our logo image
-	 */
-	private static final String LOGO_IMAGE_NAME = "banana.gif";
-	
-	/**
-	 * A popup panel that will be displayed if the search button is selected. 
-	 */
-	 PopupPanel searchRequest;
-	 
+	private final String AD_IMAGE_NAME = "banana.gif";
 		
 	/**
 	 * Create new Image widget.
 	 */
 	private void insertAd(){
-		logo = new Image(GWT.getModuleBaseURL() + "../" + LOGO_IMAGE_NAME);
+		ad = new Image(GWT.getModuleBaseURL() + "../" + AD_IMAGE_NAME);
 		
 		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
-			logoSlot.add(logo);
+			logoSlot.add(ad);
 	}
 	
 	/**
