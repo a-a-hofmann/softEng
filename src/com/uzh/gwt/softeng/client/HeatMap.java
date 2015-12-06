@@ -9,6 +9,10 @@ import org.spiffyui.client.widgets.slider.SliderListener;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -74,6 +78,26 @@ public class HeatMap extends Composite {
 	 * Panel containing the slider and two label for min and max value.
 	 */
 	private DockLayoutPanel sliderPanel;
+	
+	/**
+	 * Minimum slider value.
+	 */
+	private int sliderDefaultMin = 1888;
+	
+	/**
+	 * Maximum slider value.
+	 */
+	private int sliderDefaultMax = 2020;
+	
+	/**
+	 * Default slider input text.
+	 */
+	private String defaultText = "e.g. " + sliderDefaultMin + " or " + sliderDefaultMin + "-" + sliderDefaultMax;
+	
+	/**
+	 * Default input text box css rule.
+	 */
+	private String defaultInputCSSRule = "defaultInputBox";
 	
 	/**
 	 * Heatmap constructor.
@@ -175,7 +199,31 @@ public class HeatMap extends Composite {
 		//Initialize Year Input Field
 		yearLabel = new Label("Choose Year: ");
 		yearInputTextBox = new TextBox();
-		yearInputTextBox.setValue("1888-2020");
+		yearInputTextBox.setValue(defaultText);
+		yearInputTextBox.addStyleName(defaultInputCSSRule);
+		
+		yearInputTextBox.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				yearInputTextBox.setText("");
+				yearInputTextBox.removeStyleName(defaultInputCSSRule);
+			}
+        	
+        });
+        
+		yearInputTextBox.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				if(yearInputTextBox.getText().isEmpty()) {
+					yearInputTextBox.setText(defaultText);
+					yearInputTextBox.addStyleName(defaultInputCSSRule);
+				} 
+			}
+        	
+        });
+        
 		
 		yearControls.add(yearLabel);
 		yearControls.add(yearInputTextBox);
