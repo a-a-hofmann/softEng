@@ -11,11 +11,14 @@ import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -27,7 +30,6 @@ import com.googlecode.gwt.charts.client.ChartLoader;
 import com.googlecode.gwt.charts.client.ChartPackage;
 import com.googlecode.gwt.charts.client.ColumnType;
 import com.googlecode.gwt.charts.client.DataTable;
-import com.googlecode.gwt.charts.client.geochart.GeoChart;
 import com.googlecode.gwt.charts.client.geochart.GeoChartColorAxis;
 import com.googlecode.gwt.charts.client.geochart.GeoChartOptions;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
@@ -42,7 +44,7 @@ public class HeatMap extends Composite {
 	/**
 	 * The actual heatmap.
 	 */
-	private GeoChart geoChart;
+	private MyGeoChart geoChart;
 	
 	/**
 	 * filmSet to be represented.
@@ -149,7 +151,7 @@ public class HeatMap extends Composite {
 			@Override
 			public void run() {
 				// Create and attach the chart
-				geoChart = new GeoChart();
+				geoChart = new MyGeoChart();
 				
 				dlp.addSouth(sliderPanel, 20);
 				dlp.add(geoChart);
@@ -176,6 +178,16 @@ public class HeatMap extends Composite {
 		
 		yearControls.add(yearLabel);
 		yearControls.add(yearInputTextBox);
+
+		Button export = new Button("Export");
+		export.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				geoChart.exportJava();
+			}
+		});
+		yearControls.add(export);
 		yearControls.setStyleName("SliderControls");
 		
 		//Slider Part
