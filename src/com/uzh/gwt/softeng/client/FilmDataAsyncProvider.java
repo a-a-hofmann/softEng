@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.DataGrid;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -18,12 +17,6 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * controls are used. Send search queries
  */
 public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
-	/**
-	 * Film data set size.
-	 */
-	private int size;
-	
-	private int searchSize;
 	
 	/**
 	 * FilmDataServiceAsync object for RPC.
@@ -93,8 +86,10 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		final int length = range.getLength();
 		
 		String order = isAscending ? "ASC" : "DESC";
+		this.isAscending = isAscending;
 		this.column = column;
 		isSort = true;
+		
 		query = "select m.*, group_concat(DISTINCT g.genre) genres, group_concat(DISTINCT l.language) languages, "
 				+ "group_concat(DISTINCT c.country) countries from (SELECT * FROM movies ORDER BY " + column + " " + order + " LIMIT " + start + ", " + length + ") as m"
 				+ " left join moviegenres mg on m.movieid=mg.movieid left join genres g on g.genreid=mg.genreid"
@@ -103,19 +98,25 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 				+ " left join moviecountries mc on m.movieid=mc.movieid"
 				+ " left join countries c on c.countryid=mc.countryid group by m.movieid order by " + column + " " + order + ";";
 		
-		AsyncCallback<FilmDataSet> callback = new AsyncCallback<FilmDataSet>() {
-	    	public void onFailure(Throwable caught) {
-	    		caught.printStackTrace();
-	    	}
-
-	    	public void onSuccess(FilmDataSet result) {
-	            List<FilmData> newData = result.getFilms();
-	            updateRowData(start, newData);
-	    	}
-	    };
+		if (isFinishedLoading || isSearchResult) {
+			FilmDataSet films = null;
+			if (isSearchResult) {
+				films = new FilmDataSet(filmSearchResults);
+			} else {
+				films = new FilmDataSet(filmData);
+			}
+			if (column.equals("movieid")) {
+				films.sortByID(isAscending);
+			} else if (column.equals("title")) {
+				films.sortByTitle(isAscending);
+			} else if (column.equals("date")) {
+				films.sortByDate(isAscending);
+			} else {
+				films.sortByDuration(isAscending);
+			}
+		}
 	    
 	    onRangeChanged(display);
-//    	filmDataSvc.getFilmData(sortQuery, false, callback);
 		
 	}
 	
@@ -207,12 +208,10 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			if(isSearch){
 				filmSearchResults = newData;
 				isSearchResult = isSearch;
-				this.searchSize = newData.size();
 			}
 			else{
 				filmData = newData;
 				isFinishedLoading = true;
-				this.size = newData.size();
 			}
 			
 			updateRowCount(newData.size(), true);
@@ -243,7 +242,6 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	@Override
 	public void updateRowCount(int size, boolean exact) {
 		super.updateRowCount(size, exact);
-		this.size = size;
 	}
 	
 	

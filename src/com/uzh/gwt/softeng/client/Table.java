@@ -14,7 +14,6 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
@@ -215,29 +214,57 @@ public class Table extends Composite {
 						    public void onResponseReceived(Request request, Response response) {
 						    	if (200 == response.getStatusCode()) {
 						    		// Process the response in response.getText()
-						    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
-						    		JSONArray results = jsonObject.get("results").isArray();
-						    		jsonObject = results.get(0).isObject();
 						    		
-						    		String url = "http://image.tmdb.org/t/p/original/";
 						    		
-						    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
-						    		String plot = jsonObject.get("overview").toString();
-					    		
 						    		// Show popup with poster and movie plot.
 						    		PopupPanel popup = new PopupPanel();
 						    		HorizontalPanel hp = new HorizontalPanel();
 						    		VerticalPanel vp = new VerticalPanel();
 						    		Label titleLabel = new Label(selected.getTitle());
-						    		Label plotLabel = new Label(plot);
+						    		Label plotLabel;
+						    		// Placeholder to show in case no image was found.
+						    		String placeholder = "http://www.fliks.com.au/assets/images/placeholders/poster-placeholder.jpg";
+						    		try {
+							    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
+							    		JSONArray results = jsonObject.get("results").isArray();
+							    		
+							    		
+							    		jsonObject = results.get(0).isObject();
+							    		
+							    		
+							    		// Show popup with poster and movie plot.
+							    		popup = new PopupPanel();
+							    		hp = new HorizontalPanel();
+							    		vp = new VerticalPanel();
+							    		titleLabel = new Label(selected.getTitle());
+							    		
+							    		
+							    		String url = "http://image.tmdb.org/t/p/original/";
+							    		
+							    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
+							    		if (poster.equals("null")) {
+							    			final Image image = new Image(placeholder);
+							    			image.setSize("300px", "500px");
+								    		hp.add(image);
+							    		} else {
+							    			final Image image = new Image(url + poster);
+							    			image.setSize("300px", "500px");
+								    		hp.add(image);
+							    		}
+							    		String plot = jsonObject.get("overview").toString();
 						    		
-						    		final Image image = new Image(url + poster);
-						    		image.setSize("300px", "500px");
+							    		plotLabel = new Label(plot);
+
+						    		} catch (Exception e) {
+						    			final Image image = new Image(placeholder);
+						    			image.setSize("300px", "500px");
+						    			hp.add(image);
+						    			plotLabel = new Label("No Information found");
+						    		}
 						    		
 						    		vp.add(titleLabel);
 						    		vp.add(plotLabel);
 						    		
-						    		hp.add(image);
 						    		hp.add(vp);
 						    		
 						    		popup.setAutoHideEnabled(true);
