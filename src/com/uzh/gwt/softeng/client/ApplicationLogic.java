@@ -102,10 +102,6 @@ public class ApplicationLogic implements EntryPoint {
 		    		filterPanel.setGenresSuggestion(result.getGenresList());
 		    		filterPanel.setLanguagesSuggestion(result.getLanguagesList());
 		    		table.setList(dataSet, false);
-		    		
-		    		
-		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
-//		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
 		    // Make the call to the film data service.

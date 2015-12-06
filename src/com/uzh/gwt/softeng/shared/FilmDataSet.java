@@ -3,6 +3,8 @@ package com.uzh.gwt.softeng.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -310,21 +312,6 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
-     * Returns an ArrayList containing the filmData of all films with a given language.
-     * @param language Language to be searched.
-     * @return ArrayList containing FilmDataSet.
-     */
-    ArrayList<FilmData> filterByLanguage(String language){
-    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
-    	for(FilmData film: films){
-    		if(film.getLanguages().contains(language + " Language") || film.getLanguages().contains(language)){
-    			filteredSet.add(film);
-    		}
-    	}
-    	return filteredSet;
-    }
-    
-    /**
      * Returns an ArrayList containing the filmData of all films released in a given year.
      * @param date Year to be searched.
      * @return ArrayList containing FilmDataSet.
@@ -388,7 +375,7 @@ public class FilmDataSet implements Serializable{
      * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
-    public ArrayList<FilmData> filterByDurationRange(Range range){
+    ArrayList<FilmData> filterByDurationRange(Range range){
     	int low = range.getStart();
     	int high = low + range.getLength();
     	
@@ -407,7 +394,22 @@ public class FilmDataSet implements Serializable{
     	}
     	return filteredSet;
     }
-
+    
+    /**
+     * Returns an ArrayList containing the filmData of all films with a given language.
+     * @param language Language to be searched.
+     * @return ArrayList containing FilmDataSet.
+     */
+    ArrayList<FilmData> filterByLanguage(String language){
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	for(FilmData film: films){
+    		if(film.getLanguages().contains(language)){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
     /**
      * Returns an ArrayList containing the filmData of all films filmed (partially) in a given country.
      * @param country Country to be searched.
@@ -463,11 +465,11 @@ public class FilmDataSet implements Serializable{
     	}
     	
     	if(genre != null && !genre.isEmpty()){
-    		result.setDataSet(result.filterByGenre(title));
+    		result.setDataSet(result.filterByGenre(genre));
     	}
     	
     	if(language != null && !language.isEmpty()){
-    		result.setDataSet(result.filterByLanguage(title));
+    		result.setDataSet(result.filterByLanguage(language));
     	}
     	
     	
@@ -550,6 +552,49 @@ public class FilmDataSet implements Serializable{
     	return result.getFilms();
     }
     
+    public void sortByID(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Integer.compare(o1.getID(), o2.getID());
+				return isAscending ? result : -result;
+			}	
+    	});
+    }
+    
+    public void sortByTitle(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = o1.getTitle().compareTo(o2.getTitle());
+				return isAscending ? result : -result;
+			}	
+    	});
+    }
+    
+    public void sortByDate(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Integer.compare(o1.getDate(), o2.getDate());
+				return isAscending ? result : -result;
+			}
+    	});
+    }
+    
+    public void sortByDuration(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Float.compare(o1.getDuration(), o2.getDuration());
+				return isAscending ? result : -result;
+			}	
+    	});
+    }
+    
     /**
      * Format the data set to TSV.
      * @return a string representation of the entire data set in tsv format.
@@ -564,22 +609,18 @@ public class FilmDataSet implements Serializable{
     }
 
     
-    public static void main(String[] args){
-    	FilmDataSet dataSet;
-    	FilmData avengers = new FilmData();
-    	avengers.setTitle("The Avengers");
-    	ArrayList<FilmData> films = new ArrayList<FilmData>();
-    	films.add(avengers);
-    	dataSet = new FilmDataSet(films);
-    	
-    	 System.out.println(dataSet.filterByTitle("The Avengers"));
+//    public static void main(String[] args){
+//    	
 //		try {
-//			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+//			FilmDataSet dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
 ////			
-//			ArrayList<FilmData> result = dataSet.filter("Batman", null, null, null, new Range(0, 400), new Range(1888, 2020));
+//			dataSet.sortByID(false);
+//			dataSet.sortByTitle(true);
+//			dataSet.sortByDuration(false);
+//			dataSet.sortByDate(true);
 //			
-//			for(FilmData film : result)
-//				System.out.println(film.getTitle());
+//			for(FilmData film : dataSet.getFilms())
+//				System.out.println(film);
 //		} catch(Exception e){
 ////		
 //			
@@ -643,5 +684,5 @@ public class FilmDataSet implements Serializable{
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-    }
+//    }
 }

@@ -55,6 +55,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 */
 	@Override
 	public FilmDataSet getFilmData(String query, boolean isSearch){
+		log.log(Level.INFO, query);
 		ArrayList<FilmData> result = null;
 		try {
 			result = MySQLConnector.readFromDB(query);
@@ -62,6 +63,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		log.log(Level.INFO, query);
 		//Save last loaded dataset as export candidate
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		if (isSearch){

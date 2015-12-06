@@ -14,7 +14,9 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
+import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -66,12 +68,14 @@ public class Table extends Composite {
 	 * Initializes data provider.
 	 */
 	public Table() {
+		
 		table.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		
 		table.setWidth("100%");
 		table.setRowCount(81741, true);
 		
 		asyncDataProvider = new FilmDataAsyncProvider(table);
+		asyncDataProvider.getFilmDataSetSize();
 		
 		lp = new DockLayoutPanel(Unit.PCT);
 		lp.setHeight("800px");
@@ -94,17 +98,16 @@ public class Table extends Composite {
 	 */
 	public void initTable() {
 		
-		AsyncHandler columnSortHandler = new AsyncHandler(table);
-		table.addColumnSortHandler(columnSortHandler);
+//		AsyncHandler columnSortHandler = new AsyncHandler(table);
 		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
 				return Long.toString( object.getID() );
 			}};
+			
 		table.addColumn(movieID, "Movie ID");
-		movieID.setSortable(true);
-		table.getColumnSortList().push(movieID);
+		movieID.setDataStoreName("movieid");
 		
 		TextColumn<FilmData> title = new TextColumn<FilmData>() {
 			@Override
@@ -113,6 +116,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(title, "Title");
+		title.setDataStoreName("title");
 		
 		TextColumn<FilmData> movieDate = new TextColumn<FilmData>() {
 			@Override
@@ -127,7 +131,8 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDate, "Date");
-
+		movieDate.setDataStoreName("date");
+		
 		TextColumn<FilmData> movieDuration = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {
@@ -141,6 +146,7 @@ public class Table extends Composite {
 			}};
 			
 		table.addColumn(movieDuration, "Duration");
+		movieDuration.setDataStoreName("duration");
 		
 		TextColumn<FilmData> movieGenres = new TextColumn<FilmData>() {
 			@Override
@@ -153,6 +159,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieGenres, "Genres");
+		movieGenres.setDataStoreName("genres");
 		
 		TextColumn<FilmData> movieLanguages = new TextColumn<FilmData>() {
 			@Override
@@ -165,6 +172,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieLanguages, "Languages");
+		movieLanguages.setDataStoreName("languages");
 
 		TextColumn<FilmData> movieCountry = new TextColumn<FilmData>() {
 			@Override
@@ -177,6 +185,7 @@ public class Table extends Composite {
 			}};
 
 		table.addColumn(movieCountry, "Country");
+		movieCountry.setDataStoreName("countries");
 		
 		//Handler for single selection of one row
 		final NoSelectionModel<FilmData> selectionModel = new NoSelectionModel<FilmData>();
@@ -205,29 +214,57 @@ public class Table extends Composite {
 						    public void onResponseReceived(Request request, Response response) {
 						    	if (200 == response.getStatusCode()) {
 						    		// Process the response in response.getText()
-						    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
-						    		JSONArray results = jsonObject.get("results").isArray();
-						    		jsonObject = results.get(0).isObject();
 						    		
-						    		String url = "http://image.tmdb.org/t/p/original/";
 						    		
-						    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
-						    		String plot = jsonObject.get("overview").toString();
-					    		
 						    		// Show popup with poster and movie plot.
 						    		PopupPanel popup = new PopupPanel();
 						    		HorizontalPanel hp = new HorizontalPanel();
 						    		VerticalPanel vp = new VerticalPanel();
 						    		Label titleLabel = new Label(selected.getTitle());
-						    		Label plotLabel = new Label(plot);
+						    		Label plotLabel;
+						    		// Placeholder to show in case no image was found.
+						    		String placeholder = "http://www.fliks.com.au/assets/images/placeholders/poster-placeholder.jpg";
+						    		try {
+							    		JSONObject jsonObject = JSONParser.parseStrict(response.getText()).isObject();
+							    		JSONArray results = jsonObject.get("results").isArray();
+							    		
+							    		
+							    		jsonObject = results.get(0).isObject();
+							    		
+							    		
+							    		// Show popup with poster and movie plot.
+							    		popup = new PopupPanel();
+							    		hp = new HorizontalPanel();
+							    		vp = new VerticalPanel();
+							    		titleLabel = new Label(selected.getTitle());
+							    		
+							    		
+							    		String url = "http://image.tmdb.org/t/p/original/";
+							    		
+							    		String poster = jsonObject.get("poster_path").toString().replaceAll("\"", "");
+							    		if (poster.equals("null")) {
+							    			final Image image = new Image(placeholder);
+							    			image.setSize("300px", "500px");
+								    		hp.add(image);
+							    		} else {
+							    			final Image image = new Image(url + poster);
+							    			image.setSize("300px", "500px");
+								    		hp.add(image);
+							    		}
+							    		String plot = jsonObject.get("overview").toString();
 						    		
-						    		final Image image = new Image(url + poster);
-						    		image.setSize("300px", "500px");
+							    		plotLabel = new Label(plot);
+
+						    		} catch (Exception e) {
+						    			final Image image = new Image(placeholder);
+						    			image.setSize("300px", "500px");
+						    			hp.add(image);
+						    			plotLabel = new Label("No Information found");
+						    		}
 						    		
 						    		vp.add(titleLabel);
 						    		vp.add(plotLabel);
 						    		
-						    		hp.add(image);
 						    		hp.add(vp);
 						    		
 						    		popup.setAutoHideEnabled(true);
@@ -244,14 +281,28 @@ public class Table extends Composite {
 					} catch (RequestException e) {
 						// Couldn't connect to server
 					}
-					
-					
-					
-//					Window.alert("You selected: " + selected.getID() + " " + selected.getTitle() + " " + selected.getCountries().toString()
-//									+ " " + selected.getDuration());
 				}
 			}
 		});	
+		
+		table.addColumnSortHandler(new AsyncHandler(table){
+			
+			@Override
+			public void onColumnSort(ColumnSortEvent event) {
+				
+				ColumnSortInfo info = table.getColumnSortList().get(0);
+				String sortByColumn = info.getColumn().getDataStoreName();
+				asyncDataProvider.onColumnSort(table, event.isSortAscending(), sortByColumn);
+			}
+		});
+		
+		movieID.setSortable(true);
+		title.setSortable(true);
+		movieDate.setSortable(true);
+		movieDuration.setSortable(true);
+		
+		table.getColumnSortList().push(movieID);
+		
 	}
 	
 	/**
@@ -261,7 +312,7 @@ public class Table extends Composite {
 	public void setList(FilmDataSet filmDataSet, boolean isSearch){
 		asyncDataProvider.setList(filmDataSet, isSearch);
 	}
-	
+
 	/**
 	 * Returns list from data provider.
 	 * @return list containing film data.
