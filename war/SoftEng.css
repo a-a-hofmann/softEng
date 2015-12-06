@@ -199,6 +199,9 @@ h1 {
 	padding-right: 10%;
 }
 
+.gwt-SuggestBoxPopup { 
+	z-index: 9999;
+}
 
 /* CC section */
 #cc{
