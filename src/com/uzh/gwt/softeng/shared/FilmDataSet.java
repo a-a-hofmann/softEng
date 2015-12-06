@@ -3,6 +3,8 @@ package com.uzh.gwt.softeng.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -268,19 +270,13 @@ public class FilmDataSet implements Serializable{
     */
     public ArrayList<FilmData> filterByTitle(String titlePart){
     	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
-    	//distinction of occurrence of titlePart in beginning, middle or end of Title
-    	//so only eg. titlePart = "the" containing data is in ArrayList and not "They"
+    	
+    	titlePart = titlePart.toLowerCase();
+    	
     	for(FilmData film: films){
-    		if (film.getTitle().contains(titlePart)){
+    		if (film.getTitle().toLowerCase().contains(titlePart)){
     			filteredSet.add(film);
     		}
-//    		if(film.getTitle().toUpperCase().startsWith(titlePart.toUpperCase())){  
-//    			filteredSet.add(film);
-//    		} else if(film.getTitle().toUpperCase().contains(titlePart.toUpperCase())){
-//    			filteredSet.add(film);
-//    		} else if(film.getTitle().toUpperCase().endsWith(titlePart.toUpperCase())){
-//    			filteredSet.add(film);
-//		   }
     	}
     	return filteredSet;  
     }
@@ -299,35 +295,20 @@ public class FilmDataSet implements Serializable{
         }
         return filteredSet;
     }
-       
+    
     /**
      * Returns an ArrayList containing the filmData of all films with given duration.
-     * @param duration Duration to be searched.
+     * @param duration Lower limit acceptable to be searched.
      * @return ArrayList containing FilmDataSet.
      */
-    ArrayList<FilmData> filterByDuration(float duration){
+    ArrayList<FilmData> filterByDuration(float durationMin){
        ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
        for(FilmData film: films){
-           if(film.getDuration() == duration){
+           if(film.getDuration() >= durationMin){
                filteredSet.add(film);
            }
        }
        return filteredSet;
-    }
-    
-    /**
-     * Returns an ArrayList containing the filmData of all films with a given language.
-     * @param language Language to be searched.
-     * @return ArrayList containing FilmDataSet.
-     */
-    ArrayList<FilmData> filterByLanguage(String language){
-    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
-    	for(FilmData film: films){
-    		if(film.getLanguages().contains(language + " Language") || film.getLanguages().contains(language)){
-    			filteredSet.add(film);
-    		}
-    	}
-    	return filteredSet;
     }
     
     /**
@@ -347,10 +328,25 @@ public class FilmDataSet implements Serializable{
     }
     
     /**
+     * Returns an ArrayList containing the filmData of all films released in a given year.
+     * @param dateMax Upper limit year to be searched.
+     * @return ArrayList containing FilmDataSet.
+     */
+    ArrayList<FilmData> filterByDate(int dateMax){
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	
+    	for(FilmData film: films){
+    		if(film.getDate() <= dateMax){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
+    /**
      * /**
      * Returns an ArrayList containing the filmData filtered over a given date range.
-     * @param low Lower limit.
-     * @param high Upper limit.
+     * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
     public ArrayList<FilmData> filterByDateRange(Range range){
@@ -376,11 +372,10 @@ public class FilmDataSet implements Serializable{
     /**
      * /**
      * Returns an ArrayList containing the filmData filtered over a given date range.
-     * @param low Lower limit.
-     * @param high Upper limit.
+     * @param range Range (low, length) such that the range is (low, low + length)
      * @return ArrayList containing filtered film data set.
 	**/
-    public ArrayList<FilmData> filterByDurationRange(Range range){
+    ArrayList<FilmData> filterByDurationRange(Range range){
     	int low = range.getStart();
     	int high = low + range.getLength();
     	
@@ -399,7 +394,22 @@ public class FilmDataSet implements Serializable{
     	}
     	return filteredSet;
     }
-
+    
+    /**
+     * Returns an ArrayList containing the filmData of all films with a given language.
+     * @param language Language to be searched.
+     * @return ArrayList containing FilmDataSet.
+     */
+    ArrayList<FilmData> filterByLanguage(String language){
+    	ArrayList<FilmData> filteredSet = new ArrayList<FilmData>();
+    	for(FilmData film: films){
+    		if(film.getLanguages().contains(language)){
+    			filteredSet.add(film);
+    		}
+    	}
+    	return filteredSet;
+    }
+    
     /**
      * Returns an ArrayList containing the filmData of all films filmed (partially) in a given country.
      * @param country Country to be searched.
@@ -441,7 +451,74 @@ public class FilmDataSet implements Serializable{
      * @return ArrayList filtered data set.
      */
     public ArrayList<FilmData> filter(String title, String country, String genre, String language,
-    		Range durationRange, Range dateRange){
+    		Range durationRange, Range dateRange, boolean shouldNotLimitDurationUpwards, boolean shouldNotLimitDateDownwards){
+    	
+    	
+    	FilmDataSet result = new FilmDataSet(films);
+    	ArrayList<FilmData> tmp;
+    	if(title != null && !title.isEmpty()){
+    		result.setDataSet(result.filterByTitle(title));
+    	}
+    	
+    	if(country != null && !country.isEmpty()){
+    		result.setDataSet(result.filterByCountry(country));
+    	}
+    	
+    	if(genre != null && !genre.isEmpty()){
+    		result.setDataSet(result.filterByGenre(genre));
+    	}
+    	
+    	if(language != null && !language.isEmpty()){
+    		result.setDataSet(result.filterByLanguage(language));
+    	}
+    	
+    	
+    	if(shouldNotLimitDurationUpwards){
+    		tmp = result.filterByDuration(durationRange.getStart());
+    	} else {
+    		tmp = result.filterByDurationRange(durationRange);
+    	}
+    	result.setDataSet(tmp);
+    	
+    	if(shouldNotLimitDateDownwards){
+    		tmp = result.filterByDate(dateRange.getStart() + dateRange.getLength());
+    	} else {
+    		tmp = result.filterByDateRange(dateRange);
+    	}
+    	result.setDataSet(tmp);
+
+    	return result.getFilms();
+    }
+    
+    /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return ArrayList filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		int durationMin, int durationMax, int dateMin, int dateMax){
+    	
+    	return filter(title, country, genre, language, new Range(durationMin, durationMax - durationMin)
+    			, new Range(dateMin, dateMax - dateMin), true, true);
+    }
+    
+    /**
+     * Filter data set according to given parameters.
+     * @param title Title to search for.
+     * @param country Country to search for.
+     * @param genre Genre to search for.
+     * @param language Language to search for.
+     * @param durationRange Duration range to search for.
+     * @param dateRange Date range to search for.
+     * @return ArrayList filtered data set.
+     */
+    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
+    		int dateMax, int durationMin){
     	
     	
     	FilmDataSet result = new FilmDataSet(films);
@@ -466,35 +543,56 @@ public class FilmDataSet implements Serializable{
     		result = new FilmDataSet(tmp);
     	}
     	
+    	tmp = result.filterByDuration(durationMin);
+    	result = new FilmDataSet(tmp);
     	
-    	if(durationRange != null){
-    	
-    		tmp = result.filterByDurationRange(durationRange);
-    		result = new FilmDataSet(tmp);
-    	}
-    	if(dateRange != null){
-    		tmp = result.filterByDateRange(dateRange);
-    		result = new FilmDataSet(tmp);
-    	}
+    	tmp = result.filterByDate(dateMax);
+    	result = new FilmDataSet(tmp);
 
     	return result.getFilms();
     }
     
-    /**
-     * Filter data set according to given parameters.
-     * @param title Title to search for.
-     * @param country Country to search for.
-     * @param genre Genre to search for.
-     * @param language Language to search for.
-     * @param durationRange Duration range to search for.
-     * @param dateRange Date range to search for.
-     * @return ArrayList filtered data set.
-     */
-    public ArrayList<FilmData> filter(String title, String country, String genre, String language,
-    		int durationMin, int durationMax, int dateMin, int dateMax){
-    	
-    	return filter(title, country, genre, language, new Range(durationMin, durationMax - durationMin)
-    			, new Range(dateMin, dateMax - dateMin));
+    public void sortByID(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Integer.compare(o1.getID(), o2.getID());
+				return isAscending ? result : -result;
+			}	
+    	});
+    }
+    
+    public void sortByTitle(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = o1.getTitle().compareTo(o2.getTitle());
+				return isAscending ? result : -result;
+			}	
+    	});
+    }
+    
+    public void sortByDate(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Integer.compare(o1.getDate(), o2.getDate());
+				return isAscending ? result : -result;
+			}
+    	});
+    }
+    
+    public void sortByDuration(final boolean isAscending) {
+    	Collections.sort(films, new Comparator<FilmData>(){
+
+			@Override
+			public int compare(FilmData o1, FilmData o2) {
+				int result = Float.compare(o1.getDuration(), o2.getDuration());
+				return isAscending ? result : -result;
+			}	
+    	});
     }
     
     /**
@@ -512,17 +610,19 @@ public class FilmDataSet implements Serializable{
 
     
 //    public static void main(String[] args){
-//    	FilmDataSet dataSet;
-////    	ArrayList<FilmData> films;
+//    	
 //		try {
-//			dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+//			FilmDataSet dataSet = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+////			
+//			dataSet.sortByID(false);
+//			dataSet.sortByTitle(true);
+//			dataSet.sortByDuration(false);
+//			dataSet.sortByDate(true);
 //			
-//			ArrayList<FilmData> result = dataSet.filter("Batman", null, null, null, new Range(0, 400), new Range(1888, 2020));
-//			
-//			for(FilmData film : result)
-//				System.out.println(film.getTitle());
+//			for(FilmData film : dataSet.getFilms())
+//				System.out.println(film);
 //		} catch(Exception e){
-//		
+////		
 //			
 ////			for (String country : dataSet.getCountriesList()){
 //				System.out.println(country);

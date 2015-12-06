@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -36,6 +38,8 @@ public class MySQLConnector {
 	 * Query result.
 	 */
 	private static ResultSet rs;
+	
+	private static final Logger log = Logger.getLogger( MySQLConnector.class.getName() );
 	
 	/**
 	 * Opens connection to MySQL database instance.
@@ -73,9 +77,7 @@ public class MySQLConnector {
 			String userName = "softEng";
 			String pwd = "softEng";
 			url = "jdbc:mysql://77.56.2.160:3306/newmoviedb";
-//			url = "jdbc:mysql://raspy.local:3306/newmoviedb";
 			conn = DriverManager.getConnection(url, userName, pwd);
-//			conn = DriverManager.getConnection(url);
 		}
 	}
 	
@@ -551,7 +553,7 @@ public class MySQLConnector {
 //			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_80000.tsv");
 			
 			//Extra data set.
-			films = TSVImporter.importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
+			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_1471.tsv");
 			System.out.println("Sending to db");
 			sendToDB(films);
 		} catch (IOException | SQLException e1) {
@@ -560,7 +562,34 @@ public class MySQLConnector {
 
 	}
 	
-	public static void main(String[] args){
+	public static String[] getSuggestions(String query, String sizeQuery) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		int size = 0;
+		
+		openConnection();
+		
+		stmt = conn.createStatement();
+		
+		ResultSet rs = stmt.executeQuery(sizeQuery);
+		
+		if(rs.next())
+			size = rs.getInt(1);
+		
+		log.log(Level.INFO, "" + size);
+		
+		String[] result = new String[size];
+		int i = 0;
+		ResultSet rs2 = stmt.executeQuery(query);
+		while(rs2.next()){
+			result[i++] = rs2.getString(1);
+		}
+		
+		closeConnection();
+		
+		return result;
+	}
+	
+	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+		
 		
 //		sendAllDataFromFileToDB();
 //		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "

@@ -22,5 +22,15 @@
     <servlet-name>filmDataServiceImpl</servlet-name>
     <url-pattern>/SoftEng/filmData</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>filmInfoServiceImpl</servlet-name>
+    <servlet-class>com.uzh.gwt.softeng.server.FilmInfoServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>filmInfoServiceImpl</servlet-name>
+    <url-pattern>/SoftEng/filmInfo</url-pattern>
+  </servlet-mapping>
 
 </web-app>

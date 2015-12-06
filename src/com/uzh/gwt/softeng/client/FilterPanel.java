@@ -35,7 +35,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 public class FilterPanel extends Composite {
 	
 	/**
-	 * RPC Object
+	 * RPC Object.s
 	 */
 	private FilmDataServiceAsync filmDataSvc = GWT.create(FilmDataService.class);
 	
@@ -56,6 +56,8 @@ public class FilterPanel extends Composite {
 	
 	//Sub panels containing the different search widgets
 	private HorizontalPanel titlePanel;
+	private HorizontalPanel datePanel;
+	private HorizontalPanel durationPanel;
 	private HorizontalPanel genresPanel;
 	private HorizontalPanel languagesPanel;
 	private HorizontalPanel countriesPanel;
@@ -67,15 +69,17 @@ public class FilterPanel extends Composite {
 
 	//Date filter
 	private Label dateLabel;
+	private TextBox dateBox;
     private RangeSlider dateSlider;
-    private Label dateminValueLabel;
-    private Label datemaxValueLabel;
+    private int defaultMinDate = 1888;
+    private int defaultMaxDate = 2020;
 
     //Duration filter
     private Label durationLabel;
+    private TextBox durationBox;
     private RangeSlider durationSlider;
-    private Label durationminValueLabel;
-    private Label durationmaxValueLabel;
+    private int defaultMinDuration = 0;
+    private int defaultMaxDuration = 600;
 	
     //Genres filter
 	private Label genresLabel;
@@ -92,18 +96,23 @@ public class FilterPanel extends Composite {
 	//Buttons
 	private Button submitButton;
 	private Button resetButton;
-	private Button exportButton;
+	private Button exportSearchButton;
+	private Button exportAllButton;
 	
-	//Stringbuilder to build search query
+	/**
+	 * Stringbuilder to build search query
+	 */
 	private StringBuilder filterString;
 	
-	//Says whether the normal data set is visible or a search result
+	/**
+	 * Says whether the normal data set is visible or a search result.
+	 */
 	private boolean isSearch;
 	
 	/**
-	 * Url string for HTTP GET requests.
+	 * Base url for HTTP GET requests.
 	 */
-	private String url;
+	private String baseUrl = GWT.getModuleBaseURL();
 
 	/**
 	 * Constructor.
@@ -115,11 +124,7 @@ public class FilterPanel extends Composite {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				if( event.getNativeKeyCode() == KeyCodes.KEY_ENTER ) {
-					if(!isEmpty()){
-						isSearch = true;
-						createSearchQuery();
-						sendSearchQuery();
-					}
+					search();
 				}
 			}
 			
@@ -148,25 +153,24 @@ public class FilterPanel extends Composite {
 		//Button
 		createSubmitButton();
 		createResetButton();
-		createTSVExportButton();
+		createExportSearchButton();
+		createExportAllButton();
 		
 
 		//Genres
 		genresLabel = new Label("Genres: ");
-		genresBox = new SuggestBox();
+		genresBox = new SuggestBox(new MultiWordSuggestOracle());
 		genresPanel = new HorizontalPanel();
 		genresPanel.add(genresLabel);
 		genresPanel.add(genresBox);
-//		genresPanel.addStyleName("filter-genre-panel");
 		genresPanel.setHeight("40px");
 		
 		//Languages
 		languagesLabel = new Label("Languages: ");
-		languagesBox = new SuggestBox();
+		languagesBox = new SuggestBox(new MultiWordSuggestOracle());
 		languagesPanel = new HorizontalPanel();
 		languagesPanel.add(languagesLabel);
 		languagesPanel.add(languagesBox);
-//		languagesPanel.addStyleName("filter-language-panel");
 		languagesPanel.setHeight("40px");
 		
 		//Countries
@@ -175,18 +179,13 @@ public class FilterPanel extends Composite {
 		countriesPanel = new HorizontalPanel();
 		countriesPanel.add(countriesLabel);
 		countriesPanel.add(countriesBox);
-//		countriesPanel.addStyleName("filter-countries-panel");
 		countriesPanel.setHeight("40px");
 		
 		
 		vlp.add(titlePanel);
-        vlp.add(dateLabel);
-        vlp.add(dateminValueLabel);
-        vlp.add(datemaxValueLabel);
+        vlp.add(datePanel);
         vlp.add(dateSlider);
-        vlp.add(durationLabel);
-        vlp.add(durationminValueLabel);
-        vlp.add(durationmaxValueLabel);
+        vlp.add(durationPanel);
         vlp.add(durationSlider);
         vlp.add(genresPanel);
         vlp.add(languagesPanel);
@@ -195,7 +194,8 @@ public class FilterPanel extends Composite {
 		buttonsPanel = new HorizontalPanel();
 		buttonsPanel.add(submitButton);
 		buttonsPanel.add(resetButton);
-		buttonsPanel.add(exportButton);
+		buttonsPanel.add(exportSearchButton);
+		buttonsPanel.add(exportAllButton);
 		vlp.add(buttonsPanel);
 		
 		//Always call for composite widgets
@@ -214,30 +214,193 @@ public class FilterPanel extends Composite {
 	}
 	
 	/**
-	 * Creates duration labels, slider and adds listeners.
+	 * Starts the searching process.
 	 */
-	private void createDurationFilter() {
-		//Duration
-		//TODO: Longest film available is 14400 minutes long.
-		//What should we put as max?
-        durationLabel = new Label("Duration: ");
-        durationSlider = new RangeSlider("durationSlider", 0, 400, 0, 400);
-        durationminValueLabel = new Label("Min: 0");
-        durationminValueLabel.setHeight("20px");
-        durationmaxValueLabel = new Label("Max: 400");
-        durationmaxValueLabel.setHeight("20px");
-
-        durationSlider.addListener(new SliderListener(){
+	private void search() {
+		if(!isEmpty()){
+			isSearch = true;
+			if(!table.isFinishedLoading())
+				createSearchQuery();
+			sendSearchQuery();
+		}
+	}
+	
+	/**
+	 * Gets a new KeyDownHandler for the duration filter.
+	 * @return KeyDownHandler
+	 */
+	private KeyDownHandler getDurationKeyDownHandler() {
+		KeyDownHandler handler = new KeyDownHandler() {
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
+					String durationInput = durationBox.getText();
+								
+					//year was entered
+					if( durationInput.matches("\\d{1,3}") ) {
+						//if background was changed due to error, reset it
+						durationBox.getElement().getStyle().setBackgroundColor("white");
+						
+						int min = Integer.valueOf( durationInput );
+						int max = min;
+						
+						durationSlider.setValues(min, max);
+						return;
+						
+					} else if( durationInput.matches("\\d{1,3}-\\d{1,3}") ) {
+						//if background was changed due to error, reset it
+						durationBox.getElement().getStyle().setBackgroundColor("white");
+						
+						//year range was entered
+						String[] duration = durationInput.split("-");
+						
+						int min = Integer.valueOf( duration[0] );
+						int max = Integer.valueOf( duration[1] );
+						
+						//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
+						if( (min <= max) && !(min < durationSlider.getMinimum()) && !(max > durationSlider.getMaximum()) ){
+							durationSlider.setValues(min, max);
+							return;
+						}
+						
+					} 
+					
+					//non valid input
+					//set background of input box to red and remove wrong input
+					durationBox.setValue("");
+					durationBox.getElement().getStyle().setBackgroundColor("red");
+				}	
+			}
+		};
+		
+		return handler;
+	}
+	
+	/**
+	 * Gets a new KeyDownHandler for the date filter.
+	 * @return KeyDownHandler
+	 */
+	private KeyDownHandler getDateKeyDownHandler() {
+		KeyDownHandler handler = new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER ){
+				String dateInput = dateBox.getText();
+				
+				//year was entered
+				if( dateInput.matches("\\d{4}") ) {
+					//if background was changed due to error, reset it
+					dateBox.getElement().getStyle().setBackgroundColor("white");
+					
+					int min = Integer.valueOf( dateInput );
+					int max = min;
+					
+					dateSlider.setValues(min, max);
+					return;
+					
+				} else if( dateInput.matches("\\d{4}-\\d{4}") ) {
+					//if background was changed due to error, reset it
+					dateBox.getElement().getStyle().setBackgroundColor("white");
+					
+					//year range was entered
+					String[] dates = dateInput.split("-");
+					
+					int min = Integer.valueOf( dates[0] );
+					int max = Integer.valueOf( dates[1] );
+					
+					//if minvalue is greater than max value or smaller than minimum of slider indicate error with red TextBox
+					if( (min <= max) && !(min < dateSlider.getMinimum()) && !(max > dateSlider.getMaximum()) ){
+						dateSlider.setValues(min, max);
+						return;
+					}
+					
+				} 
+				
+				//non valid input
+				//set background of input box to red and remove wrong input
+				dateBox.setValue("");
+				dateBox.getElement().getStyle().setBackgroundColor("red");
+				}	
+			}	
+		};
+		
+		return handler;
+	}
+	
+	/**
+	 * Gets a new SliderListener for the duration slider.
+	 * @return SliderListener.
+	 */
+	private SliderListener getDateSliderListener() {
+		SliderListener listener = new SliderListener() {
+			//helper function
+			private void setDateInput(int min, int max) {
+				if( min == max ) {
+					//if values are equal just write one value
+					dateBox.setValue( Integer.toString(min) );
+				} else {
+					//if values are different write both
+					dateBox.setValue( Integer.toString(min) + "-" + Integer.toString(max) );
+				}
+			}
+        	
             @Override
             public void onStart(SliderEvent e) {
+            	//reset input field in case it was changed due to an error
+            	dateBox.getElement().getStyle().setBackgroundColor("white");
+            }
+            
+            @Override
+            public boolean onSlide(SliderEvent e) {
+                int max = dateSlider.getValueMax();
+                int min = dateSlider.getValueMin();
+
+                setDateInput(min, max);
+                return true;
+            }
+
+            @Override
+            public void onChange(SliderEvent e) {
+                int max = dateSlider.getValueMax();
+                int min = dateSlider.getValueMin();
+                
+                setDateInput(min, max);
+            }
+
+            @Override
+            public void onStop(SliderEvent e) {
+            }
+		};
+		
+		return listener;
+	}
+	
+	/**
+	 * Gets a new SliderListener for the date filter.
+	 * @return SliderListener.
+	 */
+	private SliderListener getDurationSliderListener() {
+		SliderListener listener = new SliderListener() {
+			//helper function
+			private void setDurationInput(int min, int max) {
+				if( min == max ) {
+					//if values are equal just write one value
+					durationBox.setValue( Integer.toString(min) );
+				} else {
+					//if values are different write both
+					durationBox.setValue( Integer.toString(min) + "-" + Integer.toString(max) );
+				}
+			}
+        	
+            @Override
+            public void onStart(SliderEvent e) {
+            	//reset input field in case it was changed due to an error
+            	durationBox.getElement().getStyle().setBackgroundColor("white");
             }
             @Override
             public boolean onSlide(SliderEvent e) {
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
-
-                durationminValueLabel.setText("Min: " + min);
-                durationmaxValueLabel.setText("Max: " + max);
+                
+                setDurationInput(min, max);
                 return true;
             }
 
@@ -246,55 +409,53 @@ public class FilterPanel extends Composite {
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
 
-                durationminValueLabel.setText("Min: " + min);
-                durationmaxValueLabel.setText("Max: " + max);
+                setDurationInput(min, max);
             }
 
             @Override
             public void onStop(SliderEvent e) {
             }
-        });
+		};
+		
+		return listener;
 	}
-
+	
 	/**
 	 * Creates date labels, slider and adds listener.
 	 */
 	private void createDateFilter() {
+		datePanel = new HorizontalPanel();
 		dateLabel = new Label("Date: ");
-        dateSlider = new RangeSlider("dateSlider", 1888, 2020, 1888, 2020);
-        dateminValueLabel = new Label("Min: 1888");
-        dateminValueLabel.setHeight("20px");
-        datemaxValueLabel = new Label("Max: 2020");
-        datemaxValueLabel.setHeight("20px");
+        dateSlider = new RangeSlider("dateSlider", defaultMinDate, defaultMaxDate, defaultMinDate, defaultMaxDate);
+        dateBox = new TextBox();
+        dateBox.setText(defaultMinDate + "-" + defaultMaxDate);//"1888-2020");
+        
+        datePanel.add(dateLabel);
+        datePanel.add(dateBox);
+        
+        dateBox.addKeyDownHandler(getDateKeyDownHandler());
+        dateSlider.addListener(getDateSliderListener());
+	}
 
-        dateSlider.addListener(new SliderListener(){
-            @Override
-            public void onStart(SliderEvent e) {
-            }
-            @Override
-            public boolean onSlide(SliderEvent e) {
-                int max = dateSlider.getValueMax();
-                int min = dateSlider.getValueMin();
-
-                dateminValueLabel.setText("Min: " + min);
-                datemaxValueLabel.setText("Max: " + max);
-                return true;
-            }
-
-            @Override
-            public void onChange(SliderEvent e) {
-                int max = dateSlider.getValueMax();
-                int min = dateSlider.getValueMin();
-
-                dateminValueLabel.setText("Min: " + min);
-                datemaxValueLabel.setText("Max: " + max);
-            }
-
-            @Override
-            public void onStop(SliderEvent e) {
-            }
-
-        });
+	/**
+	 * Creates duration labels, slider and adds listeners.
+	 */
+	private void createDurationFilter() {
+		durationPanel = new HorizontalPanel();
+		durationLabel = new Label("Duration: ");
+		durationSlider = new RangeSlider("durationSlider", defaultMinDuration, defaultMaxDuration, defaultMinDuration, defaultMaxDuration);
+        durationBox = new TextBox();
+        durationBox.setText(defaultMinDuration + "-" + defaultMaxDuration);//"0-600");
+        durationPanel.add(durationLabel);
+        durationPanel.add(durationBox);
+        
+        durationBox.addKeyDownHandler(getDurationKeyDownHandler());
+        durationSlider.addListener(getDurationSliderListener());
+     
+        
+        durationPanel.add(durationLabel);
+        durationPanel.add(durationBox);
+        durationPanel.add(durationSlider);
 	}
 	
 	/**
@@ -302,8 +463,8 @@ public class FilterPanel extends Composite {
 	 */
 	private void emptySearchParameters() {
 		titleSearchBox.setText("");
-		dateSlider.setValues(1888, 2020);
-		durationSlider.setValues(0, 400);
+		dateSlider.setValues(defaultMinDate, defaultMaxDate);
+		durationSlider.setValues(defaultMinDuration, defaultMaxDuration);
 		genresBox.setText("");
 		languagesBox.setText("");
 		countriesBox.setText("");
@@ -331,11 +492,7 @@ public class FilterPanel extends Composite {
 		submitButton  = new Button("Filter...", new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!isEmpty()){
-					isSearch = true;
-					createSearchQuery();
-					sendSearchQuery();
-				}
+				search();
 			}
 		});
 	}
@@ -377,10 +534,22 @@ public class FilterPanel extends Composite {
 		if( !languagesBox.getText().equals("") )
 			filterString.append( "LOWER(l.language) like \"%" + languagesBox.getText().toLowerCase() + "%\" and " );
 		
-		filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
-		filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " +dateSlider.getValueMax() + " " );
+		if(shouldNotLimitDurationUpwards()){
+			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and " );
+			
+		} else {
+			filterString.append( "m.duration >= " + durationSlider.getValueMin() + " and m.duration <= " + durationSlider.getValueMax() + " and " );
+		}
+		
+		if(shouldNotLimitDateDownwards()) {
+			filterString.append( "m.date <= " +dateSlider.getValueMax() + " " );
+		} else {
+			filterString.append( "m.date >= " + dateSlider.getValueMin() + " and m.date <= " + dateSlider.getValueMax() + " " );
+		}
+		
 		//has to be last String in this chain
-		filterString.append( "group by m.movieid;" );
+		filterString.append( "group by m.movieid;" );	
+		
 	}
 	
 	/**
@@ -404,15 +573,16 @@ public class FilterPanel extends Composite {
 			//Filter locally.
 			
 			FilmDataSet result = new FilmDataSet(table.getList());
-			
+				
 			String title = titleSearchBox.getText();
 			String country = countriesBox.getText();
 			String genre = genresBox.getText();
 			String language = languagesBox.getText();
-			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax());
-			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax());
-		
-			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange));
+			
+			Range durationRange = new Range(durationSlider.getValueMin(), durationSlider.getValueMax() - durationSlider.getValueMin());
+			Range dateRange = new Range(dateSlider.getValueMin(), dateSlider.getValueMax() - dateSlider.getValueMin());
+			result = new FilmDataSet(result.filter(title, country, genre, language, durationRange, dateRange, shouldNotLimitDurationUpwards(), shouldNotLimitDateDownwards()));
+			
 			table.setList(result, true);
 		}
 	}
@@ -438,79 +608,161 @@ public class FilterPanel extends Composite {
 			}
 		});
 	}
+	
+	/**
+	 * Gets all search parameters.
+	 * @return A String array containing all search parameters.
+	 */
+	private String[] getSearchParameters() {
+		String[] result = new String[8];
+		result[0] = titleSearchBox.getText();
+		result[1] = countriesBox.getText();
+		result[2] = genresBox.getText();
+		result[3] = languagesBox.getText();
+		result[4] = Integer.toString(durationSlider.getValueMin());
+		result[5] = Integer.toString(durationSlider.getValueMax());
+		result[6] = Integer.toString(dateSlider.getValueMin());
+		result[7] = Integer.toString(dateSlider.getValueMax());
+		
+		return result;
+	}
+	
+	/**
+	 * Create GET query from search parameters.
+	 * @return HTTP GET query to be added to the base url.
+	 */
+	private String getSearchParametersUrl() {
+		String[] parameters = getSearchParameters();
+		String result = "&title=" + parameters[0] + 
+				"&country=" + parameters[1] + "&genre=" + parameters[2] + "&language=" + parameters[3] +
+				"&durationMin=" + parameters[4] + "&durationMax=" + parameters[5] + 
+				"&dateMin=" + parameters[6] + "&dateMax=" + parameters[7];
+		
+		return result;
+	}
 
 	/**
 	 * Creates a button and attaches a clickhandler to export data set to tsv.
 	 */
-	private void createTSVExportButton() {
-		exportButton = new Button("Export", new ClickHandler(){
+	private void createExportSearchButton() {
+		exportSearchButton = new Button("Export Search", new ClickHandler(){
 			// On click send a get request
 			@Override
 			public void onClick(ClickEvent event) {
-				// Servlet URL
-				url = GWT.getModuleBaseURL() + "filmData?search=" + isSearch + "&extended=" + ((table.isFinishedLoading() && isSearch)? "true" : "false");
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
 				
-				if(table.isFinishedLoading()) {
-					if(isSearch) {
-						String title = titleSearchBox.getText();
-						String country = countriesBox.getText();
-						String genre = genresBox.getText();
-						String language = languagesBox.getText();
-						String durationMin = Integer.toString(durationSlider.getValueMin());
-						String durationMax = Integer.toString(durationSlider.getValueMax());
-						String dateMin = Integer.toString(dateSlider.getValueMin());
-						String dateMax = Integer.toString(dateSlider.getValueMax());
-						
-						url = url + "&title=" + title + 
-								"&country=" + country + "&genre=" + genre + "&language=" + language +
-								"&durationMin=" + durationMin + "&durationMax=" + durationMax + 
-								"&dateMin=" + dateMin + "&dateMax=" + dateMax;
-						
-						builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-					}
-				}
-				
-				try {
-					// Create a HTTP GET request
-					builder.sendRequest(null, new RequestCallback() {
-						public void onError(Request request, Throwable exception) {
-							// Couldn't connect to server (could be timeout, SOP violation, etc.)
-							Window.alert(exception.toString());
-					    }
-
-					    public void onResponseReceived(Request request, Response response) {
-					    	if (200 == response.getStatusCode()) {
-					    		// Process the response in response.getText()
-					    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
-					    	} else {
-					    		// Handle the error.  Can get the status text from response.getStatusText()
-					    	}
-					    }
-					});
-				} catch (RequestException e) {
-					// Couldn't connect to server
+				if(!isEmpty() && isSearch){
+					// Servlet URL
+					String url = baseUrl + "filmData?search=true" + "&extended=" + table.isFinishedLoading();
+					
+					if(table.isFinishedLoading()) {
+						url = url + getSearchParametersUrl();
+						}
+					doGet(url);
+				} else {
+					Window.alert("Please choose at least one search option to use this functionality");
 				}
 			}
 		});
 	}
 	
 	/**
+	 * Creates a button and attaches a clickhandler to export data set to tsv.
+	 */
+	private void createExportAllButton() {
+		exportAllButton = new Button("Export All", new ClickHandler(){
+			// On click send a get request
+			@Override
+			public void onClick(ClickEvent event) {
+				// Servlet URL
+				String url = baseUrl + "filmData?search=false";
+				doGet(url);
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void doGet(final String url) {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+		
+		try {
+			// Create a HTTP GET request
+			builder.sendRequest(null, new RequestCallback() {
+				public void onError(Request request, Throwable exception) {
+					// Couldn't connect to server (could be timeout, SOP violation, etc.)
+					Window.alert(exception.toString());
+			    }
+
+			    public void onResponseReceived(Request request, Response response) {
+			    	if (200 == response.getStatusCode()) {
+			    		// Process the response in response.getText()
+			    		Window.open(url, "_self", "status=0,toolbar=0,menubar=0,location=0");
+			    	} else {
+			    		// Handle the error.  Can get the status text from response.getStatusText()
+			    	}
+			    }
+			});
+		} catch (RequestException e) {
+			// Couldn't connect to server
+		}
+	}
+	
+	/**
 	 * Set country suggestion list
 	 * @param countries Countries list to be set as suggestions.
 	 */
-	public void setCountrySuggestion(ArrayList<String> countries){
+	void setCountrySuggestion(ArrayList<String> countries){
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) countriesBox.getSuggestOracle();
 		
 		for(int i = 0; i < countries.size(); i++){
 			oracle.add(countries.get(i));
 		}
-//		for (String country : countries){
-//			oracle.add(country);
-//		}
+	}
+	
+	/**
+	 * Set genre suggestion list
+	 * @param genres Genres list to be set as suggestions.
+	 */
+	void setGenresSuggestion(ArrayList<String> genres) {
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) genresBox.getSuggestOracle();
+		
+		for(int i = 0; i < genres.size(); i++){
+			oracle.add(genres.get(i));
+		}
+	}
+	
+	/**
+	 * Set language suggestion list
+	 * @param languages Languages list to be set as suggestions.
+	 */
+	void setLanguagesSuggestion(ArrayList<String> languages) {
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle) languagesBox.getSuggestOracle();
+		
+		for(int i = 0; i < languages.size(); i++){
+			oracle.add(languages.get(i));
+		}
 	}
 		
 	public String getSearchBoxCaption() {
 		return titleSearchBox.getText();
+	}
+	
+	/**
+	 * Returns true if we should omit upper limit for the search query
+	 * @return true if we should omit upper limit for the duration
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDurationUpwards() {
+		return durationSlider.getValueMax() == durationSlider.getMaximum();
+	}
+	
+	/**
+	 * Returns true if we should omit lower limit for the search query
+	 * @return true if we should omit lower limit for the date
+	 * TODO: Find better name
+	 */
+	private boolean shouldNotLimitDateDownwards() {
+		return dateSlider.getValueMin() == dateSlider.getMinimum();
 	}
 }

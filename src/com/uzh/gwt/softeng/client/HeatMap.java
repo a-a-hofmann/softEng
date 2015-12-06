@@ -213,7 +213,7 @@ public class HeatMap extends Composite {
 
 				setYearInput(min, max);
 			
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
+				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
 
 				return true;
 			}
@@ -224,8 +224,7 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 
 				setYearInput(min, max);
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max)));
-
+				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
 				fillDataTable();
 				draw();
 			}
@@ -235,6 +234,7 @@ public class HeatMap extends Composite {
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				
+				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
 				setYearInput(min, max);
 			}
 			

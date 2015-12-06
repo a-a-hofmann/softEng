@@ -7,4 +7,5 @@ public interface FilmDataServiceAsync {
 
 	void getFilmData(String query, boolean isSearch, AsyncCallback<FilmDataSet> callback);
 	void getFilmDataSetSize(AsyncCallback<Integer> callback);
+	void getSuggestions(AsyncCallback<String[][]> callback);
 }

@@ -49,8 +49,11 @@ h1 {
 	width: 20px;
 }
 
-#ad{
-	top: 3em;
+#ad {
+	aamargin-left: auto;
+	aamargin-rigth: auto;
+	aaclear: both;
+	top: 8em;
 	width: 20%;
 	float: left;
 	position: relative;
@@ -60,8 +63,8 @@ h1 {
 }
 
 #ad .gwt-Image {
-	width: 200px;
-	height: 450px;
+	width: 150px;
+	height: 400px;
 }
 
 #search{
@@ -130,7 +133,7 @@ h1 {
 
 .filterPanel-composite td {
 	width: 50%;
-	padding: 5px 0px 0px 0px;
+	padding: 10px 0px 5px 0px;
 }
 
 .filterPanel-composite .gwt-TextBox {
@@ -177,4 +180,36 @@ h1 {
    width: 70px;
    cursor: pointer;
    cursor: hand;
+}
+
+/* Popup */
+
+.popupContent {
+	position: relative;
+}
+
+.popupContent .gwt-Image {
+	padding: 2px 2px 2px 2px;
+	margin: auto;
+}
+.popupContent .gwt-Label {
+	padding: 10%, 10%, 0, 10%;
+	padding-top: 10%;
+	padding-left: 10%;
+	padding-right: 10%;
+}
+
+.gwt-SuggestBoxPopup { 
+	z-index: 9999;
+}
+
+/* CC section */
+#cc{
+	background-color: rgba(153,153,153, 0.2);
+	clear: both;
+}
+
+#tmdb {
+	width: 20%;
+	height: 20%;
 }

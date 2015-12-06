@@ -1,5 +1,7 @@
 package com.uzh.gwt.softeng.server;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -53,6 +55,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 	 */
 	@Override
 	public FilmDataSet getFilmData(String query, boolean isSearch){
+		log.log(Level.INFO, query);
 		ArrayList<FilmData> result = null;
 		try {
 			result = MySQLConnector.readFromDB(query);
@@ -60,6 +63,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		log.log(Level.INFO, query);
 		//Save last loaded dataset as export candidate
 		FilmDataSet newDataSet = new FilmDataSet(result);
 		if (isSearch){
@@ -90,6 +94,36 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		return result;
 	}
 	
+	@Override
+	public String[][] getSuggestions() {
+		String[][] result = new String[3][];
+		
+		String[] genres = null;
+		String[] languages = null;
+		String[] countries = null;
+		try {
+			String query = "SELECT country FROM countries;";
+			String sizeQuery = "SELECT COUNT(*) FROM countries;";
+			countries = MySQLConnector.getSuggestions(query, sizeQuery);
+			
+			query = "SELECT genre FROM genres;";
+			sizeQuery = "SELECT COUNT(*) FROM genres;";
+			genres = MySQLConnector.getSuggestions(query, sizeQuery);
+			
+			query = "SELECT language FROM languages;";
+			sizeQuery = "SELECT COUNT(*) FROM languages;";
+			languages = MySQLConnector.getSuggestions(query, sizeQuery);
+			
+			result[0] = genres;
+			result[1] = languages;
+			result[2] = countries;
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
+			log.log(Level.SEVERE, e.toString());
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Process the HTTP doGet request and serves a file as response.
 	 */
@@ -103,10 +137,12 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			log.log(Level.SEVERE, e.toString());
 		}
 		
+		log.log(Level.INFO, request.getQueryString());
+		
 		String formatDataSet = "";
-		log.log(Level.SEVERE, request.getQueryString());
 		
 		response.setContentType(TSV_CONTENT_TYPE);
+		
 		PrintWriter out = response.getWriter();
 		
 		if (request.getParameter("search").equals("true")){
@@ -123,6 +159,7 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 				int dateMax = Integer.parseInt(request.getParameter("dateMax"));
 	
 				formatDataSet = new FilmDataSet(dataSet.filter(title, country, genre, language, durationMin, durationMax, dateMin, dateMax)).formatToTSV();
+				log.log(Level.SEVERE, "" + dataSet.size());
 			} else {
 				formatDataSet = searchSet.formatToTSV();
 			}
@@ -132,26 +169,15 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 		    
 		} else {
 			log.log(Level.INFO, "Export entire dataset");
-			formatDataSet = dataSet.formatToTSV();
-			out.print(formatDataSet);
-			out.close();
 			
-//			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_80000.tsv"));
-//			
-//			log.log(Level.INFO, formatDataSet);
-//			
-//			while((formatDataSet = bufferedReader.readLine()) != null){
-//				out.println(formatDataSet);
-//			}
-//			
-//			bufferedReader.close();
-//			bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_1471.tsv"));
-//			while((formatDataSet = bufferedReader.readLine()) != null){
-//				out.println(formatDataSet);
-//			}
-//			
-//			out.close();
-//			bufferedReader.close();
+			BufferedReader bufferedReader = new BufferedReader(new FileReader("WEB-INF/Resources/movies_all.tsv"));
+			
+			while((formatDataSet = bufferedReader.readLine()) != null){
+				out.println(formatDataSet);
+			}
+			
+			out.close();
+			bufferedReader.close();
 		}
 	}
 }

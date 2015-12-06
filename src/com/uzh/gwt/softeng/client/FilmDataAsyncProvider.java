@@ -17,10 +17,6 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * controls are used. Send search queries
  */
 public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
-	/**
-	 * Film data set size.
-	 */
-	private int size;
 	
 	/**
 	 * FilmDataServiceAsync object for RPC.
@@ -58,25 +54,17 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	 */
 	private String query;
 	
+	
+	private boolean isSort;
+	
+	private String column;
+	
+	private boolean isAscending;
+	
 	/**
 	 * Data provider constructor.
 	 * @param table Table reference to add to the list of displays to monitor.
 	 */
-//	public FilmDataAsyncProvider(CellTable<FilmData> table){
-//		query = "select m.*, group_concat(DISTINCT g.genre) genres, "
-//				+ "group_concat(DISTINCT l.language) languages, "
-//				+ "group_concat(DISTINCT c.country) countries "
-//				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
-//				+ "left join genres g on g.genreid=mg.genreid "
-//				+ "left join movielanguages ml on m.movieid=ml.movieid "
-//				+ "left join languages l on l.languageid=ml.languageid "
-//				+ "left join moviecountries mc on m.movieid=mc.movieid "
-//				+ "left join countries c on c.countryid=mc.countryid "
-//				+ "group by m.movieid ";
-//		this.table = table;
-//		addDataDisplay(table);
-//	}
-	
 	public FilmDataAsyncProvider(DataGrid<FilmData> table){
 		query = "select m.*, group_concat(DISTINCT g.genre) genres, "
 				+ "group_concat(DISTINCT l.language) languages, "
@@ -91,6 +79,47 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		this.table = table;
 		addDataDisplay(table);
 	}
+	
+	public void onColumnSort(HasData<FilmData> display, boolean isAscending, String column) {
+		Range range = display.getVisibleRange();
+		final int start = range.getStart();
+		final int length = range.getLength();
+		
+		String order = isAscending ? "ASC" : "DESC";
+		this.isAscending = isAscending;
+		this.column = column;
+		isSort = true;
+		
+		query = "select m.*, group_concat(DISTINCT g.genre) genres, group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries from (SELECT * FROM movies ORDER BY " + column + " " + order + " LIMIT " + start + ", " + length + ") as m"
+				+ " left join moviegenres mg on m.movieid=mg.movieid left join genres g on g.genreid=mg.genreid"
+				+ " left join movielanguages ml on m.movieid=ml.movieid"
+				+ " left join languages l on l.languageid=ml.languageid"
+				+ " left join moviecountries mc on m.movieid=mc.movieid"
+				+ " left join countries c on c.countryid=mc.countryid group by m.movieid order by " + column + " " + order + ";";
+		
+		if (isFinishedLoading || isSearchResult) {
+			FilmDataSet films = null;
+			if (isSearchResult) {
+				films = new FilmDataSet(filmSearchResults);
+			} else {
+				films = new FilmDataSet(filmData);
+			}
+			if (column.equals("movieid")) {
+				films.sortByID(isAscending);
+			} else if (column.equals("title")) {
+				films.sortByTitle(isAscending);
+			} else if (column.equals("date")) {
+				films.sortByDate(isAscending);
+			} else {
+				films.sortByDuration(isAscending);
+			}
+		}
+	    
+	    onRangeChanged(display);
+		
+	}
+	
 	
 	/**
 	 * onRangeChanged is called any time the pager controls are activated.
@@ -115,11 +144,22 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 		            updateRowData(start, newData);
 		    	}
 		    };
-		  
-			String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
-	    	filmDataSvc.getFilmData(getAllQuery, false, callback);
-		}
-		else{
+		    
+		    if(isSort) {
+		    	query = "select m.*, group_concat(DISTINCT g.genre) genres, group_concat(DISTINCT l.language) languages, "
+						+ "group_concat(DISTINCT c.country) countries from (SELECT * FROM movies ORDER BY " + column + " " + (isAscending ? "ASC" : "DESC") + " LIMIT " + start + ", " + length + ") as m"
+						+ " left join moviegenres mg on m.movieid=mg.movieid left join genres g on g.genreid=mg.genreid"
+						+ " left join movielanguages ml on m.movieid=ml.movieid"
+						+ " left join languages l on l.languageid=ml.languageid"
+						+ " left join moviecountries mc on m.movieid=mc.movieid"
+						+ " left join countries c on c.countryid=mc.countryid group by m.movieid"
+						+ " order by m." + column + " " + (isAscending ? "ASC" : "DESC") + ";";
+		    	filmDataSvc.getFilmData(query, false, callback);
+		    } else {
+		    	String getAllQuery = query + " limit " + Integer.toString(start) + "," + Integer.toString(length) + ";";
+		    	filmDataSvc.getFilmData(getAllQuery, false, callback);
+		    }
+		} else {
 			List<FilmData> tmp = new ArrayList<FilmData>();
 			
 			if(isSearchResult){
@@ -134,6 +174,25 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			}
 			updateRowData(start, tmp);
 		}
+	}
+	
+	public void getFilmDataSetSize(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		    // Set up the callback object.
+		    AsyncCallback<Integer> callback = new AsyncCallback<Integer>() {
+		    	public void onFailure(Throwable caught) {
+		    		caught.printStackTrace();
+		    	}
+
+		    	public void onSuccess(Integer result) {
+		    		updateRowCount(result, true);
+		    	}
+		    };
+		    // Make the call to the film data service.
+		    filmDataSvc.getFilmDataSetSize(callback);
 	}
 
 	/**
@@ -169,10 +228,9 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 			updateRowCount(filmData.size(), true);
 		}
 		else{
-			updateRowCount(size, true);
+			getFilmDataSetSize();
 		}
-		onRangeChanged(table);
-		
+		onRangeChanged(table);		
 	}
 	
 	/**
@@ -184,8 +242,8 @@ public class FilmDataAsyncProvider extends AsyncDataProvider<FilmData>{
 	@Override
 	public void updateRowCount(int size, boolean exact) {
 		super.updateRowCount(size, exact);
-		this.size = size;
 	}
+	
 	
 	public ArrayList<FilmData> getList() {
 		return filmData;

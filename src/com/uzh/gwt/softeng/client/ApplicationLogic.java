@@ -1,7 +1,11 @@
 package com.uzh.gwt.softeng.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
@@ -74,7 +78,6 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel logoSlot = RootPanel.get("ad");
 		if (logoSlot != null)
 			logoSlot.add(logo);
-		logo.setWidth("30em");
 	}
 	
 	/**
@@ -96,15 +99,38 @@ public class ApplicationLogic implements EntryPoint {
 		    		dataSet = result;
 		    		buildMap();
 		    		filterPanel.setCountrySuggestion(result.getCountriesList());
+		    		filterPanel.setGenresSuggestion(result.getGenresList());
+		    		filterPanel.setLanguagesSuggestion(result.getLanguagesList());
 		    		table.setList(dataSet, false);
-		    		
-		    		
-		    		//TODO: Throws a Uncaught TypeError exception after drawing the map leave for last in async call until solved.
-//		    		map.setFilmDataSet(dataSet);
 		    	}
 		    };
 		    // Make the call to the film data service.
 		    filmDataSvc.getFilmData(query, false, callback);
+	}
+	
+	private void getSuggestionsAsync(){
+		if (filmDataSvc == null) {
+		      filmDataSvc = GWT.create(FilmDataService.class);
+		    }
+
+		    // Set up the countries callback object.
+		    AsyncCallback<String[][]> callback = new AsyncCallback<String[][]>() {
+		    	public void onFailure(Throwable caught) {
+		    		Window.alert(caught.toString());
+		    	}
+
+		    	public void onSuccess(String[][] result) {    		
+		    		ArrayList<String> suggG = new ArrayList<String>(Arrays.asList(result[0]));
+		    		ArrayList<String> suggL = new ArrayList<String>(Arrays.asList(result[1]));
+		    		ArrayList<String> suggC = new ArrayList<String>(Arrays.asList(result[2]));
+		    		
+		    		filterPanel.setCountrySuggestion(suggC);
+		    		filterPanel.setGenresSuggestion(suggG);
+		    		filterPanel.setLanguagesSuggestion(suggL);
+		    	}
+		    };
+		    // Make the call to the film data service.
+		    filmDataSvc.getSuggestions(callback);
 	}
 	
 	/**
@@ -161,6 +187,8 @@ public class ApplicationLogic implements EntryPoint {
 		RootPanel filterSlot = RootPanel.get("filterPanel");
 		if(filterSlot != null)
 			filterSlot.add(filterPanel);
+		
+		getSuggestionsAsync();
 	}
 	
 	/**
@@ -179,7 +207,6 @@ public class ApplicationLogic implements EntryPoint {
 				+ "left join countries c on c.countryid=mc.countryid "
 				+ "group by m.movieid;";
 		getFilmDataSetAsync(query);
-		
 		// Create the user interface
 		setUpGui();				
 	}

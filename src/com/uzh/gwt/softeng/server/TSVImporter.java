@@ -4,15 +4,18 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
  * The {@code TSVImporter} class is responsible for reading the data from the tsv file.
+ * To upload new data to server:
+ * 	1) run importFilmData to parse .tsv file.
+ * 	2) call sendToDBExtendedFileSet to send the new data to the mysql db.
  */
 public class TSVImporter {
 	
@@ -31,117 +34,13 @@ public class TSVImporter {
     }
     
     /**
-	 * Imports Film data from file.
-	 * @param filePath The path to the .tsv file to parse.
-	 * @return Imported FilmDataSet.
-     * @throws IOException IOException.
-     * @throws FileNotFoundException File not found.
-	 */
-    public static FilmDataSet importFilmData(String filePath) throws FileNotFoundException, IOException{
-		return importFilmData(filePath, getFileSizeByLine(filePath));
-    }
-     
-    /**
-     * Imports film data from file.
-     * @param filePath The path to the file to parse.
-     * @param numberOfLinesToParse The number of lines to parse from the file.
-     * @throws FileNotFoundException File not found.
-     * @return Imported FilmDataSet.
-     */
-    public static FilmDataSet importFilmData(String filePath, long numberOfLinesToParse) throws FileNotFoundException{
-    	//Open .tsv file to read.
-    	BufferedReader TSVFile = null;	
-		TSVFile = new BufferedReader(new FileReader(filePath));
-    	
-    	//Define patterns to parse text and add them to ArrayList for easier iterations.
-        String idPattern = "[0-9]++";
-        String titlePattern = "\\w.*";
-        String datePattern = "(\\d{4}-\\d{2}-\\d{2})|(\\d{4})|(\\d{4}-\\d{2})";
-        String durationPattern = "\\d++.\\d++";
-        String languageCountryGenrePattern = "\\{\"/m/\\w+_*\": \".+[\\s\\w+-]*?\"[, \"/m/\\w+_*\": \"\\w+[\\s\\w+-]*?\"]*\\}";
-        
-        ArrayList<String> patterns = new ArrayList<String>();
-        patterns.add(idPattern);
-        patterns.add(titlePattern);
-        patterns.add(datePattern);
-        patterns.add(durationPattern);
-        patterns.add(languageCountryGenrePattern);
-        patterns.add(languageCountryGenrePattern);
-        patterns.add(languageCountryGenrePattern);
-        
-        ArrayList<FilmData> films = new ArrayList<FilmData>((int) numberOfLinesToParse);
-  
-		try {
-			//line from .tsv file.
-			String line = TSVFile.readLine();
-			
-			//pattern iterator.
-			int i, numberOfLinesParsed = 0;
-
-	        while(numberOfLinesParsed++ < numberOfLinesToParse && line != null){
-	        	//For each line in file, tokenize line.
-	        	StringTokenizer tok = new StringTokenizer(line, "\t");
-	        	
-	        	//Create film data container.
-	            FilmData m = new FilmData();
-	            
-	            i = 0;
-	            
-	            String token;
-	            
-	            //While there are still tokens to parse and we still haven't found all patterns.
-	            while(tok.hasMoreTokens() && i < patterns.size()){
-	            	
-	            	token = tok.nextToken();
-	            	
-	            	//If the token matches the given pattern then save it.
-	            	if(token.matches(patterns.get(i)) || token.equals("{}")){
-	            		if(token.equals("{}"))
-	            			i++;
-	            		else
-	            			m.set(i++, token);
-	            	}
-	            	else{ 
-	            		//If the token doesn't match the given pattern then some data is missing
-	            		//search for next matching pattern.
-	            		for(int c = i + 1; c < patterns.size(); c++){
-	            			if((c > 3 && token.equals("{}")) || token.matches(patterns.get(c))){
-	            				if(token.equals("{}")){
-	            					c++;
-	            					i = c;
-	            				}
-	            				else{
-	            					m.set(c++, token);
-	            					i = c;
-	            					break;
-	            				}
-	                    	}
-	            		}
-	            	}
-	            }
-	            
-	            //Add film data to data set.
-	            films.add(m);
-	            
-	            //Read next line in file.
-	            line = TSVFile.readLine();
-	        }
-	        TSVFile.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return new FilmDataSet(films);
-    }
-    
-    /**
      * Imports film data from file. Easier implementation
      * @param filePath The path to the file to parse.
      * @param numberOfLinesToParse The number of lines to parse from the file.
      * @throws FileNotFoundException File not found.
      * @return Imported FilmDataSet.
      */
-    public static FilmDataSet importFilmDataNew(String filePath) throws IOException{
+    public static FilmDataSet importFilmData(String filePath) throws IOException{
     	//Open .tsv file to read.
     	BufferedReader TSVFile = null;	
 		TSVFile = new BufferedReader(new FileReader(filePath));
@@ -193,6 +92,14 @@ public class TSVImporter {
     	return new FilmDataSet(films);
     }
     
+    public static void writeFilmDataToFile(FilmDataSet films, String newFileName) throws FileNotFoundException{
+    	PrintWriter out = new PrintWriter(newFileName);
+    		
+    	out.println(films.formatToTSV());
+    	
+    	out.close();
+    }
+    
     
     public static void main(String[] args) throws FileNotFoundException, IOException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
     	
@@ -200,6 +107,21 @@ public class TSVImporter {
 //    	FilmDataSet newData = importFilmDataNew("war/WEB-INF/Resources/movies_1471.tsv");
 //    	result.getFilms().addAll(newData.getFilms());
 //    	FilmDataSet superDataSet = new FilmDataSet(result.getFilms());
+//    	
+//		String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+//				+ "group_concat(DISTINCT l.language) languages, "
+//				+ "group_concat(DISTINCT c.country) countries "
+//				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+//				+ "left join genres g on g.genreid=mg.genreid "
+//				+ "left join movielanguages ml on m.movieid=ml.movieid "
+//				+ "left join languages l on l.languageid=ml.languageid "
+//				+ "left join moviecountries mc on m.movieid=mc.movieid "
+//				+ "left join countries c on c.countryid=mc.countryid "
+//				+ "group by m.movieid ";
+//    	
+//		FilmDataSet movies = new FilmDataSet(MySQLConnector.readFromDB(query));
+//    	
+//    	writeFilmDataToFile(movies, "war/WEB-INF/Resources/movies_all.tsv");
 //    	MySQLConnector.sendToDBExtendedFileSet(superDataSet);
     	
 
@@ -219,16 +141,6 @@ public class TSVImporter {
 //        for (FilmData film : superDataSet.getFilms())
 //        	bufferedWriter.write(film.toString());
 //    	result.printDataSet();
-    	
-//    	String s = "21687004\t/m/05mr0sv\tThe Stickpin\t\tDate\t\t{}\t{\"/m/07ssc\": \"United Kingdom\"}\t{\"/m/02hmvc\": \"Short Film\", \"/m/0lsxr\": \"Crime Fiction\"}";
-////    	String s = "1 \tID \tTitle \t \t \t{} \tSomething";
-//    	String[] tmp = s.split("\t");
-//    	System.out.println(tmp.length);
-//    	for(String s1 : tmp){
-//    		if(s1.isEmpty())
-//    			System.out.println();
-//    		else
-//    			System.out.println(s1);
-//    	}
+
     }
 }
