@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -256,13 +257,11 @@ public class HeatMap extends Composite {
 
 			@Override
 			public boolean onSlide(SliderEvent e) {
+				yearInputTextBox.removeStyleName(defaultInputCSSRule);
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 
 				setYearInput(min, max);
-			
-				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
-
 				return true;
 			}
 
@@ -272,6 +271,12 @@ public class HeatMap extends Composite {
 				int min = slider.getValueMin();
 
 				setYearInput(min, max);
+				
+				if (isDefault()) {
+					yearInputTextBox.setText(defaultText);
+					yearInputTextBox.addStyleName(defaultInputCSSRule);
+				}
+				
 				filteredSet = new FilmDataSet(filmSet.filterByDateRange(new Range(min, max - min)));
 				fillDataTable();
 				draw();
@@ -279,6 +284,7 @@ public class HeatMap extends Composite {
 
 			@Override
 			public void onStop(SliderEvent e) {
+				
 				int max = slider.getValueMax();
 				int min = slider.getValueMin();
 				
@@ -299,6 +305,10 @@ public class HeatMap extends Composite {
 		sliderPanel.setHeight("60px");
 		sliderPanel.setWidth("500px");
 		
+	}
+	
+	private boolean isDefault() {
+		return (slider.getValueMin() == sliderDefaultMin) && (slider.getValueMax() == sliderDefaultMax);
 	}
 	
 	/**

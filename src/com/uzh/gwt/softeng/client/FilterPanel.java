@@ -369,6 +369,8 @@ public class FilterPanel extends Composite {
             
             @Override
             public boolean onSlide(SliderEvent e) {
+            	dateBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = dateSlider.getValueMax();
                 int min = dateSlider.getValueMin();
 
@@ -416,6 +418,8 @@ public class FilterPanel extends Composite {
             }
             @Override
             public boolean onSlide(SliderEvent e) {
+            	durationBox.removeStyleName(defaultInputCSSRule);
+            	
                 int max = durationSlider.getValueMax();
                 int min = durationSlider.getValueMin();
                 
