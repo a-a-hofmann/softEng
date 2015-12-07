@@ -13,14 +13,12 @@ h1 {
 	width: 90%;
 }
 
-
 .pager {
 	position: static !important;
 	margin: auto !important;
 }
 
-#mainHeader { 
-    height: 0px !important;
+#mainHeader {
     display: none; 
 } 
 
@@ -36,12 +34,6 @@ h1 {
 	padding: 0 10em !important;
 	text-align: center;
 }
-
-
-.htmlPanel{
-	background-color : lightgray;
-}
-
 
 #filterPanel .ui-slider-handle {
 	background: #ef2929;
@@ -67,31 +59,11 @@ h1 {
 	height: 400px;
 }
 
-#search{
-   margin-left: 15px;
-}
-
-
-.feedback{
-   color: white;
-   height: 250px;
-   position: absolute;
-   top: 35%;
-   right: 0%;
-}
-
 #header {
 	clear: both;
 	background-color: #323B38;
 	bottom: 0.5em;
 	overflow: hidden;
-}
-
-#header #cc {
-	width: 10%;
-	float: right;
-	margin-right: 0;'
-	
 }
 
 #heatmap {
@@ -173,18 +145,6 @@ h1 {
 .gwt-Label {
 	letter-spacing: 3px;
 	font-weight: bold;
-}
-
-.normal{
-   background: darkgreen;
-   width: 40px;
-}
-
-.active{
-   background: lightgreen;
-   width: 70px;
-   cursor: pointer;
-   cursor: hand;
 }
 
 /* Popup */
