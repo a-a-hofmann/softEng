@@ -13,7 +13,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
  * The {@code TSVImporter} class is responsible for reading the data from the tsv file.
- * To upload new data to server:
+ * To upload new data to server (might take up to 1 minute):
  * 	1) run importFilmData to parse .tsv file.
  * 	2) call sendToDBExtendedFileSet to send the new data to the mysql db.
  *  3) call writeEntireDataSetToFile for exporting later.
@@ -132,7 +132,7 @@ public class TSVImporter {
     
     /**
      * Helper method to import new data set.
-     * @param path
+     * @param path Path to .tsv file.
      */
     public static void importNewData(String path) {
     	FilmDataSet tmp;

@@ -1,0 +1,2 @@
+serviceClass: com.uzh.gwt.softeng.client.FilmDataService
+path: DAE96AC4639F3F5DF65523B263A00D35.gwt.rpc

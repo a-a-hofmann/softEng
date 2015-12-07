@@ -1,3 +1,3 @@
 # Module SoftEng
 # RPC service class, partial path of RPC policy file
-com.uzh.gwt.softeng.client.FilmDataService, D427B2BED035FB54EE537717C275EDED.gwt.rpc
+com.uzh.gwt.softeng.client.FilmDataService, DAE96AC4639F3F5DF65523B263A00D35.gwt.rpc
