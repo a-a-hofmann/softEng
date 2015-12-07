@@ -1,27 +1,30 @@
 package com.uzh.gwt.softeng.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.uzh.gwt.softeng.shared.FilmData;
+import com.uzh.gwt.softeng.shared.FilmDataSet;
+
 public class TSVImporterTest {
 	
 	ArrayList<String> patterns;
-	private ByteArrayOutputStream outContent;
 
 	@Before
 	public void setUp() throws Exception {
 		patterns = new ArrayList<String>();
 		String idPattern = "[0-9]++";
-        String titlePattern = "\\w.*";
+        String titlePattern = ".*";
         String datePattern = "(\\d{4}-\\d{2}-\\d{2})|(\\d{4})|(\\d{4}-\\d{2})|(-1)";
         String durationPattern = "\\d++.\\d++";
         String languageCountryGenrePattern = "\\[.*[\\s\\w+]*[,\\s\\w+]*\\]";
@@ -32,8 +35,7 @@ public class TSVImporterTest {
         patterns.add(languageCountryGenrePattern);
         patterns.add(languageCountryGenrePattern);
         patterns.add(languageCountryGenrePattern);
-        outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+        
 	}
 	
 	@Test
@@ -52,51 +54,42 @@ public class TSVImporterTest {
 		}	
 	}
 	
-//	/**
-//	 * Tests both importFilmData methods.
-//	 */
-//	@Test
-//	public void testImportFilmData(){
-//		String pathToFile = "war/WEB-INF/Resources/movies_80000.tsv";
-//		int lineToParse = 100;
-//		
-//		
-//		//Test wrong path to file.
-//		//Should fail
-//		try {
-//			TSVImporter.importFilmData(pathToFile + "a");
-//		} catch (FileNotFoundException e) {
-//			// Nothing to do.
-//		} catch (IOException e) {
-//			fail("TSVImporter.importFilmData(pathTofile) IOException");
-//		}
-//		
-//		//Test import function on the whole file
-//		FilmDataSet result;
-//		try {
-//			result = TSVImporter.importFilmData(pathToFile);
-//			for(FilmData film : result.getFilms()){
-//				assertTrue(Long.toString(film.getID()).matches(patterns.get(0)));
-//				assertTrue(film.getTitle().matches(patterns.get(1)));
-//				assertTrue(Integer.toString(film.getDate()).matches(patterns.get(2)));
-//				assertTrue(Float.toString(film.getDuration()).matches(patterns.get(3)));
-//				assertTrue(film.getLanguages().toString().matches(patterns.get(4)));
-//				assertTrue(film.getCountries().toString().matches(patterns.get(5)));
-//				assertTrue(film.getGenres().toString().matches(patterns.get(6)));			
-//			}
-//			assertEquals(result.getFilms().size(), 80000);
-//		} catch (FileNotFoundException e1) {
-//			fail("TSVImporter.importFilmData(pathToFile) Failed to open file");
-//		} catch (IOException e1) {
-//			fail("TSVImporter.importFilmData(pathToFile) IOException");
-//		}
-//		
-//		//Test import with fewer lines.
-//		try {
-//			result = TSVImporter.importFilmData(pathToFile, lineToParse);
-//			assertEquals(lineToParse, result.getFilms().size());
-//		} catch (FileNotFoundException e) {
-//			fail("TSVImporter.importFilmData(pathToFile, lineToParse) Failed to open file");
-//		}
-//	}
+	/**
+	 * Tests both importFilmData methods.
+	 */
+	@Test
+	public void testImportFilmData(){
+		String pathToFile = "war/WEB-INF/Resources/movies_80000.tsv";
+		
+		//Test wrong path to file.
+		//Should fail
+		try {
+			TSVImporter.importFilmDataFromFile(pathToFile + "a");
+		} catch (FileNotFoundException e) {
+			// Nothing to do.
+		} catch (IOException e) {
+			fail("TSVImporter.importFilmData(pathTofile) IOException");
+		}
+		
+		//Test import function on the whole file
+		FilmDataSet result;
+		try {
+			result = TSVImporter.importFilmDataFromFile(pathToFile);
+			for(FilmData film : result.getFilms()){
+				System.out.println(film);
+				assertTrue(Long.toString(film.getID()).matches(patterns.get(0)));
+				assertTrue(film.getTitle().matches(patterns.get(1)));
+				assertTrue(Integer.toString(film.getDate()).matches(patterns.get(2)));
+				assertTrue(Float.toString(film.getDuration()).matches(patterns.get(3)));
+				assertTrue(film.getLanguages().toString().matches(patterns.get(4)));
+				assertTrue(film.getCountries().toString().matches(patterns.get(5)));
+				assertTrue(film.getGenres().toString().matches(patterns.get(6)));			
+			}
+			assertEquals(result.getFilms().size(), 80000);
+		} catch (FileNotFoundException e1) {
+			fail("TSVImporter.importFilmData(pathToFile) Failed to open file");
+		} catch (IOException e1) {
+			fail("TSVImporter.importFilmData(pathToFile) IOException");
+		}
+	}
 }

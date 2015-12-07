@@ -162,7 +162,6 @@ public class FilmDataServiceImpl extends RemoteServiceServlet implements FilmDat
 			
 		    out.println(formatDataSet);
 		    out.close();
-		    
 		} else {
 			log.log(Level.INFO, "Export entire dataset");
 			

@@ -13,5 +13,11 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spiffyui-1.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spiffyuitasks-1.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.3.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4-test-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4-tests.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

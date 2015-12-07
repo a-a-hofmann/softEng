@@ -98,8 +98,6 @@ public class Table extends Composite {
 	 */
 	public void initTable() {
 		
-//		AsyncHandler columnSortHandler = new AsyncHandler(table);
-		
 		TextColumn<FilmData> movieID = new TextColumn<FilmData>() {
 			@Override
 			public String getValue(FilmData object) {

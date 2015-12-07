@@ -209,7 +209,8 @@ h1 {
 }
 
 /* CC section */
-#cc{
+#footer{
+	padding: 15px;
 	background-color: rgba(153,153,153, 0.2);
 	clear: both;
 }

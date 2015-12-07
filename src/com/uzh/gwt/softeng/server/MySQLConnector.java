@@ -335,10 +335,10 @@ public class MySQLConnector {
 		FilmDataSet films;
 		try {
 			//Original data set.
-			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_80000.tsv");
+			films = TSVImporter.importFilmDataFromFile("war/WEB-INF/Resources/movies_80000.tsv");
 			ArrayList<FilmData> tmp = films.getFilms();
 			//Extra data set.
-			films = TSVImporter.importFilmData("war/WEB-INF/Resources/movies_1471.tsv");
+			films = TSVImporter.importFilmDataFromFile("war/WEB-INF/Resources/movies_1471.tsv");
 			tmp.addAll(films.getFilms());
 			
 			films.setDataSet(tmp);

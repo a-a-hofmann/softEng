@@ -6,22 +6,32 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.uzh.gwt.softeng.client.FilmInfoService;
+import com.uzh.gwt.softeng.shared.FilmDataSet;
 
 /**
  * The {@code FilmInfoServiceImpl} is used to connect to the themoviedb.org api.
  */
-public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInfoService{
+public class FilmInfoServiceImpl extends HttpServlet implements FilmInfoService{
 	
 	/**
 	 * Logger.
@@ -99,6 +109,53 @@ public class FilmInfoServiceImpl extends RemoteServiceServlet implements FilmInf
 		
 	}
 	
+	/**
+	 * Responds to file upload HTTP POST.
+	 */
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) {
+
+		FileItemFactory factory = new DiskFileItemFactory();
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		
+		log.log(Level.INFO, "Trying to process upload");
+		
+		try{
+			// Parse the request
+	        List<FileItem> items = upload.parseRequest(request); 
+	        
+	        // Process the uploaded items
+	        Iterator<FileItem> iter = items.iterator();
+
+	        while (iter.hasNext()) {
+	            final FileItem item = (FileItem) iter.next();
+	            //handling file loads
+				String fieldName = item.getFieldName();
+				final String fileName = FilenameUtils.getName((item.getName()));
+			   			 
+				log.log(Level.INFO, "Field Name:"+fieldName +",File Name:"+fileName);
+				
+				FilmDataSet tmp = TSVImporter.importFilmData(item.getString());
+				
+				MySQLConnector.sendToDBExtendedFileSet(tmp);
+				
+				log.log(Level.INFO, "File Uploaded Successfully!");
+	        }
+	    } catch(SQLException e){
+	    	log.log(Level.SEVERE, "File Uploading Failed!\n" + e.toString());
+		} catch (FileUploadException e) {
+			log.log(Level.SEVERE, "File Uploading Failed!\nFileUploadException: " + e.toString());
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "File Uploading Failed!\nIOException: " + e.toString());
+		} catch (InstantiationException e) {
+			log.log(Level.SEVERE, "File Uploading Failed!\nInstantiationException: " + e.toString());
+		} catch (IllegalAccessException e) {
+			log.log(Level.SEVERE, "File Uploading Failed!\nIllegalAccessException: " + e.toString());
+		} catch (ClassNotFoundException e) {
+			log.log(Level.SEVERE, "File Uploading Failed!\nClassNotFoundException: " + e.toString());
+		}
+		
+	}
 	/**
 	 * Sends a query to the themoviedb. 
 	 * @param url Query url.

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -40,10 +41,68 @@ public class TSVImporter {
      * @throws FileNotFoundException File not found.
      * @return Imported FilmDataSet.
      */
-    public static FilmDataSet importFilmData(String filePath) throws IOException{
+    public static FilmDataSet importFilmDataFromFile(String filePath) throws IOException{
     	//Open .tsv file to read.
     	BufferedReader TSVFile = null;	
 		TSVFile = new BufferedReader(new FileReader(filePath));
+    	
+		ArrayList<FilmData> films = new ArrayList<FilmData>();
+		
+		String line = TSVFile.readLine();
+		
+		while(line != null){
+			FilmData m = new FilmData();
+			
+			String[] tmp = line.split("\t");
+			
+			String id = tmp[0];
+			String title = tmp[2];
+			String date = tmp[3];
+			String duration = tmp[5];
+			String languages = tmp[6];
+			String countries = tmp[7];
+			String genres = tmp[8];
+			
+			m.set(0, id);
+			m.set(1, title);
+			
+			if(!date.isEmpty())
+				m.set(2, date);
+			
+		
+			if(!duration.isEmpty())
+				m.set(3, duration);
+			
+
+			if(!languages.equals("{}"));
+				m.set(4, languages);
+			
+		
+			if(!countries.equals("{}"))
+				m.set(5, countries);
+			
+			if(!genres.equals("{}"))
+				m.set(6, genres);
+			
+			films.add(m);
+			
+			line = TSVFile.readLine();
+		}
+		TSVFile.close();
+		
+    	return new FilmDataSet(films);
+    }
+    
+    /**
+     * Imports film data from string. Easier implementation
+     * @param filePath The path to the file to parse.
+     * @throws FileNotFoundException File not found.
+     * @return Imported FilmDataSet.
+     */
+    public static FilmDataSet importFilmData(String data) throws IOException{
+    	//Open .tsv file to read.
+    	BufferedReader TSVFile = null;	
+		TSVFile = new BufferedReader(new StringReader(data));
     	
 		ArrayList<FilmData> films = new ArrayList<FilmData>();
 		
@@ -137,7 +196,7 @@ public class TSVImporter {
     public static void importNewData(String path) {
     	FilmDataSet tmp;
 		try {
-			tmp = importFilmData(path);
+			tmp = importFilmDataFromFile(path);
 		} catch (IOException e2) {
 			e2.printStackTrace();
 			return;

@@ -49,6 +49,11 @@ public class ApplicationLogic implements EntryPoint {
 	private Image ad;
 	
 	/**
+	 * FileUploader.
+	 */
+	private FileUploader fileUploader;
+	
+	/**
 	 * The filename of our ad image
 	 */
 	private final String AD_IMAGE_NAME = "banana.gif";
@@ -138,8 +143,17 @@ public class ApplicationLogic implements EntryPoint {
 		buildFilters();
 		//Insert an ad
 		insertAd();
+		
+		insertUploadForm();
 	}
 	
+	private void insertUploadForm() {
+		fileUploader = new FileUploader();
+		RootPanel contentSlot = RootPanel.get("fileUploader");
+		if (contentSlot!=null) 
+			contentSlot.add(fileUploader);
+	}
+
 	/**
 	 * Create a new map object with updated FilmDataSet.
 	 */

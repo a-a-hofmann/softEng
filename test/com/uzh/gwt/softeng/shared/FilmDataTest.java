@@ -1,12 +1,12 @@
 package com.uzh.gwt.softeng.shared;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import com.uzh.gwt.softeng.shared.FilmData;
 
 public class FilmDataTest {
 	private FilmData emptyFilmTest;
@@ -46,66 +46,6 @@ public class FilmDataTest {
 	}
 
 	@Test
-	public void testFilmDataConstructor() {
-		assertNotEquals(null, emptyFilmTest);
-		assertNotEquals(null, filmTest);
-	}
-	
-	@Test
-	public void testGetID(){
-		assertEquals(-1, emptyFilmTest.getID());
-		assertEquals(1, filmTest.getID());
-	}
-	
-	@Test
-	public void testGetTitle(){
-		assertEquals("No Title", emptyFilmTest.getTitle());
-		assertEquals("Star Wars Episode IV: A New Hope", filmTest.getTitle());
-	}
-	
-	@Test
-	public void testGetDate(){
-		assertEquals(testDate, filmTest.getDate());
-	}
-	
-	@Test
-	public void testGetDuration(){
-		assertEquals(-1, emptyFilmTest.getID());
-		assertEquals(121.0f, filmTest.getDuration(), 0.01);
-	}
-	
-	@Test
-	public void testGetLanguages(){
-		assertEquals(0, emptyFilmTest.getLanguages().size());
-		int i = 0;
-		for(String language: filmTest.getLanguages()){
-			assertEquals(testLanguages.get(i++), language);
-		}
-		assertEquals(testLanguages.size(), filmTest.getLanguages().size());
-	}
-	
-	@Test
-	public void testGetCountries(){
-		assertEquals(0, emptyFilmTest.getCountries().size());
-		assertTrue(emptyFilmTest.getCountries().isEmpty());
-		
-		int i = 0;
-		for(String country: filmTest.getCountries()){
-			assertEquals(testCountries.get(i++), country);
-		}
-	}
-	
-	@Test
-	public void testGetGenres(){
-		assertEquals(0, emptyFilmTest.getGenres().size());
-		
-		int i = 0;
-		for(String genre: filmTest.getGenres()){
-			assertEquals(testGenres.get(i++), genre);
-		}
-	}
-	
-	@Test
 	public void testSetID(){
 		//Invalid input.
 		boolean thrown = false;
@@ -125,13 +65,6 @@ public class FilmDataTest {
 	}
 	
 	@Test
-	public void testSetTitle(){
-		testTitle = "Star Wars";
-		filmTest.setTitle(testTitle);
-		assertEquals(testTitle, filmTest.getTitle());
-	}
-	
-	@Test
 	public void testSetDate(){
 		//Valid parameters.
 		String date1 = "1977-10-10";
@@ -148,9 +81,25 @@ public class FilmDataTest {
 		//Invalid parameter.
 		//Should throw exception
 		String date4 = "-1";
+		String date5 = "abc";
+		String date6 = "";
 		boolean thrown = false;
 		try{
 			filmTest.setDate(date4);
+		} catch(NumberFormatException e){
+			thrown = true;
+			assertEquals(testDate, filmTest.getDate());
+		}
+		
+		try{
+			filmTest.setDate(date5);
+		} catch(NumberFormatException e){
+			thrown = true;
+			assertEquals(testDate, filmTest.getDate());
+		}
+		
+		try{
+			filmTest.setDate(date6);
 		} catch(NumberFormatException e){
 			thrown = true;
 			assertEquals(testDate, filmTest.getDate());
@@ -168,9 +117,9 @@ public class FilmDataTest {
 		} catch(IllegalArgumentException e){
 			thrown = true;
 		}
-		//Assert setID threw exception on invalid parameter.
+		//Assert setDuration threw exception on invalid parameter.
 		assertTrue(thrown);
-		//Assert id is still set to the old id.
+		//Assert duration is still set to the old duration.
 		assertEquals(testDuration, filmTest.getDuration(), 0.01);
 		
 		//Valid input.
@@ -187,14 +136,4 @@ public class FilmDataTest {
 			assertEquals(token, testTokensCleaned.get(i++));
 		}
 	}
-	
-	@Test
-	public void testToString(){
-		String expected = testID + " " + testTitle  + " " + testDate 
-		+ " " + testDuration + " " + testLanguages + " " + testCountries +
-		"\nGenres: " + testGenres + "\n";
-		
-		assertEquals(expected, filmTest.toString());
-	}
-
 }
