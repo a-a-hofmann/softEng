@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.utils.SystemProperty;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.uzh.gwt.softeng.shared.FilmData;
 import com.uzh.gwt.softeng.shared.FilmDataSet;
 
@@ -92,7 +91,7 @@ public class MySQLConnector {
 	 * @throws IllegalAccessException Exception.
 	 * @throws ClassNotFoundException Exception.
 	 */
-	public static void sendToDBExtendedFileSet(FilmDataSet data) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+	public static void sendToDBExtendedFileSet(FilmDataSet data) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 			
 			openConnection();
 			conn.setAutoCommit(false);
@@ -105,11 +104,11 @@ public class MySQLConnector {
 					countriesPreparedStatement.setString(1, cursor.getValue());
 					countriesPreparedStatement.setString(2, cursor.getKey());
 					countriesPreparedStatement.addBatch();
-				}catch(MySQLIntegrityConstraintViolationException e){
+					countriesPreparedStatement.executeBatch();
+				}catch(SQLException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
-			countriesPreparedStatement.executeBatch();
 			conn.commit();
 			System.out.println("Finished sending countries data.");
 			
@@ -121,11 +120,11 @@ public class MySQLConnector {
 					languagesPreparedStatement.setString(1, cursor.getValue());
 					languagesPreparedStatement.setString(2, cursor.getKey());
 					languagesPreparedStatement.addBatch();
-				}catch(MySQLIntegrityConstraintViolationException e){
+					languagesPreparedStatement.executeBatch();
+				}catch(SQLException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
-			languagesPreparedStatement.executeBatch();
 			conn.commit();
 			System.out.println("Finished sending languages data.");
 			
@@ -137,15 +136,15 @@ public class MySQLConnector {
 					genresPreparedStatement.setString(1, cursor.getValue());
 					genresPreparedStatement.setString(2, cursor.getKey());
 					genresPreparedStatement.addBatch();
-				}catch(MySQLIntegrityConstraintViolationException e){
+					genresPreparedStatement.executeBatch();
+				}catch(SQLException e){
 					//Happens when a key is already present in db. In this case just ignore error.
 				}
 			}
-			genresPreparedStatement.executeBatch();
 			conn.commit();
 			System.out.println("Finished sending genres data.");
 			
-//			Send moviecountries data.
+			//Send moviecountries data.
 			String moviesCountriesQuery = "INSERT INTO moviecountries (movieid, countryid) VALUES (?, ?);";
 			int j = 0;
 			PreparedStatement movieCountriesPreparedStatement = conn.prepareStatement(moviesCountriesQuery);

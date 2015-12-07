@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.uzh.gwt.softeng.shared.FilmData;
@@ -15,6 +16,7 @@ import com.uzh.gwt.softeng.shared.FilmDataSet;
  * To upload new data to server:
  * 	1) run importFilmData to parse .tsv file.
  * 	2) call sendToDBExtendedFileSet to send the new data to the mysql db.
+ *  3) call writeEntireDataSetToFile for exporting later.
  */
 public class TSVImporter {
 	
@@ -102,5 +104,60 @@ public class TSVImporter {
     	out.println(films.formatToTSV());
     	
     	out.close();
+    }
+    
+    /**
+     * Writes the entire data set from the db to a file to be used from the server later when exporting.
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     * @throws FileNotFoundException
+     */
+    public static void writeEntireDataSetToFile() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, FileNotFoundException {
+    	String query = "select m.*, group_concat(DISTINCT g.genre) genres, "
+				+ "group_concat(DISTINCT l.language) languages, "
+				+ "group_concat(DISTINCT c.country) countries "
+				+ "from movies m left join moviegenres mg on m.movieid=mg.movieid "
+				+ "left join genres g on g.genreid=mg.genreid "
+				+ "left join movielanguages ml on m.movieid=ml.movieid "
+				+ "left join languages l on l.languageid=ml.languageid "
+				+ "left join moviecountries mc on m.movieid=mc.movieid "
+				+ "left join countries c on c.countryid=mc.countryid "
+				+ "group by m.movieid;";
+    	
+    	FilmDataSet result = new FilmDataSet(MySQLConnector.readFromDB(query));
+    	writeFilmDataToFile(result, "war/WEB-INF/Resources/movies_all.tsv");
+    }
+    
+    /**
+     * Helper method to import new data set.
+     * @param path
+     */
+    public static void importNewData(String path) {
+    	FilmDataSet tmp;
+		try {
+			tmp = importFilmData(path);
+		} catch (IOException e2) {
+			e2.printStackTrace();
+			return;
+		}
+    	try {
+			MySQLConnector.sendToDBExtendedFileSet(tmp);
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+			return;
+		}
+    	try {
+			writeEntireDataSetToFile();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | FileNotFoundException
+				| SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+    }
+    
+    public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+    	importNewData("war/WEB-INF/Resources/movies_1471.tsv");
     }
 }
