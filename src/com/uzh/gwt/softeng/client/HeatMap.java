@@ -422,9 +422,6 @@ public class HeatMap extends Composite {
 		GeoChartColorAxis geoChartColorAxis = GeoChartColorAxis.create();
 		geoChartColorAxis.setColors("green", "yellow", "red");
 		
-		int size = computeDataSetSize();
-		geoChartColorAxis.setMaxValue(size);
-		
 		//Update new color axis
 		options.setColorAxis(geoChartColorAxis);
 		options.setDatalessRegionColor("gray");
